@@ -1,13 +1,11 @@
 package com.fiap.gestao_servicos.infrastructure.controller;
 
 import com.fiap.gestao_servicos.core.domain.Estabelecimento;
-import com.fiap.gestao_servicos.core.domain.EstabelecimentoRepository;
 import com.fiap.gestao_servicos.core.usecase.CreateEstabelecimentoUsecase;
 import com.fiap.gestao_servicos.infrastructure.mapper.EstabelecimentoDtoToDomainMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -21,10 +19,10 @@ public class EstabelecimentoController {
     }
 
     @PostMapping
-    public ResponseEntity<Estabelecimento> criar(@RequestBody EstabelecimentoDto estabelecimentoDto) {
+    public ResponseEntity<?> criar(@RequestBody EstabelecimentoDto estabelecimentoDto) {
         Estabelecimento estabelecimento = EstabelecimentoDtoToDomainMapper.toDomain(estabelecimentoDto);
-        createEstabelecimentoUsecase.create(estabelecimento);
-        return null;
+        Estabelecimento estabelecimentoCriado = createEstabelecimentoUsecase.create(estabelecimento);
+        return ResponseEntity.ok(estabelecimentoCriado);
     }
 
     @DeleteMapping("/{id}")

@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EstabelecimentoRepositoryJpa extends JpaRepository<EstabelecimentoEntity, Long> {
+	boolean existsByCnpjAndNome(String cnpj, String nome);
 }

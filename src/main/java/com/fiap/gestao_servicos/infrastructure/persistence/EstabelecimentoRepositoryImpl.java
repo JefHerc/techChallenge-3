@@ -1,7 +1,9 @@
 package com.fiap.gestao_servicos.infrastructure.persistence;
 
 import com.fiap.gestao_servicos.core.domain.Estabelecimento;
-import com.fiap.gestao_servicos.core.domain.EstabelecimentoRepository;
+import com.fiap.gestao_servicos.core.repository.EstabelecimentoRepository;
+import com.fiap.gestao_servicos.infrastructure.mapper.EstabelecimentoDomainToEntityMapper;
+import com.fiap.gestao_servicos.infrastructure.mapper.EstabelecimentoEntityToDomainMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,7 +19,14 @@ public class EstabelecimentoRepositoryImpl implements EstabelecimentoRepository 
 
     @Override
     public Estabelecimento create(Estabelecimento estabelecimento) {
-        return null;
+        EstabelecimentoEntity entity = EstabelecimentoDomainToEntityMapper.toEntity(estabelecimento);
+        jpaRepository.save(entity);
+        return EstabelecimentoEntityToDomainMapper.toDomain(entity);
+    }
+
+    @Override
+    public boolean existsByCnpjAndNome(String cnpj, String nome) {
+        return jpaRepository.existsByCnpjAndNome(cnpj, nome);
     }
 
     @Override

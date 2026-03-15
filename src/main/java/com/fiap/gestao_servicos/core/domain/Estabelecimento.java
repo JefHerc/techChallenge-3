@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Estabelecimento {
 
+    private final Long id;
     private final String nome;
     private final Endereco endereco;
     private final List<Profissional> profissionais;
@@ -12,10 +13,11 @@ public class Estabelecimento {
     private final List<String> urlFotos;
     private final String horarioFuncionamento;
 
-    public Estabelecimento(String nome, Endereco endereco, List<Profissional> profissionais, List<Servico> servicos, Cnpj cnpj, List<String> urlFotos, String horarioFuncionamento) {
+    public Estabelecimento(Long id, String nome, Endereco endereco, List<Profissional> profissionais, List<Servico> servicos, Cnpj cnpj, List<String> urlFotos, String horarioFuncionamento) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
+        this.id = id;
         this.nome = nome.trim();
 
         this.endereco = endereco;
@@ -29,6 +31,10 @@ public class Estabelecimento {
         this.urlFotos = urlFotos != null ? List.copyOf(urlFotos) : List.of();
 
         this.horarioFuncionamento = horarioFuncionamento != null ? horarioFuncionamento.trim() : null;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getNome() {

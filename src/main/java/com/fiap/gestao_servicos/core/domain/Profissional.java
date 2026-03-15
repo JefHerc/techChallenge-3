@@ -2,6 +2,7 @@ package com.fiap.gestao_servicos.core.domain;
 
 public class Profissional {
 
+    private Long id;
     private String nome;
     private Cpf cpf;
     private Celular celular;

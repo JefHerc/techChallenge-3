@@ -1,6 +1,6 @@
 package com.fiap.gestao_servicos.infrastructure.config;
 
-import com.fiap.gestao_servicos.core.domain.EstabelecimentoRepository;
+import com.fiap.gestao_servicos.core.repository.EstabelecimentoRepository;
 import com.fiap.gestao_servicos.core.usecase.CreateEstabelecimentoUsecase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

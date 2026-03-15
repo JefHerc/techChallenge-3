@@ -22,7 +22,6 @@ public class ServicoEntity {
     @Column(nullable = false)
     private Duration duracaoMedia;
 
-    // Constructors
     public ServicoEntity() {}
 
     public ServicoEntity(String nome, Duration duracaoMedia) {
@@ -30,7 +29,6 @@ public class ServicoEntity {
         this.duracaoMedia = duracaoMedia;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

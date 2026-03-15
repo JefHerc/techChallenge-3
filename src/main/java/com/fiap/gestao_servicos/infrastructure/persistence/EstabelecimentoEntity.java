@@ -34,7 +34,6 @@ public class EstabelecimentoEntity {
 
     private String horarioFuncionamento;
 
-    // Constructors
     public EstabelecimentoEntity() {}
 
     public EstabelecimentoEntity(String nome, EnderecoEntity endereco, List<ProfissionalEntity> profissionais, List<ServicoEntity> servicos, String cnpj, List<String> urlFotos, String horarioFuncionamento) {
@@ -47,7 +46,6 @@ public class EstabelecimentoEntity {
         this.horarioFuncionamento = horarioFuncionamento;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

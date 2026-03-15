@@ -16,6 +16,7 @@ public class EstabelecimentoDtoToDomainMapper {
         }
 
         return new Estabelecimento(
+            null,
             dto.getNome(),
             toEndereco(dto.getEndereco()),
             dto.getProfissionais() != null ? dto.getProfissionais().stream().map(EstabelecimentoDtoToDomainMapper::toProfissional).collect(Collectors.toList()) : null,
