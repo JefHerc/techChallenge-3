@@ -1,5 +1,7 @@
 package com.fiap.gestao_servicos.core.domain;
 
+import java.util.List;
+
 public class Profissional {
 
     private Long id;
@@ -9,12 +11,17 @@ public class Profissional {
     private Email email;
     private String urlFoto;
     private String descricao;
+    private List<ExpedienteProfissional> expedientes;
+    private Sexo sexo;
+    private ServicoProfissional servicoProfissional;
 
-    public Profissional(String nome, Cpf cpf, Celular celular, Email email, String urlFoto, String descricao) {
+    public Profissional(Long id, String nome, Cpf cpf, Celular celular, Email email, String urlFoto, String descricao, List<ExpedienteProfissional> expedientes, Sexo sexo, ServicoProfissional servicoProfissional) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
+        this.id = id;
         this.nome = nome.trim();
+        this.expedientes = expedientes != null ? List.copyOf(expedientes) : List.of();
 
         this.cpf = cpf;
 
@@ -25,6 +32,12 @@ public class Profissional {
         this.urlFoto = urlFoto != null ? urlFoto.trim() : null;
 
         this.descricao = descricao != null ? descricao.trim() : null;
+        this.sexo = sexo;
+        this.servicoProfissional = servicoProfissional;
+    }
+
+    public Profissional(String nome, Cpf cpf, Celular celular, Email email, String urlFoto, String descricao) {
+        this(null, nome, cpf, celular, email, urlFoto, descricao, null, null, null);
     }
 
     public String getNome() {
@@ -49,6 +62,14 @@ public class Profissional {
 
     public String getDescricao() {
         return descricao;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public List<ExpedienteProfissional> getExpedientes() {
+        return expedientes;
     }
 
     public String toString() {

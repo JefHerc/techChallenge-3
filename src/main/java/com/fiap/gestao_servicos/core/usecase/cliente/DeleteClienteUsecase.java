@@ -2,9 +2,7 @@ package com.fiap.gestao_servicos.core.usecase.cliente;
 
 import com.fiap.gestao_servicos.core.repository.ClienteRepository;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
-import org.springframework.stereotype.Component;
 
-@Component
 public class DeleteClienteUsecase {
 
     private final ClienteRepository clienteRepository;

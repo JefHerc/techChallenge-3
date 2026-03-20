@@ -3,9 +3,7 @@ package com.fiap.gestao_servicos.core.usecase.cliente;
 import com.fiap.gestao_servicos.core.domain.Cliente;
 import com.fiap.gestao_servicos.core.repository.ClienteRepository;
 import com.fiap.gestao_servicos.core.exception.DuplicateDataException;
-import org.springframework.stereotype.Component;
 
-@Component
 public class CreateClienteUsecase {
 
     private final ClienteRepository clienteRepository;

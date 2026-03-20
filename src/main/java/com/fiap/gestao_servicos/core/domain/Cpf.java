@@ -1,5 +1,7 @@
 package com.fiap.gestao_servicos.core.domain;
 
+import java.util.Objects;
+
 public class Cpf {
 
     private final String value;
@@ -78,6 +80,23 @@ public class Cpf {
         return value;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof Cpf other)) {
+            return false;
+        }
+        return Objects.equals(getCleanValue(), other.getCleanValue());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getCleanValue());
+    }
+
+    @Override
     public String toString() {
         return getMasked();
     }

@@ -8,8 +8,9 @@ public interface EstabelecimentoRepository {
 
     Estabelecimento create(Estabelecimento estabelecimento);
     boolean existsByCnpjAndNome(String cnpj, String nome);
-    Estabelecimento update(Estabelecimento estabelecimento);
-    void delete(Estabelecimento estabelecimento);
+    Estabelecimento update(Long id, Estabelecimento estabelecimento);
+    void deleteById(Long id);
     List<Estabelecimento> findAll();
     Estabelecimento findById(Long id);
+    boolean existsById(Long id);
 }

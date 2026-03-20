@@ -3,9 +3,9 @@ spring:
     name: gestao-servicos
 
   datasource:
-    url: jdbc:mysql://localhost:3306/petshop?createDatabaseIfNotExist=true
-    username: petshop
-    password: petshop
+    url: jdbc:mysql://localhost:3306/gestao_servicos?createDatabaseIfNotExist=true
+    username: gestao_servicos
+    password: gestao_servico
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:

@@ -4,9 +4,7 @@ import com.fiap.gestao_servicos.core.domain.Cliente;
 import com.fiap.gestao_servicos.core.repository.ClienteRepository;
 import com.fiap.gestao_servicos.core.exception.DuplicateDataException;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
-import org.springframework.stereotype.Component;
 
-@Component
 public class UpdateClienteUsecase {
 
     private final ClienteRepository clienteRepository;
