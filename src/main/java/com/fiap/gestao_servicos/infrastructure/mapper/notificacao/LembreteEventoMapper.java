@@ -2,8 +2,6 @@ package com.fiap.gestao_servicos.infrastructure.mapper.notificacao;
 
 import com.fiap.gestao_servicos.core.domain.LembreteDestinatario;
 import com.fiap.gestao_servicos.core.domain.LembreteEvento;
-import com.fiap.gestao_servicos.core.domain.LembreteStatus;
-import com.fiap.gestao_servicos.core.domain.LembreteTipo;
 import com.fiap.gestao_servicos.infrastructure.persistence.agendamento.AgendamentoEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.notificacao.LembreteEventoEntity;
 

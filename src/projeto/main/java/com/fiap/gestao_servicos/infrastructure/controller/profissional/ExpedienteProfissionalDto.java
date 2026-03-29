@@ -5,13 +5,13 @@ import jakarta.validation.constraints.NotBlank;
 public class ExpedienteProfissionalDto {
 
     @NotBlank(message = "Dia da semana é obrigatório")
-    private String diaSemana; // ex: MONDAY
+    private String diaSemana; 
     @NotBlank(message = "Início do turno é obrigatório")
-    private String inicioTurno; // ex: 08:00
+    private String inicioTurno; 
     @NotBlank(message = "Fim do turno é obrigatório")
-    private String fimTurno; // ex: 17:00
-    private String inicioIntervalo; // optional
-    private String fimIntervalo; // optional
+    private String fimTurno; 
+    private String inicioIntervalo;
+    private String fimIntervalo;
 
     public String getDiaSemana() {
         return diaSemana;

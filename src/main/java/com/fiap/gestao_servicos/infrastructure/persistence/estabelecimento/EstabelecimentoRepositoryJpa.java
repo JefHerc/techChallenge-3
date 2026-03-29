@@ -12,29 +12,31 @@ import java.util.List;
 @Repository
 public interface EstabelecimentoRepositoryJpa extends JpaRepository<EstabelecimentoEntity, Long>,
         JpaSpecificationExecutor<EstabelecimentoEntity> {
-	boolean existsByCnpj(String cnpj);
-	boolean existsByCnpjAndNome(String cnpj, String nome);
-	boolean existsByCnpjAndIdNot(String cnpj, Long id);
+    boolean existsByCnpj(String cnpj);
 
-	@Query("SELECT AVG(av.notaEstabelecimento) FROM AvaliacaoEntity av " +
-	       "WHERE av.agendamento.estabelecimento.id = :estabelecimentoId " +
-	       "AND av.agendamento.status = 'CONCLUIDO'")
-	Double findAverageNota(@Param("estabelecimentoId") Long estabelecimentoId);
+    boolean existsByCnpjAndNome(String cnpj, String nome);
 
-	@Query("SELECT AVG(av.notaProfissional) FROM AvaliacaoEntity av " +
-	       "WHERE av.agendamento.profissional.id = :profissionalId " +
-	       "AND av.agendamento.status = 'CONCLUIDO'")
-	Double findAverageProfissionalNota(@Param("profissionalId") Long profissionalId);
+    boolean existsByCnpjAndIdNot(String cnpj, Long id);
 
-	@Query("SELECT sp FROM ServicoProfissionalEntity sp " +
-	       "JOIN sp.profissional p " +
-	       "JOIN sp.servico s " +
-	       "WHERE p.estabelecimento.id = :estabelecimentoId " +
-	       "AND LOWER(s.nome) LIKE LOWER(CONCAT('%', :servicoNome, '%'))")
-	List<ServicoProfissionalEntity> findServicosOfertadosByEstabelecimentoAndServico(
-	    @Param("estabelecimentoId") Long estabelecimentoId,
-	    @Param("servicoNome") String servicoNome
-	);
+    @Query("SELECT AVG(av.notaEstabelecimento) FROM AvaliacaoEntity av " +
+            "WHERE av.agendamento.estabelecimento.id = :estabelecimentoId " +
+            "AND av.agendamento.status = 'CONCLUIDO'")
+    Double findAverageNota(@Param("estabelecimentoId") Long estabelecimentoId);
+
+    @Query("SELECT AVG(av.notaProfissional) FROM AvaliacaoEntity av " +
+            "WHERE av.agendamento.profissional.id = :profissionalId " +
+            "AND av.agendamento.status = 'CONCLUIDO'")
+    Double findAverageProfissionalNota(@Param("profissionalId") Long profissionalId);
+
+    @Query("SELECT sp FROM ServicoProfissionalEntity sp " +
+            "JOIN sp.profissional p " +
+            "JOIN sp.servico s " +
+            "WHERE p.estabelecimento.id = :estabelecimentoId " +
+            "AND LOWER(s.nome) LIKE LOWER(CONCAT('%', :servicoNome, '%'))")
+    List<ServicoProfissionalEntity> findServicosOfertadosByEstabelecimentoAndServico(
+            @Param("estabelecimentoId") Long estabelecimentoId,
+            @Param("servicoNome") String servicoNome
+    );
 }
 
 

@@ -7,7 +7,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AvaliacaoRepositoryJpa extends JpaRepository<AvaliacaoEntity, Long> {
-	Page<AvaliacaoEntity> findByAgendamentoId(Long agendamentoId, Pageable pageable);
-	Page<AvaliacaoEntity> findByAgendamentoEstabelecimentoId(Long estabelecimentoId, Pageable pageable);
+    Page<AvaliacaoEntity> findByAgendamentoId(Long agendamentoId, Pageable pageable);
+
+    Page<AvaliacaoEntity> findByAgendamentoEstabelecimentoId(
+            Long estabelecimentoId,
+            Pageable pageable);
 }
 

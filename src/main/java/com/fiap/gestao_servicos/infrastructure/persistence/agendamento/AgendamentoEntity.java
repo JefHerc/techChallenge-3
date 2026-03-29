@@ -1,6 +1,7 @@
 package com.fiap.gestao_servicos.infrastructure.persistence.agendamento;
 
 import com.fiap.gestao_servicos.core.domain.AgendamentoStatus;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.fiap.gestao_servicos.infrastructure.persistence.cliente.ClienteEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento.EstabelecimentoEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.profissional.ProfissionalEntity;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "agendamento")
+@SuppressFBWarnings(value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"}, justification = "Entidade JPA com relacionamentos gerenciados pelo ORM")
 public class AgendamentoEntity {
 
     @Id

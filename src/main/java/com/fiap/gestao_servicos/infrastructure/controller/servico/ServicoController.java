@@ -8,7 +8,17 @@ import com.fiap.gestao_servicos.core.usecase.servico.FindServicoByIdUseCase;
 import com.fiap.gestao_servicos.core.usecase.servico.UpdateServicoNoEstabelecimentoUseCase;
 import com.fiap.gestao_servicos.infrastructure.controller.PageUtils;
 import com.fiap.gestao_servicos.infrastructure.mapper.servico.ServicoMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,6 +36,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/estabelecimentos/{estabelecimentoId}/servicos")
+@Tag(name = "Servicos", description = "Operacoes de servicos ofertados por estabelecimento")
 public class ServicoController {
 
     private final CreateServicosNoEstabelecimentoUseCase createServicosNoEstabelecimentoUseCase;
@@ -47,7 +58,58 @@ public class ServicoController {
     }
 
     @PostMapping
-    public ResponseEntity<List<ServicoResponseDto>> criar(@PathVariable Long estabelecimentoId,
+        @Operation(summary = "Criar servicos no estabelecimento")
+                @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                        description = "Lista de servicos para cadastro no estabelecimento",
+                        required = true,
+                        content = @Content(
+                                mediaType = "application/json",
+                                examples = @ExampleObject(
+                                        name = "servicos",
+                                        value = """
+                                                        [
+                                                            {
+                                                                "nome": "Corte feminino",
+                                                                "duracaoMedia": "PT1H"
+                                                            },
+                                                            {
+                                                                "nome": "Escova",
+                                                                "duracaoMedia": "PT45M"
+                                                            }
+                                                        ]
+                                                        """
+                                )
+                        )
+                )
+        @ApiResponses(value = {
+                        @ApiResponse(
+                                responseCode = "201",
+                                description = "Servicos criados com sucesso",
+                                content = @Content(
+                                        mediaType = "application/json",
+                                        examples = @ExampleObject(
+                                                name = "servicosCriados",
+                                                value = """
+                                                                [
+                                                                    {
+                                                                        "id": 20,
+                                                                        "nome": "Corte feminino",
+                                                                        "duracaoMedia": "PT1H"
+                                                                    },
+                                                                    {
+                                                                        "id": 21,
+                                                                        "nome": "Escova",
+                                                                        "duracaoMedia": "PT45M"
+                                                                    }
+                                                                ]
+                                                                """
+                                        )
+                                )
+                        ),
+                        @ApiResponse(ref = "#/components/responses/BadRequestError"),
+                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+        })
+        public ResponseEntity<List<ServicoResponseDto>> criar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                                           @Valid @RequestBody List<ServicoDto> servicoDtos) {
         List<ServicoResponseDto> criados = createServicosNoEstabelecimentoUseCase.create(
                         estabelecimentoId,
@@ -59,8 +121,20 @@ public class ServicoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ServicoResponseDto>> listar(@PathVariable Long estabelecimentoId,
-                                                           Pageable pageable) {
+        @Operation(summary = "Listar servicos por estabelecimento")
+            @PageableAsQueryParam
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Lista de servicos retornada com sucesso",
+                        content = @Content(
+                                mediaType = "application/json",
+                                examples = @ExampleObject(
+                                        ref = "#/components/examples/PageResultExample"
+                                )
+                        )
+                )
+        public ResponseEntity<Page<ServicoResponseDto>> listar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                                   @ParameterObject Pageable pageable) {
         Page<ServicoResponseDto> servicos = PageUtils.toSpringPage(
             findAllServicosUseCase
                 .findPageByEstabelecimentoId(estabelecimentoId, PageUtils.toPageQuery(pageable))
@@ -69,15 +143,77 @@ public class ServicoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ServicoResponseDto> buscarPorId(@PathVariable Long estabelecimentoId,
-                                                          @PathVariable Long id) {
+        @Operation(summary = "Buscar servico por ID")
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Servico encontrado",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ServicoResponseDto.class),
+                    examples = @ExampleObject(
+                        name = "servico",
+                        value = """
+                                {
+                                  "id": 20,
+                                  "nome": "Corte feminino",
+                                  "duracaoMedia": "PT1H"
+                                }
+                                """
+                    )
+                )
+            ),
+            @ApiResponse(ref = "#/components/responses/NotFoundError")
+        })
+        public ResponseEntity<ServicoResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                                  @Parameter(description = "ID do servico", example = "20") @PathVariable Long id) {
         Servico servico = findServicoByIdUseCase.findByIdAndEstabelecimentoId(id, estabelecimentoId);
         return ResponseEntity.ok(ServicoMapper.toResponse(servico));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ServicoResponseDto> atualizar(@PathVariable Long estabelecimentoId,
-                                                        @PathVariable Long id,
+        @Operation(summary = "Atualizar servico")
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Payload de atualizacao de servico",
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ServicoDto.class),
+                examples = @ExampleObject(
+                    name = "servicoAtualizacao",
+                    value = """
+                            {
+                              "nome": "Corte feminino completo",
+                              "duracaoMedia": "PT1H15M"
+                            }
+                            """
+                )
+            )
+        )
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Servico atualizado com sucesso",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ServicoResponseDto.class),
+                    examples = @ExampleObject(
+                        name = "servicoAtualizado",
+                        value = """
+                                {
+                                  "id": 20,
+                                  "nome": "Corte feminino completo",
+                                  "duracaoMedia": "PT1H15M"
+                                }
+                                """
+                    )
+                )
+            ),
+                        @ApiResponse(ref = "#/components/responses/BadRequestError"),
+                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+        })
+        public ResponseEntity<ServicoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                                @Parameter(description = "ID do servico", example = "20") @PathVariable Long id,
                                                         @Valid @RequestBody ServicoDto servicoDto) {
         Servico atualizado = updateServicoNoEstabelecimentoUseCase.update(
                 estabelecimentoId,
@@ -88,8 +224,13 @@ public class ServicoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long estabelecimentoId,
-                                        @PathVariable Long id) {
+    @Operation(summary = "Remover servico")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Servico removido com sucesso"),
+            @ApiResponse(ref = "#/components/responses/NotFoundError")
+    })
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                                        @Parameter(description = "ID do servico", example = "20") @PathVariable Long id) {
         deleteServicoNoEstabelecimentoUseCase.deleteById(estabelecimentoId, id);
         return ResponseEntity.noContent().build();
     }

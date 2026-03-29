@@ -45,7 +45,6 @@ public class ProfissionalEntity {
     @JoinColumn(name = "profissional_id")
     private java.util.List<ExpedienteProfissionalEntity> expedientes;
 
-    // Constructors
     public ProfissionalEntity() {}
 
     public ProfissionalEntity(String nome, String cpf, String celular, String email, String urlFoto, String descricao) {
@@ -57,7 +56,6 @@ public class ProfissionalEntity {
         this.descricao = descricao;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

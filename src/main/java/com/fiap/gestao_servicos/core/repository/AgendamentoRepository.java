@@ -2,8 +2,6 @@ package com.fiap.gestao_servicos.core.repository;
 
 import com.fiap.gestao_servicos.core.domain.Agendamento;
 import com.fiap.gestao_servicos.core.domain.AgendamentoStatus;
-import com.fiap.gestao_servicos.core.domain.Estabelecimento;
-import com.fiap.gestao_servicos.core.domain.Servico;
 import com.fiap.gestao_servicos.core.pagination.PageQuery;
 import com.fiap.gestao_servicos.core.pagination.PageResult;
 

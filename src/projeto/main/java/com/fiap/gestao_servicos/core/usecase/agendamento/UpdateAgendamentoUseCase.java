@@ -62,7 +62,6 @@ public class UpdateAgendamentoUseCase {
                         "Cliente",
                         input.getClienteId())));
 
-        // Criar agendamento com entidades reais
         Agendamento agendamento = new Agendamento(
                 null,
                 profissional,

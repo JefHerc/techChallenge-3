@@ -124,7 +124,7 @@ public class ServicoRepositoryImpl implements ServicoRepository {
     }
 
     private Servico toDomain(ServicoEntity entity) {
-        return new Servico(entity.getId(), java.util.Optional.ofNullable(entity.getNome())
+        return new Servico(entity.getId(), Optional.ofNullable(entity.getNome())
                 .map(n -> com.fiap.gestao_servicos.core.domain.ServicoEnum.valueOf(n))
                 .orElse(null), entity.getDuracaoMedia());
     }

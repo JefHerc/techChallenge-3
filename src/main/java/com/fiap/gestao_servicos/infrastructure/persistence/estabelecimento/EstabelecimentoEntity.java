@@ -1,11 +1,24 @@
 package com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.fiap.gestao_servicos.infrastructure.persistence.EnderecoEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "estabelecimento")
+@SuppressFBWarnings(value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"}, justification = "Entidade JPA com estado gerenciado pelo ORM")
 public class EstabelecimentoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,8 +51,8 @@ public class EstabelecimentoEntity {
         this.nome = nome;
         this.endereco = endereco;
         this.cnpj = cnpj;
-        this.urlFotos = urlFotos;
-        this.horarioFuncionamento = horarioFuncionamento;
+        this.urlFotos = urlFotos == null ? null : new ArrayList<>(urlFotos);
+        this.horarioFuncionamento = horarioFuncionamento == null ? null : new ArrayList<>(horarioFuncionamento);
     }
 
     public Long getId() {
@@ -75,19 +88,19 @@ public class EstabelecimentoEntity {
     }
 
     public List<String> getUrlFotos() {
-        return urlFotos;
+        return urlFotos == null ? null : new ArrayList<>(urlFotos);
     }
 
     public void setUrlFotos(List<String> urlFotos) {
-        this.urlFotos = urlFotos;
+        this.urlFotos = urlFotos == null ? null : new ArrayList<>(urlFotos);
     }
 
     public List<HorarioFuncionamentoEmbeddable> getHorarioFuncionamento() {
-        return horarioFuncionamento;
+        return horarioFuncionamento == null ? null : new ArrayList<>(horarioFuncionamento);
     }
 
     public void setHorarioFuncionamento(List<HorarioFuncionamentoEmbeddable> horarioFuncionamento) {
-        this.horarioFuncionamento = horarioFuncionamento;
+        this.horarioFuncionamento = horarioFuncionamento == null ? null : new ArrayList<>(horarioFuncionamento);
     }
 
     public Double getNota() {

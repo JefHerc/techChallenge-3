@@ -44,3 +44,27 @@ notification:
 scheduler:
   lembrete:
     delay: ${SCHEDULER_LEMBRETE_DELAY:300000}
+
+springdoc:
+  group-configs:
+    - group: clientes
+      display-name: Clientes
+      paths-to-match:
+        - /clientes/**
+    - group: estabelecimentos
+      display-name: Estabelecimentos e Catalogo
+      paths-to-match:
+        - /estabelecimentos/**
+    - group: agenda
+      display-name: Agenda e Avaliacoes
+      paths-to-match:
+        - /agendamentos/**
+        - /estabelecimentos/*/agendamentos/**
+        - /agendamentos/*/avaliacoes/**
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    urls-primary-name: clientes
+    operations-sorter: method
+    tags-sorter: alpha

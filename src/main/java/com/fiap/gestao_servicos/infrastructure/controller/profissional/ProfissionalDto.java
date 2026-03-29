@@ -1,28 +1,55 @@
 package com.fiap.gestao_servicos.infrastructure.controller.profissional;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Schema(description = "Payload para criacao/atualizacao de profissional")
 public class ProfissionalDto {
 
+        @Schema(
+            description = "Nome do profissional",
+            example = "Ana Souza",
+            minLength = 2,
+            maxLength = 120
+        )
     @NotBlank(message = "Nome é obrigatório")
+        @Size(min = 2, max = 120, message = "Nome deve ter entre 2 e 120 caracteres")
     private String nome;
+    @Schema(description = "CPF do profissional", example = "12345678901")
     @NotBlank(message = "CPF é obrigatório")
     private String cpf;
+    @Schema(description = "Celular do profissional", example = "11987654321")
     @NotBlank(message = "Celular é obrigatório")
     private String celular;
+    @Schema(description = "Email do profissional", example = "ana.souza@email.com")
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email inválido")
     private String email;
+    @Schema(description = "URL da foto do profissional", example = "https://cdn.exemplo.com/fotos/ana.jpg")
     private String urlFoto;
+        @Schema(
+            description = "Descricao resumida do profissional",
+            example = "Especialista em coloracao e corte",
+            maxLength = 500
+        )
+        @Size(max = 500, message = "Descricao deve ter no máximo 500 caracteres")
     private String descricao;
+        @Schema(
+            description = "Sexo do profissional",
+            example = "FEMININO",
+            allowableValues = {"MASCULINO", "FEMININO", "OUTRO"}
+        )
     private String sexo;
+    @Schema(description = "Lista de expedientes do profissional")
     @Valid
     private List<ExpedienteProfissionalDto> expedientes;
+    @Schema(description = "Lista de servicos e precos do profissional")
     @Valid
     private List<ServicoProfissionalDto> servicosProfissional;
 
@@ -35,12 +62,11 @@ public class ProfissionalDto {
         this.email = email;
         this.urlFoto = urlFoto;
         this.descricao = descricao;
-        this.sexo = null; // Initialize sexo
-        this.expedientes = new ArrayList<>(); // Initialize expedientes
-        this.servicosProfissional = new ArrayList<>(); // Initialize servicosProfissional
+        this.sexo = null;
+        this.expedientes = new ArrayList<>();
+        this.servicosProfissional = new ArrayList<>();
     }
 
-    // Getters and Setters
     public String getNome() {
         return nome;
     }
@@ -98,19 +124,19 @@ public class ProfissionalDto {
     }
 
     public List<ExpedienteProfissionalDto> getExpedientes() {
-        return expedientes;
+        return expedientes == null ? null : new ArrayList<>(expedientes);
     }
 
     public void setExpedientes(List<ExpedienteProfissionalDto> expedientes) {
-        this.expedientes = expedientes;
+        this.expedientes = expedientes == null ? null : new ArrayList<>(expedientes);
     }
 
     public List<ServicoProfissionalDto> getServicosProfissional() {
-        return servicosProfissional;
+        return servicosProfissional == null ? null : new ArrayList<>(servicosProfissional);
     }
 
     public void setServicosProfissional(List<ServicoProfissionalDto> servicosProfissional) {
-        this.servicosProfissional = servicosProfissional;
+        this.servicosProfissional = servicosProfissional == null ? null : new ArrayList<>(servicosProfissional);
     }
 }
 

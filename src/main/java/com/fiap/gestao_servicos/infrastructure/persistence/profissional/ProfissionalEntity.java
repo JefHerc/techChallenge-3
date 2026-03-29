@@ -1,5 +1,6 @@
 package com.fiap.gestao_servicos.infrastructure.persistence.profissional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento.EstabelecimentoEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "profissional")
+@SuppressFBWarnings(value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"}, justification = "Entidade JPA com coleções e associações gerenciadas pelo ORM")
 public class ProfissionalEntity {
 
     @Id
@@ -52,7 +54,6 @@ public class ProfissionalEntity {
     @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ExpedienteProfissionalEntity> expedientes = new ArrayList<>();
 
-    // Constructors
     public ProfissionalEntity() {}
 
     public ProfissionalEntity(String nome, String cpf, String celular, String email, String urlFoto, String descricao) {
@@ -64,7 +65,6 @@ public class ProfissionalEntity {
         this.descricao = descricao;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -122,11 +122,11 @@ public class ProfissionalEntity {
     }
 
     public List<ServicoProfissionalEntity> getServicosProfissional() {
-        return servicosProfissional;
+        return servicosProfissional == null ? null : new ArrayList<>(servicosProfissional);
     }
 
     public void setServicosProfissional(List<ServicoProfissionalEntity> servicosProfissional) {
-        this.servicosProfissional = servicosProfissional;
+        this.servicosProfissional = servicosProfissional == null ? null : new ArrayList<>(servicosProfissional);
         if (this.servicosProfissional != null) {
             this.servicosProfissional.forEach(servicoProfissional -> servicoProfissional.setProfissional(this));
         }
@@ -148,12 +148,12 @@ public class ProfissionalEntity {
         this.estabelecimento = estabelecimento;
     }
 
-    public java.util.List<ExpedienteProfissionalEntity> getExpedientes() {
-        return expedientes;
+    public List<ExpedienteProfissionalEntity> getExpedientes() {
+        return expedientes == null ? null : new ArrayList<>(expedientes);
     }
 
-    public void setExpedientes(java.util.List<ExpedienteProfissionalEntity> expedientes) {
-        this.expedientes = expedientes;
+    public void setExpedientes(List<ExpedienteProfissionalEntity> expedientes) {
+        this.expedientes = expedientes == null ? null : new ArrayList<>(expedientes);
         if (this.expedientes != null) {
             this.expedientes.forEach(expediente -> expediente.setProfissional(this));
         }

@@ -7,7 +7,6 @@ import com.fiap.gestao_servicos.core.pagination.PageResult;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
 import com.fiap.gestao_servicos.infrastructure.mapper.agendamento.AgendamentoMapper;
 import com.fiap.gestao_servicos.infrastructure.pagination.SpringPaginationMapper;
-import com.fiap.gestao_servicos.infrastructure.persistence.*;
 import com.fiap.gestao_servicos.infrastructure.persistence.cliente.ClienteEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.cliente.ClienteRepositoryJpa;
 import com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento.EstabelecimentoEntity;

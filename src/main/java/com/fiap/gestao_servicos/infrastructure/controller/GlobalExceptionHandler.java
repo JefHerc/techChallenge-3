@@ -5,9 +5,12 @@ import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.method.ParameterErrors;
+import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.Instant;
@@ -64,12 +67,53 @@ public class GlobalExceptionHandler {
                 .map(error -> new ApiFieldError(error.getField(), error.getDefaultMessage()))
                 .toList();
 
+        return buildValidationResponse(request, fieldErrors);
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ApiErrorResponse> handleHandlerMethodValidation(HandlerMethodValidationException ex,
+                                                                          HttpServletRequest request) {
+        List<ApiFieldError> fieldErrors = ex.getParameterValidationResults().stream()
+                .flatMap(result -> toFieldErrors(result).stream())
+                .toList();
+
+        return buildValidationResponse(request, fieldErrors);
+    }
+
+    private List<ApiFieldError> toFieldErrors(ParameterValidationResult result) {
+        if (result instanceof ParameterErrors errors) {
+            return errors.getFieldErrors().stream()
+                    .map(error -> new ApiFieldError(prefixField(result, error.getField()), error.getDefaultMessage()))
+                    .toList();
+        }
+
+        String field = result.getMethodParameter().getParameterName();
+        if (field == null || field.isBlank()) {
+            field = "request";
+        }
+        String resolvedField = field;
+
+        return result.getResolvableErrors().stream()
+            .map(error -> new ApiFieldError(prefixField(result, resolvedField), error.getDefaultMessage()))
+                .toList();
+    }
+
+    private String prefixField(ParameterValidationResult result, String field) {
+        Integer containerIndex = result.getContainerIndex();
+        if (containerIndex == null) {
+            return field;
+        }
+        return "[" + containerIndex + "]." + field;
+    }
+
+    private ResponseEntity<ApiErrorResponse> buildValidationResponse(HttpServletRequest request,
+                                                                     List<ApiFieldError> fieldErrors) {
         return buildResponse(
-                HttpStatus.BAD_REQUEST,
-                "VALIDACAO_ENTRADA",
-                "Erro de validação na requisição.",
-                request,
-                fieldErrors
+            HttpStatus.BAD_REQUEST,
+            "VALIDACAO_ENTRADA",
+            "Erro de validação na requisição.",
+            request,
+            fieldErrors
         );
     }
 

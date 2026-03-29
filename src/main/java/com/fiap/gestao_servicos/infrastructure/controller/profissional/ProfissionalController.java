@@ -8,7 +8,17 @@ import com.fiap.gestao_servicos.core.usecase.profissional.FindProfissionalByIdUs
 import com.fiap.gestao_servicos.core.usecase.profissional.UpdateProfissionalNoEstabelecimentoUseCase;
 import com.fiap.gestao_servicos.infrastructure.controller.PageUtils;
 import com.fiap.gestao_servicos.infrastructure.mapper.profissional.ProfissionalMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -24,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/estabelecimentos/{estabelecimentoId}/profissionais")
+@Tag(name = "Profissionais", description = "Operacoes de profissionais por estabelecimento")
 public class ProfissionalController {
 
     private final CreateProfissionalNoEstabelecimentoUseCase createProfissionalNoEstabelecimentoUseCase;
@@ -45,7 +56,72 @@ public class ProfissionalController {
     }
 
     @PostMapping
-    public ResponseEntity<ProfissionalResponseDto> criar(@PathVariable Long estabelecimentoId,
+        @Operation(summary = "Criar profissional")
+                @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                        description = "Payload de criacao de profissional",
+                        required = true,
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ProfissionalDto.class),
+                                examples = @ExampleObject(
+                                        name = "profissional",
+                                        value = """
+                                                        {
+                                                            "nome": "Ana Souza",
+                                                            "cpf": "12345678901",
+                                                            "celular": "11987654321",
+                                                            "email": "ana.souza@email.com",
+                                                            "urlFoto": "https://cdn.exemplo.com/fotos/ana.jpg",
+                                                            "descricao": "Especialista em coloracao e corte",
+                                                            "sexo": "FEMININO",
+                                                            "expedientes": [
+                                                                {
+                                                                    "diaSemana": "MONDAY",
+                                                                    "inicioTurno": "09:00",
+                                                                    "fimTurno": "18:00"
+                                                                }
+                                                            ],
+                                                            "servicosProfissional": [
+                                                                {
+                                                                    "servicoId": 20,
+                                                                    "valor": 120.00
+                                                                }
+                                                            ]
+                                                        }
+                                                        """
+                                )
+                        )
+                )
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "201",
+                description = "Profissional criado com sucesso",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ProfissionalResponseDto.class),
+                    examples = @ExampleObject(
+                        name = "profissionalCriado",
+                        value = """
+                                {
+                                  "id": 5,
+                                  "nome": "Ana Souza",
+                                  "cpf": "12345678901",
+                                  "celular": "11987654321",
+                                  "email": "ana.souza@email.com",
+                                  "urlFoto": "https://cdn.exemplo.com/fotos/ana.jpg",
+                                  "descricao": "Especialista em coloracao e corte",
+                                  "sexo": "FEMININO",
+                                  "expedientes": [],
+                                  "servicosProfissional": []
+                                }
+                                """
+                    )
+                )
+            ),
+                        @ApiResponse(ref = "#/components/responses/BadRequestError"),
+                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+        })
+        public ResponseEntity<ProfissionalResponseDto> criar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                                          @Valid @RequestBody ProfissionalDto profissionalDto) {
         Profissional novoProfissional = ProfissionalMapper.toDomain(profissionalDto);
         Profissional criado = createProfissionalNoEstabelecimentoUseCase.create(estabelecimentoId, novoProfissional);
@@ -54,8 +130,20 @@ public class ProfissionalController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProfissionalResponseDto>> listar(@PathVariable Long estabelecimentoId,
-                                                                Pageable pageable) {
+        @Operation(summary = "Listar profissionais por estabelecimento")
+            @PageableAsQueryParam
+                @ApiResponse(
+                        responseCode = "200",
+                        description = "Lista de profissionais retornada com sucesso",
+                        content = @Content(
+                                mediaType = "application/json",
+                                examples = @ExampleObject(
+                                        ref = "#/components/examples/PageResultExample"
+                                )
+                        )
+                )
+        public ResponseEntity<Page<ProfissionalResponseDto>> listar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                                    @ParameterObject Pageable pageable) {
         Page<ProfissionalResponseDto> profissionais = PageUtils.toSpringPage(
             findAllProfissionaisUseCase
                 .findPageByEstabelecimentoId(estabelecimentoId, PageUtils.toPageQuery(pageable))
@@ -64,15 +152,109 @@ public class ProfissionalController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProfissionalResponseDto> buscarPorId(@PathVariable Long estabelecimentoId,
-                                                               @PathVariable Long id) {
+        @Operation(summary = "Buscar profissional por ID")
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Profissional encontrado",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ProfissionalResponseDto.class),
+                    examples = @ExampleObject(
+                        name = "profissional",
+                        value = """
+                                {
+                                  "id": 5,
+                                  "nome": "Ana Souza",
+                                  "cpf": "12345678901",
+                                  "celular": "11987654321",
+                                  "email": "ana.souza@email.com",
+                                  "urlFoto": "https://cdn.exemplo.com/fotos/ana.jpg",
+                                  "descricao": "Especialista em coloracao e corte",
+                                  "sexo": "FEMININO",
+                                  "expedientes": [],
+                                  "servicosProfissional": []
+                                }
+                                """
+                    )
+                )
+            ),
+            @ApiResponse(ref = "#/components/responses/NotFoundError")
+        })
+        public ResponseEntity<ProfissionalResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                                       @Parameter(description = "ID do profissional", example = "5") @PathVariable Long id) {
         Profissional profissional = findProfissionalByIdUseCase.findByIdAndEstabelecimentoId(id, estabelecimentoId);
         return ResponseEntity.ok(ProfissionalMapper.toResponse(profissional));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProfissionalResponseDto> atualizar(@PathVariable Long estabelecimentoId,
-                                                             @PathVariable Long id,
+        @Operation(summary = "Atualizar profissional")
+                @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                        description = "Payload de atualizacao de profissional",
+                        required = true,
+                        content = @Content(
+                                mediaType = "application/json",
+                                schema = @Schema(implementation = ProfissionalDto.class),
+                                examples = @ExampleObject(
+                                        name = "profissionalAtualizacao",
+                                        value = """
+                                                        {
+                                                            "nome": "Ana Souza Lima",
+                                                            "cpf": "12345678901",
+                                                            "celular": "11991234567",
+                                                            "email": "ana.lima@email.com",
+                                                            "urlFoto": "https://cdn.exemplo.com/fotos/ana-lima.jpg",
+                                                            "descricao": "Especialista em coloracao, corte e penteados",
+                                                            "sexo": "FEMININO",
+                                                            "expedientes": [
+                                                                {
+                                                                    "diaSemana": "TUESDAY",
+                                                                    "inicioTurno": "10:00",
+                                                                    "fimTurno": "19:00"
+                                                                }
+                                                            ],
+                                                            "servicosProfissional": [
+                                                                {
+                                                                    "servicoId": 20,
+                                                                    "valor": 130.00
+                                                                }
+                                                            ]
+                                                        }
+                                                        """
+                                )
+                        )
+                )
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Profissional atualizado com sucesso",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ProfissionalResponseDto.class),
+                    examples = @ExampleObject(
+                        name = "profissionalAtualizado",
+                        value = """
+                                {
+                                  "id": 5,
+                                  "nome": "Ana Souza Lima",
+                                  "cpf": "12345678901",
+                                  "celular": "11991234567",
+                                  "email": "ana.lima@email.com",
+                                  "urlFoto": "https://cdn.exemplo.com/fotos/ana-lima.jpg",
+                                  "descricao": "Especialista em coloracao, corte e penteados",
+                                  "sexo": "FEMININO",
+                                  "expedientes": [],
+                                  "servicosProfissional": []
+                                }
+                                """
+                    )
+                )
+            ),
+                        @ApiResponse(ref = "#/components/responses/BadRequestError"),
+                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+        })
+        public ResponseEntity<ProfissionalResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                                     @Parameter(description = "ID do profissional", example = "5") @PathVariable Long id,
                                                              @Valid @RequestBody ProfissionalDto profissionalDto) {
         Profissional atualizado = updateProfissionalNoEstabelecimentoUseCase.update(
                 estabelecimentoId,
@@ -83,8 +265,13 @@ public class ProfissionalController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long estabelecimentoId,
-                                        @PathVariable Long id) {
+    @Operation(summary = "Remover profissional")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Profissional removido com sucesso"),
+            @ApiResponse(ref = "#/components/responses/NotFoundError")
+    })
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                                        @Parameter(description = "ID do profissional", example = "5") @PathVariable Long id) {
         deleteProfissionalNoEstabelecimentoUseCase.deleteById(estabelecimentoId, id);
         return ResponseEntity.noContent().build();
     }

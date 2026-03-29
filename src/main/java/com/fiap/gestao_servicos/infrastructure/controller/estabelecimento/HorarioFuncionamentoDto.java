@@ -1,12 +1,40 @@
 package com.fiap.gestao_servicos.infrastructure.controller.estabelecimento;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 public class HorarioFuncionamentoDto {
 
+    @Schema(
+        description = "Dia da semana em padrao DayOfWeek",
+        example = "MONDAY",
+        allowableValues = {
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY",
+            "SATURDAY",
+            "SUNDAY"
+        }
+    )
     @NotBlank(message = "Dia da semana é obrigatório")
     private String diaSemana;
+    @Schema(
+        description = "Horario de abertura no formato HH:mm ou HH:mm:ss (ISO-8601 parcial)",
+        example = "09:00",
+        type = "string",
+        format = "time",
+        pattern = "^([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?$"
+    )
     private String abertura;
+    @Schema(
+        description = "Horario de fechamento no formato HH:mm ou HH:mm:ss (ISO-8601 parcial)",
+        example = "18:00",
+        type = "string",
+        format = "time",
+        pattern = "^([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?$"
+    )
     private String fechamento;
     private boolean fechado;
 

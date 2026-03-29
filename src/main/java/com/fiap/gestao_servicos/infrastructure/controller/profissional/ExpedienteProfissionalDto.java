@@ -1,17 +1,59 @@
 package com.fiap.gestao_servicos.infrastructure.controller.profissional;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 
 public class ExpedienteProfissionalDto {
 
+    @Schema(
+        description = "Dia da semana em padrao DayOfWeek",
+        example = "MONDAY",
+        allowableValues = {
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY",
+            "SATURDAY",
+            "SUNDAY"
+        }
+    )
     @NotBlank(message = "Dia da semana é obrigatório")
-    private String diaSemana; // ex: MONDAY
+    private String diaSemana;
+    @Schema(
+        description = "Horario de inicio do turno no formato HH:mm ou HH:mm:ss (ISO-8601 parcial)",
+        example = "08:00",
+        type = "string",
+        format = "time",
+        pattern = "^([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?$"
+    )
     @NotBlank(message = "Início do turno é obrigatório")
-    private String inicioTurno; // ex: 08:00
+    private String inicioTurno;
+    @Schema(
+        description = "Horario de fim do turno no formato HH:mm ou HH:mm:ss (ISO-8601 parcial)",
+        example = "17:00",
+        type = "string",
+        format = "time",
+        pattern = "^([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?$"
+    )
     @NotBlank(message = "Fim do turno é obrigatório")
-    private String fimTurno; // ex: 17:00
-    private String inicioIntervalo; // optional
-    private String fimIntervalo; // optional
+    private String fimTurno;
+    @Schema(
+        description = "Horario de inicio do intervalo no formato HH:mm ou HH:mm:ss (ISO-8601 parcial)",
+        example = "12:00",
+        type = "string",
+        format = "time",
+        pattern = "^([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?$"
+    )
+    private String inicioIntervalo;
+    @Schema(
+        description = "Horario de fim do intervalo no formato HH:mm ou HH:mm:ss (ISO-8601 parcial)",
+        example = "13:00",
+        type = "string",
+        format = "time",
+        pattern = "^([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?$"
+    )
+    private String fimIntervalo;
 
     public String getDiaSemana() {
         return diaSemana;

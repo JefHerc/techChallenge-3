@@ -1,19 +1,11 @@
 package com.fiap.gestao_servicos.infrastructure.mapper.estabelecimento;
 
-import com.fiap.gestao_servicos.core.domain.Celular;
 import com.fiap.gestao_servicos.core.domain.Cnpj;
-import com.fiap.gestao_servicos.core.domain.Cpf;
-import com.fiap.gestao_servicos.core.domain.Email;
 import com.fiap.gestao_servicos.core.domain.Endereco;
 import com.fiap.gestao_servicos.core.domain.Estabelecimento;
 import com.fiap.gestao_servicos.core.domain.EstabelecimentoSearchResult;
-import com.fiap.gestao_servicos.core.domain.ExpedienteProfissional;
 import com.fiap.gestao_servicos.core.domain.HorarioFuncionamento;
-import com.fiap.gestao_servicos.core.domain.Profissional;
 import com.fiap.gestao_servicos.core.domain.ProfissionalServicoInfo;
-import com.fiap.gestao_servicos.core.domain.Servico;
-import com.fiap.gestao_servicos.core.domain.ServicoEnum;
-import com.fiap.gestao_servicos.core.domain.ServicoOfertadoSearch;
 import com.fiap.gestao_servicos.infrastructure.controller.EnderecoDto;
 import com.fiap.gestao_servicos.infrastructure.controller.estabelecimento.EstabelecimentoDto;
 import com.fiap.gestao_servicos.infrastructure.controller.estabelecimento.EstabelecimentoResponseDto;
@@ -25,10 +17,8 @@ import com.fiap.gestao_servicos.infrastructure.persistence.EnderecoEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento.EstabelecimentoEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento.EstabelecimentoRepositoryJpa;
 import com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento.HorarioFuncionamentoEmbeddable;
-import com.fiap.gestao_servicos.infrastructure.persistence.profissional.ExpedienteProfissionalEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.profissional.ProfissionalEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.profissional.ServicoProfissionalEntity;
-import com.fiap.gestao_servicos.infrastructure.persistence.servico.ServicoEntity;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -202,7 +192,12 @@ public final class EstabelecimentoMapper {
             null,
                 entity.getCnpj() != null ? new Cnpj(entity.getCnpj()) : null,
                 entity.getUrlFotos(),
-                entity.getHorarioFuncionamento() != null ? entity.getHorarioFuncionamento().stream().map(EstabelecimentoMapper::toHorarioFuncionamento).filter(java.util.Objects::nonNull).toList() : null,
+            entity.getHorarioFuncionamento() != null
+                ? entity.getHorarioFuncionamento().stream()
+                    .map(EstabelecimentoMapper::toHorarioFuncionamento)
+                    .filter(java.util.Objects::nonNull)
+                    .toList()
+                : null,
                 entity.getNota()
         );
     }
@@ -290,8 +285,12 @@ public final class EstabelecimentoMapper {
 
         boolean fechado = dto.isFechado();
         DayOfWeek diaSemana = dto.getDiaSemana() != null ? DayOfWeek.valueOf(dto.getDiaSemana().trim().toUpperCase()) : null;
-        LocalTime abertura = fechado || dto.getAbertura() == null || dto.getAbertura().isBlank() ? null : LocalTime.parse(dto.getAbertura());
-        LocalTime fechamento = fechado || dto.getFechamento() == null || dto.getFechamento().isBlank() ? null : LocalTime.parse(dto.getFechamento());
+        LocalTime abertura = fechado || dto.getAbertura() == null || dto.getAbertura().isBlank()
+            ? null
+            : LocalTime.parse(dto.getAbertura());
+        LocalTime fechamento = fechado || dto.getFechamento() == null || dto.getFechamento().isBlank()
+            ? null
+            : LocalTime.parse(dto.getFechamento());
 
         return new HorarioFuncionamento(null, diaSemana, abertura, fechamento, fechado);
     }
@@ -352,88 +351,4 @@ public final class EstabelecimentoMapper {
         );
     }
 
-    private static ProfissionalEntity toProfissionalEntity(Profissional domain) {
-        if (domain == null) {
-            return null;
-        }
-
-        ProfissionalEntity entity = new ProfissionalEntity();
-        entity.setId(domain.getId());
-        entity.setNome(domain.getNome());
-        entity.setCpf(domain.getCpf() != null ? domain.getCpf().getValue() : null);
-        entity.setCelular(domain.getCelular() != null ? domain.getCelular().getValue() : null);
-        entity.setEmail(domain.getEmail() != null ? domain.getEmail().getNormalized() : null);
-        entity.setUrlFoto(domain.getUrlFoto());
-        entity.setDescricao(domain.getDescricao());
-        entity.setSexo(domain.getSexo() != null ? domain.getSexo().name() : null);
-        if (domain.getExpedientes() != null) {
-            entity.setExpedientes(domain.getExpedientes().stream().map(EstabelecimentoMapper::toExpedienteEntity).toList());
-        }
-        return entity;
-    }
-
-    private static ExpedienteProfissionalEntity toExpedienteEntity(ExpedienteProfissional expediente) {
-        ExpedienteProfissionalEntity entity = new ExpedienteProfissionalEntity();
-        entity.setDiaSemana(expediente.getDiaSemana().name());
-        entity.setInicioTurno(expediente.getInicioTurno());
-        entity.setFimTurno(expediente.getFimTurno());
-        entity.setInicioIntervalo(expediente.getInicioIntervalo());
-        entity.setFimIntervalo(expediente.getFimIntervalo());
-        return entity;
-    }
-
-    private static Profissional toProfissional(ProfissionalEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-
-        List<ExpedienteProfissional> expedientes = null;
-        if (entity.getExpedientes() != null) {
-            expedientes = entity.getExpedientes().stream().map(expediente -> new ExpedienteProfissional(
-                    expediente.getId(),
-                    DayOfWeek.valueOf(expediente.getDiaSemana()),
-                    expediente.getInicioTurno(),
-                    expediente.getFimTurno(),
-                    expediente.getInicioIntervalo(),
-                    expediente.getFimIntervalo()
-            )).toList();
-        }
-
-        return new Profissional(
-                entity.getId(),
-                entity.getNome(),
-                entity.getCpf() != null ? new Cpf(entity.getCpf()) : null,
-                entity.getCelular() != null ? new Celular(entity.getCelular()) : null,
-                entity.getEmail() != null ? new Email(entity.getEmail()) : null,
-                entity.getUrlFoto(),
-                entity.getDescricao(),
-                expedientes,
-                entity.getSexo() != null ? com.fiap.gestao_servicos.core.domain.Sexo.valueOf(entity.getSexo()) : null,
-                null
-        );
-    }
-
-    private static ServicoEntity toServicoEntity(Servico domain) {
-        if (domain == null) {
-            return null;
-        }
-
-        ServicoEntity entity = new ServicoEntity();
-        entity.setId(domain.getId());
-        entity.setNome(domain.getNomeAsString());
-        entity.setDuracaoMedia(domain.getDuracaoMedia());
-        return entity;
-    }
-
-    private static Servico toServico(ServicoEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-
-        return new Servico(
-                entity.getId(),
-                java.util.Optional.ofNullable(entity.getNome()).map(ServicoEnum::valueOf).orElse(null),
-                entity.getDuracaoMedia()
-        );
-    }
 }

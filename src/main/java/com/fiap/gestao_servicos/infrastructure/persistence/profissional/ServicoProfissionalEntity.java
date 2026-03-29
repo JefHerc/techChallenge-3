@@ -1,5 +1,6 @@
 package com.fiap.gestao_servicos.infrastructure.persistence.profissional;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import com.fiap.gestao_servicos.infrastructure.persistence.servico.ServicoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "servico_profissional")
+@SuppressFBWarnings(value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"}, justification = "Entidade JPA de relacionamento gerenciada pelo ORM")
 public class ServicoProfissionalEntity {
 
     @Id

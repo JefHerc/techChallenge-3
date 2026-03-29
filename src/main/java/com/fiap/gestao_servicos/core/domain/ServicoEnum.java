@@ -2,7 +2,7 @@ package com.fiap.gestao_servicos.core.domain;
 
 public enum ServicoEnum {
 
-    HIDRATACAO("Hidratação"), 
+    HIDRATACAO("Hidratação"),
     CORTE("Corte"),
     PINTURA("Pintura"),
     MANICURE("Manicure"),

@@ -3,7 +3,6 @@ package com.fiap.gestao_servicos.core.usecase.profissional;
 import com.fiap.gestao_servicos.core.domain.Estabelecimento;
 import com.fiap.gestao_servicos.core.domain.Profissional;
 import com.fiap.gestao_servicos.core.domain.Servico;
-import com.fiap.gestao_servicos.core.usecase.profissional.CreateProfissionalUseCase;
 import com.fiap.gestao_servicos.core.repository.ServicoRepository;
 import com.fiap.gestao_servicos.core.usecase.estabelecimento.FindEstabelecimentoByIdUseCase;
 import java.util.List;

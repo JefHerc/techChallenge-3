@@ -1,14 +1,31 @@
 package com.fiap.gestao_servicos.infrastructure.controller.servico;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.Duration;
 
+@Schema(description = "Payload para criacao/atualizacao de servico")
 public class ServicoDto {
 
+        @Schema(
+            description = "Nome do servico",
+            example = "Corte feminino",
+            minLength = 2,
+            maxLength = 120
+        )
     @NotBlank(message = "Nome do serviço é obrigatório")
+        @Size(min = 2, max = 120, message = "Nome do serviço deve ter entre 2 e 120 caracteres")
     private String nome;
+        @Schema(
+            description = "Duracao media do servico em formato ISO-8601 duration (ex.: PT1H, PT45M, PT1H30M)",
+            example = "PT1H",
+            type = "string",
+            format = "duration",
+            pattern = "^P(?!$)(?:\\d+Y)?(?:\\d+M)?(?:\\d+W)?(?:\\d+D)?(?:T(?=\\d)(?:\\d+H)?(?:\\d+M)?(?:\\d+S)?)?$"
+        )
     @NotNull(message = "Duração média é obrigatória")
     private Duration duracaoMedia;
 
@@ -19,7 +36,6 @@ public class ServicoDto {
         this.duracaoMedia = duracaoMedia;
     }
 
-    // Getters and Setters
     public String getNome() {
         return nome;
     }

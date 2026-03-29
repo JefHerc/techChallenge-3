@@ -40,7 +40,6 @@ public class ProfissionalDto {
         this.servicosProfissional = new ArrayList<>(); // Initialize servicosProfissional
     }
 
-    // Getters and Setters
     public String getNome() {
         return nome;
     }

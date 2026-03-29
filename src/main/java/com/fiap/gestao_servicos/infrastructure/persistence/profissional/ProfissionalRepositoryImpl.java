@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -166,7 +167,7 @@ public class ProfissionalRepositoryImpl implements ProfissionalRepository {
     }
 
     @Override
-    public java.util.List<Profissional> findAllByEstabelecimentoId(Long estabelecimentoId) {
+    public List<Profissional> findAllByEstabelecimentoId(Long estabelecimentoId) {
         return profissionalRepositoryJpa.findAllByEstabelecimento_Id(estabelecimentoId).stream()
                 .map(this::toDomain)
                 .toList();
@@ -230,7 +231,7 @@ public class ProfissionalRepositoryImpl implements ProfissionalRepository {
 
         if (profissional.getExpedientes() != null) {
             entity.setExpedientes(profissional.getExpedientes().stream().map(e -> {
-                com.fiap.gestao_servicos.infrastructure.persistence.profissional.ExpedienteProfissionalEntity ee = new com.fiap.gestao_servicos.infrastructure.persistence.profissional.ExpedienteProfissionalEntity();
+                ExpedienteProfissionalEntity ee = new ExpedienteProfissionalEntity();
                 ee.setProfissional(entity);
                 ee.setDiaSemana(e.getDiaSemana().name());
                 ee.setInicioTurno(e.getInicioTurno());
@@ -260,9 +261,9 @@ public class ProfissionalRepositoryImpl implements ProfissionalRepository {
     }
 
     private Profissional toDomain(ProfissionalEntity entity) {
-        java.util.List<ExpedienteProfissional> expedientes = null;
+        List<ExpedienteProfissional> expedientes = null;
         if (entity.getExpedientes() != null) {
-            expedientes = entity.getExpedientes().stream().map(ee -> new com.fiap.gestao_servicos.core.domain.ExpedienteProfissional(
+            expedientes = entity.getExpedientes().stream().map(ee -> new ExpedienteProfissional(
                     ee.getId(),
                     java.time.DayOfWeek.valueOf(ee.getDiaSemana()),
                     ee.getInicioTurno(),
@@ -272,7 +273,7 @@ public class ProfissionalRepositoryImpl implements ProfissionalRepository {
             )).toList();
         }
 
-        java.util.List<ServicoProfissional> servicosProfissional = null;
+        List<ServicoProfissional> servicosProfissional = null;
         if (entity.getServicosProfissional() != null) {
             servicosProfissional = entity.getServicosProfissional().stream().map(sp -> {
                 Servico servico = null;

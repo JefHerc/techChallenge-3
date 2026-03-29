@@ -2,21 +2,36 @@ package com.fiap.gestao_servicos.infrastructure.controller.estabelecimento;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fiap.gestao_servicos.infrastructure.controller.EnderecoDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = false)
+@Schema(description = "Payload para criacao/atualizacao de estabelecimento")
 public class EstabelecimentoDto {
 
+        @Schema(
+            description = "Nome do estabelecimento",
+            example = "Studio Beleza Centro",
+            minLength = 2,
+            maxLength = 120
+        )
     @NotBlank(message = "Nome é obrigatório")
+        @Size(min = 2, max = 120, message = "Nome deve ter entre 2 e 120 caracteres")
     private String nome;
+    @Schema(description = "Endereco do estabelecimento")
     @Valid
     private EnderecoDto endereco;
+    @Schema(description = "CNPJ do estabelecimento (somente numeros)", example = "12345678000199")
     @NotBlank(message = "CNPJ é obrigatório")
     private String cnpj;
+    @Schema(description = "Lista de URLs de fotos do estabelecimento")
     private List<String> urlFotos;
+    @Schema(description = "Horario de funcionamento do estabelecimento")
     @Valid
     private List<HorarioFuncionamentoDto> horarioFuncionamento;
 
@@ -26,11 +41,10 @@ public class EstabelecimentoDto {
         this.nome = nome;
         this.endereco = endereco;
         this.cnpj = cnpj;
-        this.urlFotos = urlFotos;
-        this.horarioFuncionamento = horarioFuncionamento;
+        this.urlFotos = urlFotos == null ? null : new ArrayList<>(urlFotos);
+        this.horarioFuncionamento = horarioFuncionamento == null ? null : new ArrayList<>(horarioFuncionamento);
     }
 
-    // Getters and Setters
     public String getNome() {
         return nome;
     }
@@ -56,19 +70,19 @@ public class EstabelecimentoDto {
     }
 
     public List<String> getUrlFotos() {
-        return urlFotos;
+        return urlFotos == null ? null : new ArrayList<>(urlFotos);
     }
 
     public void setUrlFotos(List<String> urlFotos) {
-        this.urlFotos = urlFotos;
+        this.urlFotos = urlFotos == null ? null : new ArrayList<>(urlFotos);
     }
 
     public List<HorarioFuncionamentoDto> getHorarioFuncionamento() {
-        return horarioFuncionamento;
+        return horarioFuncionamento == null ? null : new ArrayList<>(horarioFuncionamento);
     }
 
     public void setHorarioFuncionamento(List<HorarioFuncionamentoDto> horarioFuncionamento) {
-        this.horarioFuncionamento = horarioFuncionamento;
+        this.horarioFuncionamento = horarioFuncionamento == null ? null : new ArrayList<>(horarioFuncionamento);
     }
 }
 

@@ -1,18 +1,35 @@
 package com.fiap.gestao_servicos.infrastructure.controller.profissional;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.ArrayList;
 import java.util.List;
 
+@Schema(description = "Dados de profissional retornados pela API")
 public class ProfissionalResponseDto {
 
+    @Schema(description = "Identificador do profissional", example = "5")
     private Long id;
+    @Schema(description = "Nome do profissional", example = "Ana Souza", minLength = 2, maxLength = 120)
     private String nome;
+    @Schema(description = "CPF do profissional", example = "12345678901")
     private String cpf;
+    @Schema(description = "Celular do profissional", example = "11987654321")
     private String celular;
+    @Schema(description = "Email do profissional", example = "ana.souza@email.com")
     private String email;
+    @Schema(description = "URL da foto", example = "https://cdn.exemplo.com/fotos/ana.jpg")
     private String urlFoto;
+    @Schema(description = "Descricao resumida", example = "Especialista em coloracao e corte", maxLength = 500)
     private String descricao;
+        @Schema(
+            description = "Sexo do profissional",
+            example = "FEMININO",
+            allowableValues = {"MASCULINO", "FEMININO", "OUTRO"}
+        )
     private String sexo;
+    @Schema(description = "Expedientes de atendimento")
     private List<ExpedienteProfissionalDto> expedientes;
+    @Schema(description = "Servicos ofertados pelo profissional")
     private List<ServicoProfissionalResponseDto> servicosProfissional;
 
     public Long getId() {
@@ -80,19 +97,19 @@ public class ProfissionalResponseDto {
     }
 
     public List<ExpedienteProfissionalDto> getExpedientes() {
-        return expedientes;
+        return expedientes == null ? null : new ArrayList<>(expedientes);
     }
 
     public void setExpedientes(List<ExpedienteProfissionalDto> expedientes) {
-        this.expedientes = expedientes;
+        this.expedientes = expedientes == null ? null : new ArrayList<>(expedientes);
     }
 
     public List<ServicoProfissionalResponseDto> getServicosProfissional() {
-        return servicosProfissional;
+        return servicosProfissional == null ? null : new ArrayList<>(servicosProfissional);
     }
 
     public void setServicosProfissional(List<ServicoProfissionalResponseDto> servicosProfissional) {
-        this.servicosProfissional = servicosProfissional;
+        this.servicosProfissional = servicosProfissional == null ? null : new ArrayList<>(servicosProfissional);
     }
 }
 

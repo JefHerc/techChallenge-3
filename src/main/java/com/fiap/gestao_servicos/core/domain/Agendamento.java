@@ -71,7 +71,7 @@ public class Agendamento {
     public LocalDateTime getDataHoraFim() {
         return dataHoraFim;
     }
-    
+
     public AgendamentoStatus getStatus() {
         return status;
     }

@@ -24,8 +24,6 @@ public class EstabelecimentoSpecification {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // ── Filtros simples no EstabelecimentoEntity ──────────────────────────────
-
             if (f.getNome() != null && !f.getNome().isBlank()) {
                 predicates.add(cb.like(
                         cb.lower(root.get("nome")),
@@ -50,7 +48,6 @@ public class EstabelecimentoSpecification {
                         "%" + f.getBairro().toLowerCase() + "%"));
             }
 
-            // ── Filtros de serviço/preço via subquery (profissional -> servico_profissional) ──
             boolean needsSpJoin = f.getServicoNome() != null
                     || f.getPrecoMin() != null
                     || f.getPrecoMax() != null;
@@ -85,11 +82,6 @@ public class EstabelecimentoSpecification {
                 predicates.add(cb.exists(servicoSubq));
             }
 
-            // ── Disponibilidade ───────────────────────────────────────────────────────
-            // Filtra estabelecimentos com ao menos um profissional livre no dia informado.
-            // "Livre" = não possui agendamento com status AGENDADO cuja janela
-            //           (dataHoraInicio < fim_do_dia AND dataHoraFim > inicio_do_dia).
-
             if (f.getDataDisponivel() != null) {
                 LocalDateTime inicio = f.getDataDisponivel().atStartOfDay();
                 LocalDateTime fim    = inicio.plusDays(1);
@@ -115,9 +107,6 @@ public class EstabelecimentoSpecification {
                 predicates.add(cb.exists(profDisponivelSubq));
             }
 
-            // ── Nota mínima ───────────────────────────────────────────────────────────
-            // AVG(avaliacao.notaEstabelecimento) dos agendamentos vinculados >= notaMinima
-
             if (f.getNotaMinima() != null) {
                 Subquery<Double> notaSubq = query.subquery(Double.class);
                 Root<AvaliacaoEntity> av = notaSubq.from(AvaliacaoEntity.class);
@@ -129,9 +118,6 @@ public class EstabelecimentoSpecification {
                 predicates.add(cb.greaterThanOrEqualTo(notaSubq, f.getNotaMinima()));
             }
 
-            // ── Nota mínima por profissional ──────────────────────────────────────────
-            // Existe pelo menos um profissional no estabelecimento cuja média de
-            // avaliacao.notaProfissional (dos agendamentos vinculados) >= profissionalNotaMinima
             if (f.getProfissionalNotaMinima() != null) {
                 Subquery<Long> profSubq = query.subquery(Long.class);
                 Root<AvaliacaoEntity> av2 = profSubq.from(AvaliacaoEntity.class);

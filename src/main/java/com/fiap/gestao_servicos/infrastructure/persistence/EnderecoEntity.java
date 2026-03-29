@@ -26,7 +26,6 @@ public class EnderecoEntity {
     @Column(nullable = false, length = 8)
     private String cep;
 
-    // Constructors
     public EnderecoEntity() {}
 
     public EnderecoEntity(String logradouro, String numero, String complemento, String bairro, String cidade, String estado, String cep) {
@@ -39,7 +38,6 @@ public class EnderecoEntity {
         this.cep = cep;
     }
 
-    // Getters and Setters
     public String getLogradouro() {
         return logradouro;
     }

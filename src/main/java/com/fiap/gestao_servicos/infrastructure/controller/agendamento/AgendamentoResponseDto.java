@@ -1,20 +1,48 @@
 package com.fiap.gestao_servicos.infrastructure.controller.agendamento;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
+@Schema(description = "Dados de agendamento retornados pela API")
 public class AgendamentoResponseDto {
 
+    @Schema(description = "Identificador do agendamento", example = "10")
     private Long id;
+    @Schema(description = "ID do profissional", example = "5")
     private Long profissionalId;
+    @Schema(description = "Nome do profissional", example = "Ana Souza", minLength = 2, maxLength = 120)
     private String profissionalNome;
+    @Schema(description = "ID do servico", example = "20")
     private Long servicoId;
+    @Schema(description = "Nome do servico", example = "Corte feminino", minLength = 2, maxLength = 120)
     private String servicoNome;
+    @Schema(description = "ID do estabelecimento", example = "1")
     private Long estabelecimentoId;
+    @Schema(description = "Nome do estabelecimento", example = "Studio Beleza Centro", minLength = 2, maxLength = 120)
     private String estabelecimentoNome;
+    @Schema(description = "ID do cliente", example = "12")
     private Long clienteId;
+    @Schema(description = "Nome do cliente", example = "Maria da Silva", minLength = 2, maxLength = 120)
     private String clienteNome;
+        @Schema(
+            description = "Data e hora de inicio no formato ISO-8601 date-time",
+            example = "2026-04-20T14:30:00",
+            type = "string",
+            format = "date-time"
+        )
     private LocalDateTime dataHoraInicio;
+        @Schema(
+            description = "Data e hora de fim no formato ISO-8601 date-time",
+            example = "2026-04-20T15:30:00",
+            type = "string",
+            format = "date-time"
+        )
     private LocalDateTime dataHoraFim;
+        @Schema(
+            description = "Status do agendamento",
+            example = "AGENDADO",
+            allowableValues = {"AGENDADO", "CANCELADO", "CONCLUIDO"}
+        )
     private String status;
 
     public Long getId() {

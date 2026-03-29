@@ -14,7 +14,14 @@ public class Estabelecimento {
     private final List<HorarioFuncionamento> horarioFuncionamento;
     private final Double nota;
 
-    public Estabelecimento(Long id, String nome, Endereco endereco, List<Profissional> profissionais, List<Servico> servicos, Cnpj cnpj, List<String> urlFotos, List<HorarioFuncionamento> horarioFuncionamento) {
+    public Estabelecimento(Long id,
+                           String nome,
+                           Endereco endereco,
+                           List<Profissional> profissionais,
+                           List<Servico> servicos,
+                           Cnpj cnpj,
+                           List<String> urlFotos,
+                           List<HorarioFuncionamento> horarioFuncionamento) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
@@ -31,12 +38,22 @@ public class Estabelecimento {
 
         this.urlFotos = urlFotos != null ? List.copyOf(urlFotos) : List.of();
 
-        this.horarioFuncionamento = horarioFuncionamento != null ? List.copyOf(horarioFuncionamento) : List.of();
+        this.horarioFuncionamento = horarioFuncionamento != null
+            ? List.copyOf(horarioFuncionamento)
+            : List.of();
 
         this.nota = null;
     }
 
-    public Estabelecimento(Long id, String nome, Endereco endereco, List<Profissional> profissionais, List<Servico> servicos, Cnpj cnpj, List<String> urlFotos, List<HorarioFuncionamento> horarioFuncionamento, Double nota) {
+    public Estabelecimento(Long id,
+                           String nome,
+                           Endereco endereco,
+                           List<Profissional> profissionais,
+                           List<Servico> servicos,
+                           Cnpj cnpj,
+                           List<String> urlFotos,
+                           List<HorarioFuncionamento> horarioFuncionamento,
+                           Double nota) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
@@ -53,7 +70,9 @@ public class Estabelecimento {
 
         this.urlFotos = urlFotos != null ? List.copyOf(urlFotos) : List.of();
 
-        this.horarioFuncionamento = horarioFuncionamento != null ? List.copyOf(horarioFuncionamento) : List.of();
+        this.horarioFuncionamento = horarioFuncionamento != null
+            ? List.copyOf(horarioFuncionamento)
+            : List.of();
 
         this.nota = nota;
     }
@@ -96,8 +115,15 @@ public class Estabelecimento {
 
     @Override
     public String toString() {
-        return String.format("Estabelecimento: %s, Endereço: %s, CNPJ: %s, Horário de Funcionamento: %s, Profissionais: %d, Serviços: %d, Fotos: %d",
-                nome, endereco != null ? endereco.toString() : "N/A", cnpj != null ? cnpj.getMasked() : "N/A", horarioFuncionamento != null ? horarioFuncionamento.toString() : "N/A", profissionais.size(), servicos.size(), urlFotos.size());
+        return String.format(
+            "Estabelecimento: %s, Endereço: %s, CNPJ: %s, Horário de Funcionamento: %s, Profissionais: %d, Serviços: %d, Fotos: %d",
+            nome,
+            endereco != null ? endereco.toString() : "N/A",
+            cnpj != null ? cnpj.getMasked() : "N/A",
+            horarioFuncionamento != null ? horarioFuncionamento.toString() : "N/A",
+            profissionais.size(),
+            servicos.size(),
+            urlFotos.size());
     }
 }
 

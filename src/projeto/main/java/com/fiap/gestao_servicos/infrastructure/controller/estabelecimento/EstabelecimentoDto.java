@@ -30,7 +30,6 @@ public class EstabelecimentoDto {
         this.horarioFuncionamento = horarioFuncionamento;
     }
 
-    // Getters and Setters
     public String getNome() {
         return nome;
     }

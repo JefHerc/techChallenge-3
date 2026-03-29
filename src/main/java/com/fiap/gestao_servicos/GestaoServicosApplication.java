@@ -6,11 +6,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class  GestaoServicosApplication {
+public class GestaoServicosApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GestaoServicosApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(GestaoServicosApplication.class, args);
+    }
 
 }
 

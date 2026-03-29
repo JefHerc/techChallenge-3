@@ -61,7 +61,7 @@ class VerifyProfissionalVinculoUseCaseTest {
 
         ExpedienteProfissional expediente = mock(ExpedienteProfissional.class);
         when(expediente.getDiaSemana()).thenReturn(DayOfWeek.MONDAY);
-        when(expediente.getInicioTurno()).thenReturn(LocalTime.of(7, 0)); // antes da abertura
+        when(expediente.getInicioTurno()).thenReturn(LocalTime.of(7, 0));
         when(expediente.getFimTurno()).thenReturn(LocalTime.of(17, 0));
         when(expediente.getInicioIntervalo()).thenReturn(null);
         when(expediente.getFimIntervalo()).thenReturn(null);
@@ -83,7 +83,7 @@ class VerifyProfissionalVinculoUseCaseTest {
         when(estabelecimento.getServicos()).thenReturn(List.of());
 
         ExpedienteProfissional expediente = mock(ExpedienteProfissional.class);
-        when(expediente.getDiaSemana()).thenReturn(DayOfWeek.TUESDAY); // dia não cadastrado
+        when(expediente.getDiaSemana()).thenReturn(DayOfWeek.TUESDAY);
         when(expediente.getInicioTurno()).thenReturn(LocalTime.of(9, 0));
         when(expediente.getFimTurno()).thenReturn(LocalTime.of(17, 0));
         when(expediente.getInicioIntervalo()).thenReturn(null);

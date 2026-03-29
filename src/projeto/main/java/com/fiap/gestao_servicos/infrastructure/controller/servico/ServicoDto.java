@@ -19,7 +19,6 @@ public class ServicoDto {
         this.duracaoMedia = duracaoMedia;
     }
 
-    // Getters and Setters
     public String getNome() {
         return nome;
     }

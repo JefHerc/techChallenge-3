@@ -33,7 +33,6 @@ public class EnderecoDto {
         this.cep = cep;
     }
 
-    // Getters and Setters
     public String getLogradouro() {
         return logradouro;
     }

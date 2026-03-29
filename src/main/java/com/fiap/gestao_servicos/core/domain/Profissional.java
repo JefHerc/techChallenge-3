@@ -15,7 +15,16 @@ public class Profissional {
     private Sexo sexo;
     private List<ServicoProfissional> servicosProfissional;
 
-    public Profissional(Long id, String nome, Cpf cpf, Celular celular, Email email, String urlFoto, String descricao, List<ExpedienteProfissional> expedientes, Sexo sexo, List<ServicoProfissional> servicosProfissional) {
+    public Profissional(Long id,
+                        String nome,
+                        Cpf cpf,
+                        Celular celular,
+                        Email email,
+                        String urlFoto,
+                        String descricao,
+                        List<ExpedienteProfissional> expedientes,
+                        Sexo sexo,
+                        List<ServicoProfissional> servicosProfissional) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
@@ -81,8 +90,14 @@ public class Profissional {
     }
 
     public String toString() {
-        return String.format("Profissional: %s, CPF: %s, Celular: %s, Email: %s, URL Foto: %s, Descrição: %s",
-                nome, cpf != null ? cpf.getMasked() : "N/A", celular != null ? celular.getMasked() : "N/A", email != null ? email.getNormalized() : "N/A", urlFoto != null ? urlFoto : "N/A", descricao != null ? descricao : "N/A");
+        return String.format(
+            "Profissional: %s, CPF: %s, Celular: %s, Email: %s, URL Foto: %s, Descrição: %s",
+            nome,
+            cpf != null ? cpf.getMasked() : "N/A",
+            celular != null ? celular.getMasked() : "N/A",
+            email != null ? email.getNormalized() : "N/A",
+            urlFoto != null ? urlFoto : "N/A",
+            descricao != null ? descricao : "N/A");
     }
 }
 

@@ -11,7 +11,7 @@ public class ServicoProfissional {
 
     public ServicoProfissional(Long id, Servico servico, Profissional profissional, BigDecimal valor) {
         this.id = id;
-        
+
         validarValor(valor);
 
         this.servico = servico;
