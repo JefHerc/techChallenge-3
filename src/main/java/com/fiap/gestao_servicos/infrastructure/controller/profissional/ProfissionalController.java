@@ -1,13 +1,16 @@
 package com.fiap.gestao_servicos.infrastructure.controller.profissional;
 
 import com.fiap.gestao_servicos.core.domain.Profissional;
-import com.fiap.gestao_servicos.core.usecase.profissional.CreateProfissionalUsecase;
-import com.fiap.gestao_servicos.core.usecase.profissional.DeleteProfissionalUsecase;
-import com.fiap.gestao_servicos.core.usecase.profissional.FindAllProfissionaisUsecase;
-import com.fiap.gestao_servicos.core.usecase.profissional.FindProfissionalByIdUsecase;
-import com.fiap.gestao_servicos.core.usecase.profissional.UpdateProfissionalUsecase;
-import com.fiap.gestao_servicos.infrastructure.mapper.profissional.ProfissionalDomainToResponseMapper;
-import com.fiap.gestao_servicos.infrastructure.mapper.profissional.ProfissionalDtoToDomainMapper;
+import com.fiap.gestao_servicos.core.usecase.profissional.CreateProfissionalNoEstabelecimentoUseCase;
+import com.fiap.gestao_servicos.core.usecase.profissional.DeleteProfissionalNoEstabelecimentoUseCase;
+import com.fiap.gestao_servicos.core.usecase.profissional.FindAllProfissionaisUseCase;
+import com.fiap.gestao_servicos.core.usecase.profissional.FindProfissionalByIdUseCase;
+import com.fiap.gestao_servicos.core.usecase.profissional.UpdateProfissionalNoEstabelecimentoUseCase;
+import com.fiap.gestao_servicos.infrastructure.controller.PageUtils;
+import com.fiap.gestao_servicos.infrastructure.mapper.profissional.ProfissionalMapper;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,62 +22,72 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/profissionais")
+@RequestMapping("/estabelecimentos/{estabelecimentoId}/profissionais")
 public class ProfissionalController {
 
-    private final CreateProfissionalUsecase createProfissionalUsecase;
-    private final FindAllProfissionaisUsecase findAllProfissionaisUsecase;
-    private final FindProfissionalByIdUsecase findProfissionalByIdUsecase;
-    private final UpdateProfissionalUsecase updateProfissionalUsecase;
-    private final DeleteProfissionalUsecase deleteProfissionalUsecase;
+    private final CreateProfissionalNoEstabelecimentoUseCase createProfissionalNoEstabelecimentoUseCase;
+    private final FindAllProfissionaisUseCase findAllProfissionaisUseCase;
+    private final FindProfissionalByIdUseCase findProfissionalByIdUseCase;
+    private final UpdateProfissionalNoEstabelecimentoUseCase updateProfissionalNoEstabelecimentoUseCase;
+    private final DeleteProfissionalNoEstabelecimentoUseCase deleteProfissionalNoEstabelecimentoUseCase;
 
-    public ProfissionalController(CreateProfissionalUsecase createProfissionalUsecase,
-                                  FindAllProfissionaisUsecase findAllProfissionaisUsecase,
-                                  FindProfissionalByIdUsecase findProfissionalByIdUsecase,
-                                  UpdateProfissionalUsecase updateProfissionalUsecase,
-                                  DeleteProfissionalUsecase deleteProfissionalUsecase) {
-        this.createProfissionalUsecase = createProfissionalUsecase;
-        this.findAllProfissionaisUsecase = findAllProfissionaisUsecase;
-        this.findProfissionalByIdUsecase = findProfissionalByIdUsecase;
-        this.updateProfissionalUsecase = updateProfissionalUsecase;
-        this.deleteProfissionalUsecase = deleteProfissionalUsecase;
+    public ProfissionalController(CreateProfissionalNoEstabelecimentoUseCase createProfissionalNoEstabelecimentoUseCase,
+                                  FindAllProfissionaisUseCase findAllProfissionaisUseCase,
+                                  FindProfissionalByIdUseCase findProfissionalByIdUseCase,
+                                  UpdateProfissionalNoEstabelecimentoUseCase updateProfissionalNoEstabelecimentoUseCase,
+                                  DeleteProfissionalNoEstabelecimentoUseCase deleteProfissionalNoEstabelecimentoUseCase) {
+        this.createProfissionalNoEstabelecimentoUseCase = createProfissionalNoEstabelecimentoUseCase;
+        this.findAllProfissionaisUseCase = findAllProfissionaisUseCase;
+        this.findProfissionalByIdUseCase = findProfissionalByIdUseCase;
+        this.updateProfissionalNoEstabelecimentoUseCase = updateProfissionalNoEstabelecimentoUseCase;
+        this.deleteProfissionalNoEstabelecimentoUseCase = deleteProfissionalNoEstabelecimentoUseCase;
     }
 
     @PostMapping
-    public ResponseEntity<ProfissionalResponseDto> criar(@RequestBody ProfissionalDto profissionalDto) {
-        Profissional profissional = ProfissionalDtoToDomainMapper.toDomain(profissionalDto);
-        Profissional criado = createProfissionalUsecase.create(profissional);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ProfissionalDomainToResponseMapper.toResponse(criado));
+    public ResponseEntity<ProfissionalResponseDto> criar(@PathVariable Long estabelecimentoId,
+                                                         @Valid @RequestBody ProfissionalDto profissionalDto) {
+        Profissional novoProfissional = ProfissionalMapper.toDomain(profissionalDto);
+        Profissional criado = createProfissionalNoEstabelecimentoUseCase.create(estabelecimentoId, novoProfissional);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ProfissionalMapper.toResponse(criado));
     }
 
     @GetMapping
-    public ResponseEntity<List<ProfissionalResponseDto>> listar() {
-        List<ProfissionalResponseDto> profissionais = findAllProfissionaisUsecase.findAll().stream()
-                .map(ProfissionalDomainToResponseMapper::toResponse)
-                .toList();
+    public ResponseEntity<Page<ProfissionalResponseDto>> listar(@PathVariable Long estabelecimentoId,
+                                                                Pageable pageable) {
+        Page<ProfissionalResponseDto> profissionais = PageUtils.toSpringPage(
+            findAllProfissionaisUseCase
+                .findPageByEstabelecimentoId(estabelecimentoId, PageUtils.toPageQuery(pageable))
+                .map(ProfissionalMapper::toResponse));
         return ResponseEntity.ok(profissionais);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProfissionalResponseDto> buscarPorId(@PathVariable Long id) {
-        Profissional profissional = findProfissionalByIdUsecase.findById(id);
-        return ResponseEntity.ok(ProfissionalDomainToResponseMapper.toResponse(profissional));
+    public ResponseEntity<ProfissionalResponseDto> buscarPorId(@PathVariable Long estabelecimentoId,
+                                                               @PathVariable Long id) {
+        Profissional profissional = findProfissionalByIdUseCase.findByIdAndEstabelecimentoId(id, estabelecimentoId);
+        return ResponseEntity.ok(ProfissionalMapper.toResponse(profissional));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProfissionalResponseDto> atualizar(@PathVariable Long id,
-                                                              @RequestBody ProfissionalDto profissionalDto) {
-        Profissional profissional = ProfissionalDtoToDomainMapper.toDomain(profissionalDto);
-        Profissional atualizado = updateProfissionalUsecase.update(id, profissional);
-        return ResponseEntity.ok(ProfissionalDomainToResponseMapper.toResponse(atualizado));
+    public ResponseEntity<ProfissionalResponseDto> atualizar(@PathVariable Long estabelecimentoId,
+                                                             @PathVariable Long id,
+                                                             @Valid @RequestBody ProfissionalDto profissionalDto) {
+        Profissional atualizado = updateProfissionalNoEstabelecimentoUseCase.update(
+                estabelecimentoId,
+                id,
+                ProfissionalMapper.toDomain(profissionalDto)
+        );
+        return ResponseEntity.ok(ProfissionalMapper.toResponse(atualizado));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        deleteProfissionalUsecase.deleteById(id);
+    public ResponseEntity<Void> deletar(@PathVariable Long estabelecimentoId,
+                                        @PathVariable Long id) {
+        deleteProfissionalNoEstabelecimentoUseCase.deleteById(estabelecimentoId, id);
         return ResponseEntity.noContent().build();
     }
 }
+
+

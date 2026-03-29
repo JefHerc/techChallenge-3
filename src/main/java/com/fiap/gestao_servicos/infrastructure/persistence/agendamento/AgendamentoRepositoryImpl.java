@@ -1,16 +1,12 @@
 package com.fiap.gestao_servicos.infrastructure.persistence.agendamento;
 
 import com.fiap.gestao_servicos.core.domain.Agendamento;
-import com.fiap.gestao_servicos.core.domain.Celular;
-import com.fiap.gestao_servicos.core.domain.Cliente;
-import com.fiap.gestao_servicos.core.domain.Cnpj;
-import com.fiap.gestao_servicos.core.domain.Cpf;
-import com.fiap.gestao_servicos.core.domain.Email;
-import com.fiap.gestao_servicos.core.domain.Endereco;
-import com.fiap.gestao_servicos.core.domain.Estabelecimento;
-import com.fiap.gestao_servicos.core.domain.Profissional;
-import com.fiap.gestao_servicos.core.domain.Servico;
+import com.fiap.gestao_servicos.core.domain.AgendamentoStatus;
+import com.fiap.gestao_servicos.core.pagination.PageQuery;
+import com.fiap.gestao_servicos.core.pagination.PageResult;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
+import com.fiap.gestao_servicos.infrastructure.mapper.agendamento.AgendamentoMapper;
+import com.fiap.gestao_servicos.infrastructure.pagination.SpringPaginationMapper;
 import com.fiap.gestao_servicos.infrastructure.persistence.*;
 import com.fiap.gestao_servicos.infrastructure.persistence.cliente.ClienteEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.cliente.ClienteRepositoryJpa;
@@ -21,9 +17,11 @@ import com.fiap.gestao_servicos.infrastructure.persistence.profissional.Profissi
 import com.fiap.gestao_servicos.infrastructure.persistence.servico.ServicoEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.servico.ServicoRepositoryJpa;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class AgendamentoRepositoryImpl implements AgendamentoRepository {
@@ -47,6 +45,7 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
     }
 
     @Override
+    @Transactional
     public Agendamento create(Agendamento agendamento) {
         AgendamentoEntity entity = new AgendamentoEntity();
         preencherRelacionamentosEDados(entity, agendamento);
@@ -55,6 +54,7 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
     }
 
     @Override
+    @Transactional
     public Agendamento update(Long id, Agendamento agendamento) {
         AgendamentoEntity existing = agendamentoRepositoryJpa.findById(id).orElse(null);
         if (existing == null) {
@@ -67,24 +67,37 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         agendamentoRepositoryJpa.deleteById(id);
     }
 
     @Override
-    public List<Agendamento> findAll() {
-        return agendamentoRepositoryJpa.findAll().stream()
+        public PageResult<Agendamento> findAll(PageQuery pageQuery) {
+        return SpringPaginationMapper.toPageResult(
+            agendamentoRepositoryJpa.findAll(SpringPaginationMapper.toPageable(pageQuery))
+                .map(this::toDomain));
+    }
+
+    @Override
+        public PageResult<Agendamento> findByEstabelecimentoId(Long estabelecimentoId, PageQuery pageQuery) {
+        return SpringPaginationMapper.toPageResult(
+            agendamentoRepositoryJpa.findByEstabelecimentoId(estabelecimentoId, SpringPaginationMapper.toPageable(pageQuery))
+                .map(this::toDomain));
+    }
+
+    @Override
+    public List<Agendamento> findByStatusAndDataHoraInicioBetween(AgendamentoStatus status,
+                                                                   LocalDateTime inicio,
+                                                                   LocalDateTime fim) {
+        return agendamentoRepositoryJpa.findByStatusAndDataHoraInicioBetween(status, inicio, fim).stream()
                 .map(this::toDomain)
                 .toList();
     }
 
     @Override
-    public Agendamento findById(Long id) {
-        AgendamentoEntity entity = agendamentoRepositoryJpa.findById(id).orElse(null);
-        if (entity == null) {
-            return null;
-        }
-        return toDomain(entity);
+    public Optional<Agendamento> findById(Long id) {
+        return agendamentoRepositoryJpa.findById(id).map(this::toDomain);
     }
 
     @Override
@@ -93,23 +106,42 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
     }
 
     @Override
-    public boolean existsProfissionalById(Long id) {
-        return profissionalRepositoryJpa.existsById(id);
+    public boolean isConcluido(Long agendamentoId) {
+        return agendamentoRepositoryJpa.existsByIdAndStatus(agendamentoId, AgendamentoStatus.CONCLUIDO);
     }
 
     @Override
-    public boolean existsServicoById(Long id) {
-        return servicoRepositoryJpa.existsById(id);
+    public boolean pertenceAoProfissionalEEstabelecimento(Long agendamentoId, Long profissionalId, Long estabelecimentoId) {
+        return agendamentoRepositoryJpa.existsByIdAndProfissionalIdAndEstabelecimentoId(
+                agendamentoId,
+                profissionalId,
+                estabelecimentoId
+        );
     }
 
     @Override
-    public boolean existsEstabelecimentoById(Long id) {
-        return estabelecimentoRepositoryJpa.existsById(id);
-    }
+    public boolean existsConflitoHorarioProfissional(Long profissionalId,
+                                                     Long servicoId,
+                                                     LocalDateTime dataHoraInicio,
+                                                     Long agendamentoIdIgnorar) {
+        if (profissionalId == null || servicoId == null || dataHoraInicio == null) {
+            return false;
+        }
 
-    @Override
-    public boolean existsClienteById(Long id) {
-        return clienteRepositoryJpa.existsById(id);
+        ServicoEntity servico = servicoRepositoryJpa.findById(servicoId).orElse(null);
+        if (servico == null || servico.getDuracaoMedia() == null) {
+            return false;
+        }
+
+        LocalDateTime dataHoraFim = dataHoraInicio.plusMinutes(servico.getDuracaoMedia().toMinutes());
+
+        return agendamentoRepositoryJpa.existsConflitoHorarioProfissional(
+                profissionalId,
+                dataHoraInicio,
+                dataHoraFim,
+                AgendamentoStatus.AGENDADO,
+                agendamentoIdIgnorar
+        );
     }
 
     private void preencherRelacionamentosEDados(AgendamentoEntity entity, Agendamento agendamento) {
@@ -138,73 +170,8 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
     }
 
     private Agendamento toDomain(AgendamentoEntity entity) {
-        return new Agendamento(
-                entity.getId(),
-                toProfissional(entity.getProfissional()),
-                toServico(entity.getServico()),
-                toEstabelecimento(entity.getEstabelecimento()),
-                toCliente(entity.getCliente()),
-                entity.getDataHoraInicio(),
-                entity.getStatus()
-        );
-    }
-
-    private Profissional toProfissional(ProfissionalEntity entity) {
-        return new Profissional(
-                entity.getId(),
-                entity.getNome(),
-                new Cpf(entity.getCpf()),
-                new Celular(entity.getCelular()),
-                new Email(entity.getEmail()),
-                entity.getUrlFoto(),
-                entity.getDescricao(),
-                null,
-                null,
-                null
-        );
-    }
-
-    private Servico toServico(ServicoEntity entity) {
-        return new Servico(entity.getId(), entity.getNome(), entity.getDuracaoMedia());
-    }
-
-    private Estabelecimento toEstabelecimento(EstabelecimentoEntity entity) {
-        return new Estabelecimento(
-                entity.getId(),
-                entity.getNome(),
-                toEndereco(entity.getEndereco()),
-                null,
-                null,
-                new Cnpj(entity.getCnpj()),
-                entity.getUrlFotos(),
-                entity.getHorarioFuncionamento()
-        );
-    }
-
-    private Endereco toEndereco(EnderecoEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-
-        return new Endereco(
-                entity.getLogradouro(),
-                entity.getNumero(),
-                entity.getComplemento(),
-                entity.getBairro(),
-                entity.getCidade(),
-                entity.getEstado(),
-                entity.getCep()
-        );
-    }
-
-    private Cliente toCliente(ClienteEntity entity) {
-        return new Cliente(
-                entity.getId(),
-                entity.getNome(),
-                new Cpf(entity.getCpf()),
-                new Celular(entity.getCelular()),
-                new Email(entity.getEmail()),
-                entity.getSexo()
-        );
+        return AgendamentoMapper.toDomain(entity);
     }
 }
+
+

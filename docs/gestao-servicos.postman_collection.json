@@ -1,0 +1,725 @@
+{
+  "info": {
+    "name": "gestao-servicos",
+    "description": "Coleção para testar endpoints de Estabelecimento, Profissional, Serviço, Agendamento, Cliente e Avaliação.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "page", "value": "0" },
+    { "key": "size", "value": "10" },
+    { "key": "sort", "value": "id,asc" },
+    { "key": "estabelecimentoId", "value": "1" },
+    { "key": "profissionalId", "value": "1" },
+    { "key": "servicoId", "value": "1" },
+    { "key": "agendamentoId", "value": "1" },
+    { "key": "clienteId", "value": "1" },
+    { "key": "avaliacaoId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Estabelecimentos",
+      "item": [
+        {
+          "name": "Criar estabelecimento",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Studio Beleza Centro\",\n  \"cnpj\": \"04252011000110\",\n  \"endereco\": {\n    \"logradouro\": \"Av. Paulista\",\n    \"numero\": \"1000\",\n    \"complemento\": \"Sala 12\",\n    \"bairro\": \"Bela Vista\",\n    \"cidade\": \"São Paulo\",\n    \"estado\": \"SP\",\n    \"cep\": \"01310-100\"\n  },\n  \"urlFotos\": [\n    \"https://picsum.photos/seed/studio1/800/600\"\n  ],\n  \"horarioFuncionamento\": [\n    { \"diaSemana\": \"MONDAY\", \"abertura\": \"09:00\", \"fechamento\": \"18:00\", \"fechado\": false },\n    { \"diaSemana\": \"TUESDAY\", \"abertura\": \"09:00\", \"fechamento\": \"18:00\", \"fechado\": false },\n    { \"diaSemana\": \"WEDNESDAY\", \"abertura\": \"09:00\", \"fechamento\": \"18:00\", \"fechado\": false },\n    { \"diaSemana\": \"THURSDAY\", \"abertura\": \"09:00\", \"fechamento\": \"18:00\", \"fechado\": false },\n    { \"diaSemana\": \"FRIDAY\", \"abertura\": \"09:00\", \"fechamento\": \"18:00\", \"fechado\": false },\n    { \"diaSemana\": \"SATURDAY\", \"abertura\": \"09:00\", \"fechamento\": \"14:00\", \"fechado\": false },\n    { \"diaSemana\": \"SUNDAY\", \"abertura\": null, \"fechamento\": null, \"fechado\": true }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos"]
+            }
+          }
+        },
+        {
+          "name": "Listar estabelecimentos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos?page={{page}}&size={{size}}&sort={{sort}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos"],
+              "query": [
+                { "key": "page", "value": "{{page}}" },
+                { "key": "size", "value": "{{size}}" },
+                { "key": "sort", "value": "{{sort}}" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Resposta paginada",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/estabelecimentos?page={{page}}&size={{size}}&sort={{sort}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estabelecimentos"],
+                  "query": [
+                    { "key": "page", "value": "{{page}}" },
+                    { "key": "size", "value": "{{size}}" },
+                    { "key": "sort", "value": "{{sort}}" }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 1,\n      \"nome\": \"Studio Beleza Centro\",\n      \"cnpj\": \"04252011000110\",\n      \"endereco\": {\n        \"logradouro\": \"Av. Paulista\",\n        \"numero\": \"1000\",\n        \"complemento\": \"Sala 12\",\n        \"bairro\": \"Bela Vista\",\n        \"cidade\": \"São Paulo\",\n        \"estado\": \"SP\",\n        \"cep\": \"01310-100\"\n      },\n      \"profissionais\": [],\n      \"servicos\": [],\n      \"urlFotos\": [\n        \"https://picsum.photos/seed/studio1/800/600\"\n      ],\n      \"horarioFuncionamento\": []\n    }\n  ],\n  \"pageable\": {\n    \"pageNumber\": 0,\n    \"pageSize\": 10,\n    \"sort\": {\n      \"empty\": false,\n      \"sorted\": true,\n      \"unsorted\": false\n    },\n    \"offset\": 0,\n    \"paged\": true,\n    \"unpaged\": false\n  },\n  \"last\": true,\n  \"totalPages\": 1,\n  \"totalElements\": 1,\n  \"size\": 10,\n  \"number\": 0,\n  \"sort\": {\n    \"empty\": false,\n    \"sorted\": true,\n    \"unsorted\": false\n  },\n  \"first\": true,\n  \"numberOfElements\": 1,\n  \"empty\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Buscar estabelecimento por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar estabelecimento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Studio Beleza Centro Atualizado\",\n  \"cnpj\": \"04252011000110\",\n  \"endereco\": {\n    \"logradouro\": \"Av. Paulista\",\n    \"numero\": \"1000\",\n    \"complemento\": \"Sala 15\",\n    \"bairro\": \"Bela Vista\",\n    \"cidade\": \"São Paulo\",\n    \"estado\": \"SP\",\n    \"cep\": \"01310-100\"\n  },\n  \"profissionais\": [],\n  \"servicos\": [],\n  \"urlFotos\": [\n    \"https://picsum.photos/seed/studio2/800/600\"\n  ],\n  \"horarioFuncionamento\": [\n    { \"diaSemana\": \"MONDAY\", \"abertura\": \"09:00\", \"fechamento\": \"19:00\", \"fechado\": false },\n    { \"diaSemana\": \"TUESDAY\", \"abertura\": \"09:00\", \"fechamento\": \"19:00\", \"fechado\": false },\n    { \"diaSemana\": \"WEDNESDAY\", \"abertura\": \"09:00\", \"fechamento\": \"19:00\", \"fechado\": false },\n    { \"diaSemana\": \"THURSDAY\", \"abertura\": \"09:00\", \"fechamento\": \"19:00\", \"fechado\": false },\n    { \"diaSemana\": \"FRIDAY\", \"abertura\": \"09:00\", \"fechamento\": \"19:00\", \"fechado\": false },\n    { \"diaSemana\": \"SATURDAY\", \"abertura\": \"09:00\", \"fechamento\": \"14:00\", \"fechado\": false },\n    { \"diaSemana\": \"SUNDAY\", \"abertura\": null, \"fechamento\": null, \"fechado\": true }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Buscar estabelecimentos por filtros",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/busca?nome=Studio&cidade=São%20Paulo&estado=SP&servicoNome=CORTE&page={{page}}&size={{size}}&sort={{sort}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "busca"],
+              "query": [
+                { "key": "nome", "value": "Studio" },
+                { "key": "cidade", "value": "São Paulo" },
+                { "key": "estado", "value": "SP" },
+                { "key": "servicoNome", "value": "CORTE" },
+                { "key": "page", "value": "{{page}}" },
+                { "key": "size", "value": "{{size}}" },
+                { "key": "sort", "value": "{{sort}}" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Resposta paginada com filtros",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/estabelecimentos/busca?nome=Studio&cidade=São%20Paulo&estado=SP&servicoNome=CORTE&page={{page}}&size={{size}}&sort={{sort}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estabelecimentos", "busca"],
+                  "query": [
+                    { "key": "nome", "value": "Studio" },
+                    { "key": "cidade", "value": "São Paulo" },
+                    { "key": "estado", "value": "SP" },
+                    { "key": "servicoNome", "value": "CORTE" },
+                    { "key": "page", "value": "{{page}}" },
+                    { "key": "size", "value": "{{size}}" },
+                    { "key": "sort", "value": "{{sort}}" }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 1,\n      \"nome\": \"Studio Bela Vida\",\n      \"endereco\": {\n        \"logradouro\": \"Avenida Paulista\",\n        \"numero\": \"1000\",\n        \"complemento\": \"Sala 10\",\n        \"bairro\": \"Bela Vista\",\n        \"cidade\": \"São Paulo\",\n        \"estado\": \"SP\",\n        \"cep\": \"01310100\"\n      },\n      \"urlFotos\": [],\n      \"horarioFuncionamento\": [],\n      \"nota\": 4.8,\n      \"servicosOfertados\": [\n        {\n          \"servicoId\": 1,\n          \"servicoNome\": \"CORTE\",\n          \"preco\": 120.00,\n          \"profissional\": {\n            \"id\": 1,\n            \"nome\": \"Carla Souza\",\n            \"email\": \"carla@studio.com\",\n            \"celular\": \"11988887777\",\n            \"urlFoto\": null,\n            \"nota\": 5.0\n          }\n        }\n      ]\n    }\n  ],\n  \"pageable\": {\n    \"pageNumber\": 0,\n    \"pageSize\": 10,\n    \"sort\": {\n      \"empty\": false,\n      \"sorted\": true,\n      \"unsorted\": false\n    },\n    \"offset\": 0,\n    \"paged\": true,\n    \"unpaged\": false\n  },\n  \"last\": true,\n  \"totalPages\": 1,\n  \"totalElements\": 1,\n  \"size\": 10,\n  \"number\": 0,\n  \"sort\": {\n    \"empty\": false,\n    \"sorted\": true,\n    \"unsorted\": false\n  },\n  \"first\": true,\n  \"numberOfElements\": 1,\n  \"empty\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Deletar estabelecimento",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profissionais por Estabelecimento",
+      "item": [
+        {
+          "name": "Criar profissional no estabelecimento",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"João Silva\",\n  \"cpf\": \"52998224725\",\n  \"celular\": \"11999999999\",\n  \"email\": \"joao.silva@teste.com\",\n  \"urlFoto\": \"https://picsum.photos/seed/prof1/600/600\",\n  \"descricao\": \"Especialista em corte e pintura\",\n  \"sexo\": \"MASCULINO\",\n  \"expedientes\": [\n    {\n      \"diaSemana\": \"MONDAY\",\n      \"inicioTurno\": \"09:00\",\n      \"fimTurno\": \"18:00\",\n      \"inicioIntervalo\": \"12:00\",\n      \"fimIntervalo\": \"13:00\"\n    },\n    {\n      \"diaSemana\": \"TUESDAY\",\n      \"inicioTurno\": \"09:00\",\n      \"fimTurno\": \"18:00\",\n      \"inicioIntervalo\": \"12:00\",\n      \"fimIntervalo\": \"13:00\"\n    }\n  ],\n  \"servicosProfissional\": [\n    {\n      \"servicoId\": 1,\n      \"valor\": 50.00\n    },\n    {\n      \"servicoId\": 2,\n      \"valor\": 90.00\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/profissionais",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "profissionais"]
+            }
+          }
+        },
+        {
+          "name": "Listar profissionais do estabelecimento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/profissionais?page={{page}}&size={{size}}&sort={{sort}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "profissionais"],
+              "query": [
+                { "key": "page", "value": "{{page}}" },
+                { "key": "size", "value": "{{size}}" },
+                { "key": "sort", "value": "{{sort}}" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Resposta paginada",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/profissionais?page={{page}}&size={{size}}&sort={{sort}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estabelecimentos", "{{estabelecimentoId}}", "profissionais"],
+                  "query": [
+                    { "key": "page", "value": "{{page}}" },
+                    { "key": "size", "value": "{{size}}" },
+                    { "key": "sort", "value": "{{sort}}" }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 1,\n      \"nome\": \"João Silva\",\n      \"cpf\": \"52998224725\",\n      \"celular\": \"11999999999\",\n      \"email\": \"joao.silva@teste.com\",\n      \"urlFoto\": \"https://picsum.photos/seed/prof1/600/600\",\n      \"descricao\": \"Especialista em corte e pintura\",\n      \"sexo\": \"MASCULINO\",\n      \"servicosProfissional\": [\n        {\n          \"servicoId\": 1,\n          \"valor\": 50.00\n        },\n        {\n          \"servicoId\": 2,\n          \"valor\": 90.00\n        }\n      ]\n    }\n  ],\n  \"pageable\": {\n    \"pageNumber\": 0,\n    \"pageSize\": 10,\n    \"sort\": {\n      \"empty\": false,\n      \"sorted\": true,\n      \"unsorted\": false\n    },\n    \"offset\": 0,\n    \"paged\": true,\n    \"unpaged\": false\n  },\n  \"last\": true,\n  \"totalPages\": 1,\n  \"totalElements\": 1,\n  \"size\": 10,\n  \"number\": 0,\n  \"sort\": {\n    \"empty\": false,\n    \"sorted\": true,\n    \"unsorted\": false\n  },\n  \"first\": true,\n  \"numberOfElements\": 1,\n  \"empty\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Buscar profissional por ID no estabelecimento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/profissionais/{{profissionalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "profissionais", "{{profissionalId}}"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar profissional no estabelecimento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"João Silva Atualizado\",\n  \"cpf\": \"52998224725\",\n  \"celular\": \"11999999999\",\n  \"email\": \"joao.silva@teste.com\",\n  \"urlFoto\": \"https://picsum.photos/seed/prof1/600/600\",\n  \"descricao\": \"Especialista em corte, pintura e hidratação\",\n  \"sexo\": \"MASCULINO\",\n  \"expedientes\": [\n    {\n      \"diaSemana\": \"MONDAY\",\n      \"inicioTurno\": \"10:00\",\n      \"fimTurno\": \"19:00\",\n      \"inicioIntervalo\": \"13:00\",\n      \"fimIntervalo\": \"14:00\"\n    },\n    {\n      \"diaSemana\": \"WEDNESDAY\",\n      \"inicioTurno\": \"10:00\",\n      \"fimTurno\": \"19:00\",\n      \"inicioIntervalo\": \"13:00\",\n      \"fimIntervalo\": \"14:00\"\n    }\n  ],\n  \"servicosProfissional\": [\n    {\n      \"servicoId\": 1,\n      \"valor\": 55.00\n    },\n    {\n      \"servicoId\": 2,\n      \"valor\": 120.00\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/profissionais/{{profissionalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "profissionais", "{{profissionalId}}"]
+            }
+          }
+        },
+        {
+          "name": "Deletar profissional no estabelecimento",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/profissionais/{{profissionalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "profissionais", "{{profissionalId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Serviços por Estabelecimento",
+      "item": [
+        {
+          "name": "Criar serviço no estabelecimento",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"nome\": \"CORTE\",\n    \"duracaoMedia\": \"PT45M\"\n  },\n  {\n    \"nome\": \"COLORACAO\",\n    \"duracaoMedia\": \"PT90M\"\n  }\n]",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/servicos",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "servicos"]
+            }
+          },
+          "response": [
+            {
+              "name": "Lista de serviços criados",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n  {\n    \"nome\": \"CORTE\",\n    \"duracaoMedia\": \"PT45M\"\n  },\n  {\n    \"nome\": \"COLORACAO\",\n    \"duracaoMedia\": \"PT90M\"\n  }\n]"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/servicos",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estabelecimentos", "{{estabelecimentoId}}", "servicos"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"nome\": \"CORTE\",\n    \"duracaoMedia\": \"PT45M\"\n  },\n  {\n    \"id\": 2,\n    \"nome\": \"COLORACAO\",\n    \"duracaoMedia\": \"PT1H30M\"\n  }\n]"
+            }
+
+          ]
+        },
+        {
+          "name": "Listar serviços do estabelecimento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/servicos?page={{page}}&size={{size}}&sort={{sort}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "servicos"],
+              "query": [
+                { "key": "page", "value": "{{page}}" },
+                { "key": "size", "value": "{{size}}" },
+                { "key": "sort", "value": "{{sort}}" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Resposta paginada",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/servicos?page={{page}}&size={{size}}&sort={{sort}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estabelecimentos", "{{estabelecimentoId}}", "servicos"],
+                  "query": [
+                    { "key": "page", "value": "{{page}}" },
+                    { "key": "size", "value": "{{size}}" },
+                    { "key": "sort", "value": "{{sort}}" }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 1,\n      \"nome\": \"CORTE\",\n      \"duracaoMedia\": \"PT45M\"\n    }\n  ],\n  \"pageable\": {\n    \"pageNumber\": 0,\n    \"pageSize\": 10,\n    \"sort\": {\n      \"empty\": false,\n      \"sorted\": true,\n      \"unsorted\": false\n    },\n    \"offset\": 0,\n    \"paged\": true,\n    \"unpaged\": false\n  },\n  \"last\": true,\n  \"totalPages\": 1,\n  \"totalElements\": 1,\n  \"size\": 10,\n  \"number\": 0,\n  \"sort\": {\n    \"empty\": false,\n    \"sorted\": true,\n    \"unsorted\": false\n  },\n  \"first\": true,\n  \"numberOfElements\": 1,\n  \"empty\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Buscar serviço do estabelecimento por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/servicos/{{servicoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "servicos", "{{servicoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar serviço do estabelecimento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"COLORACAO\",\n  \"duracaoMedia\": \"PT90M\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/servicos/{{servicoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "servicos", "{{servicoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Deletar serviço do estabelecimento",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/servicos/{{servicoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "servicos", "{{servicoId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agendamentos por Estabelecimento",
+      "item": [
+        {
+          "name": "Criar agendamento no estabelecimento",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profissionalId\": 1,\n  \"servicoId\": {{servicoId}},\n  \"clienteId\": 1,\n  \"dataHoraInicio\": \"2026-03-30T10:00:00\",\n  \"status\": \"AGENDADO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/agendamentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "agendamentos"]
+            }
+          }
+        },
+        {
+          "name": "Listar agendamentos do estabelecimento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/agendamentos?page={{page}}&size={{size}}&sort={{sort}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "agendamentos"],
+              "query": [
+                { "key": "page", "value": "{{page}}" },
+                { "key": "size", "value": "{{size}}" },
+                { "key": "sort", "value": "{{sort}}" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Resposta paginada",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/agendamentos?page={{page}}&size={{size}}&sort={{sort}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["estabelecimentos", "{{estabelecimentoId}}", "agendamentos"],
+                  "query": [
+                    { "key": "page", "value": "{{page}}" },
+                    { "key": "size", "value": "{{size}}" },
+                    { "key": "sort", "value": "{{sort}}" }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 1,\n      \"profissional\": \"João Silva\",\n      \"servico\": \"CORTE\",\n      \"cliente\": \"Maria Souza\",\n      \"dataHoraInicio\": \"2026-03-30T10:00:00\",\n      \"dataHoraFim\": \"2026-03-30T10:45:00\",\n      \"status\": \"AGENDADO\"\n    }\n  ],\n  \"pageable\": {\n    \"pageNumber\": 0,\n    \"pageSize\": 10,\n    \"sort\": {\n      \"empty\": false,\n      \"sorted\": true,\n      \"unsorted\": false\n    },\n    \"offset\": 0,\n    \"paged\": true,\n    \"unpaged\": false\n  },\n  \"last\": true,\n  \"totalPages\": 1,\n  \"totalElements\": 1,\n  \"size\": 10,\n  \"number\": 0,\n  \"sort\": {\n    \"empty\": false,\n    \"sorted\": true,\n    \"unsorted\": false\n  },\n  \"first\": true,\n  \"numberOfElements\": 1,\n  \"empty\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Buscar agendamento por ID no estabelecimento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/agendamentos/{{agendamentoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "agendamentos", "{{agendamentoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar agendamento no estabelecimento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profissionalId\": 1,\n  \"servicoId\": {{servicoId}},\n  \"clienteId\": 1,\n  \"dataHoraInicio\": \"2026-03-30T11:00:00\",\n  \"status\": \"AGENDADO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/agendamentos/{{agendamentoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "agendamentos", "{{agendamentoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Deletar agendamento no estabelecimento",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/estabelecimentos/{{estabelecimentoId}}/agendamentos/{{agendamentoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["estabelecimentos", "{{estabelecimentoId}}", "agendamentos", "{{agendamentoId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Criar cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Maria Souza\",\n  \"cpf\": \"98765432100\",\n  \"celular\": \"11988887777\",\n  \"email\": \"maria.souza@teste.com\",\n  \"sexo\": \"FEMININO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/clientes",
+              "host": ["{{baseUrl}}"],
+              "path": ["clientes"]
+            }
+          }
+        },
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/clientes?page={{page}}&size={{size}}&sort={{sort}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["clientes"],
+              "query": [
+                { "key": "page", "value": "{{page}}" },
+                { "key": "size", "value": "{{size}}" },
+                { "key": "sort", "value": "{{sort}}" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Resposta paginada",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/clientes?page={{page}}&size={{size}}&sort={{sort}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["clientes"],
+                  "query": [
+                    { "key": "page", "value": "{{page}}" },
+                    { "key": "size", "value": "{{size}}" },
+                    { "key": "sort", "value": "{{sort}}" }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 1,\n      \"nome\": \"Maria Souza\",\n      \"cpf\": \"98765432100\",\n      \"celular\": \"11988887777\",\n      \"email\": \"maria.souza@teste.com\",\n      \"sexo\": \"FEMININO\"\n    }\n  ],\n  \"pageable\": {\n    \"pageNumber\": 0,\n    \"pageSize\": 10,\n    \"sort\": {\n      \"empty\": false,\n      \"sorted\": true,\n      \"unsorted\": false\n    },\n    \"offset\": 0,\n    \"paged\": true,\n    \"unpaged\": false\n  },\n  \"last\": true,\n  \"totalPages\": 1,\n  \"totalElements\": 1,\n  \"size\": 10,\n  \"number\": 0,\n  \"sort\": {\n    \"empty\": false,\n    \"sorted\": true,\n    \"unsorted\": false\n  },\n  \"first\": true,\n  \"numberOfElements\": 1,\n  \"empty\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Buscar cliente por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/clientes/{{clienteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["clientes", "{{clienteId}}"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar cliente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Maria Souza Atualizada\",\n  \"cpf\": \"98765432100\",\n  \"celular\": \"11988887777\",\n  \"email\": \"maria.souza@teste.com\",\n  \"sexo\": \"FEMININO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/clientes/{{clienteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["clientes", "{{clienteId}}"]
+            }
+          }
+        },
+        {
+          "name": "Deletar cliente",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/clientes/{{clienteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["clientes", "{{clienteId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Avaliações por Agendamento",
+      "item": [
+        {
+          "name": "Criar avaliação no agendamento",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notaEstabelecimento\": 4.5,\n  \"notaProfissional\": 5.0,\n  \"comentarioEstabelecimento\": \"Ótimo atendimento e ambiente agradável.\",\n  \"comentarioProfissional\": \"Profissional excelente, muito atencioso(a).\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/agendamentos/{{agendamentoId}}/avaliacoes",
+              "host": ["{{baseUrl}}"],
+              "path": ["agendamentos", "{{agendamentoId}}", "avaliacoes"]
+            }
+          }
+        },
+        {
+          "name": "Listar avaliações do agendamento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/agendamentos/{{agendamentoId}}/avaliacoes?page={{page}}&size={{size}}&sort={{sort}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["agendamentos", "{{agendamentoId}}", "avaliacoes"],
+              "query": [
+                { "key": "page", "value": "{{page}}" },
+                { "key": "size", "value": "{{size}}" },
+                { "key": "sort", "value": "{{sort}}" }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Resposta paginada",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/agendamentos/{{agendamentoId}}/avaliacoes?page={{page}}&size={{size}}&sort={{sort}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["agendamentos", "{{agendamentoId}}", "avaliacoes"],
+                  "query": [
+                    { "key": "page", "value": "{{page}}" },
+                    { "key": "size", "value": "{{size}}" },
+                    { "key": "sort", "value": "{{sort}}" }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"content\": [\n    {\n      \"id\": 1,\n      \"agendamentoId\": 1,\n      \"notaEstabelecimento\": 4.5,\n      \"notaProfissional\": 5.0,\n      \"comentarioEstabelecimento\": \"Ótimo atendimento e ambiente agradável.\",\n      \"comentarioProfissional\": \"Profissional excelente, muito atencioso(a).\"\n    }\n  ],\n  \"pageable\": {\n    \"pageNumber\": 0,\n    \"pageSize\": 10,\n    \"sort\": {\n      \"empty\": false,\n      \"sorted\": true,\n      \"unsorted\": false\n    },\n    \"offset\": 0,\n    \"paged\": true,\n    \"unpaged\": false\n  },\n  \"last\": true,\n  \"totalPages\": 1,\n  \"totalElements\": 1,\n  \"size\": 10,\n  \"number\": 0,\n  \"sort\": {\n    \"empty\": false,\n    \"sorted\": true,\n    \"unsorted\": false\n  },\n  \"first\": true,\n  \"numberOfElements\": 1,\n  \"empty\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Buscar avaliação por ID no agendamento",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/agendamentos/{{agendamentoId}}/avaliacoes/{{avaliacaoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["agendamentos", "{{agendamentoId}}", "avaliacoes", "{{avaliacaoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar avaliação no agendamento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notaEstabelecimento\": 4.0,\n  \"notaProfissional\": 4.8,\n  \"comentarioEstabelecimento\": \"Atendimento muito bom.\",\n  \"comentarioProfissional\": \"Profissional muito competente.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/agendamentos/{{agendamentoId}}/avaliacoes/{{avaliacaoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["agendamentos", "{{agendamentoId}}", "avaliacoes", "{{avaliacaoId}}"]
+            }
+          }
+        },
+        {
+          "name": "Deletar avaliação no agendamento",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/agendamentos/{{agendamentoId}}/avaliacoes/{{avaliacaoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["agendamentos", "{{agendamentoId}}", "avaliacoes", "{{avaliacaoId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

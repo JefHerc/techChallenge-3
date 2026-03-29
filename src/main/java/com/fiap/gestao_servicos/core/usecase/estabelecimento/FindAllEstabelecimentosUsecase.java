@@ -1,19 +1,20 @@
 package com.fiap.gestao_servicos.core.usecase.estabelecimento;
 
 import com.fiap.gestao_servicos.core.domain.Estabelecimento;
+import com.fiap.gestao_servicos.core.pagination.PageQuery;
+import com.fiap.gestao_servicos.core.pagination.PageResult;
 import com.fiap.gestao_servicos.core.repository.EstabelecimentoRepository;
 
-import java.util.List;
-
-public class FindAllEstabelecimentosUsecase {
+public class FindAllEstabelecimentosUseCase {
 
     private final EstabelecimentoRepository estabelecimentoRepository;
 
-    public FindAllEstabelecimentosUsecase(EstabelecimentoRepository estabelecimentoRepository) {
+    public FindAllEstabelecimentosUseCase(EstabelecimentoRepository estabelecimentoRepository) {
         this.estabelecimentoRepository = estabelecimentoRepository;
     }
 
-    public List<Estabelecimento> findAll() {
-        return estabelecimentoRepository.findAll();
+    public PageResult<Estabelecimento> findAll(PageQuery pageQuery) {
+        return estabelecimentoRepository.findAll(pageQuery);
     }
 }
+

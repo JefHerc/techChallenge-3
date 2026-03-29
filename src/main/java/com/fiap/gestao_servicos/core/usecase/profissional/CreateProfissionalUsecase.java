@@ -4,17 +4,22 @@ import com.fiap.gestao_servicos.core.domain.Profissional;
 import com.fiap.gestao_servicos.core.exception.DuplicateDataException;
 import com.fiap.gestao_servicos.core.repository.ProfissionalRepository;
 
-public class CreateProfissionalUsecase {
+public class CreateProfissionalUseCase {
 
     private final ProfissionalRepository profissionalRepository;
 
-    public CreateProfissionalUsecase(ProfissionalRepository profissionalRepository) {
+    public CreateProfissionalUseCase(ProfissionalRepository profissionalRepository) {
         this.profissionalRepository = profissionalRepository;
     }
 
     public Profissional create(Profissional profissional) {
         validarDuplicidade(profissional);
         return profissionalRepository.create(profissional);
+    }
+
+    public Profissional create(Long estabelecimentoId, Profissional profissional) {
+        validarDuplicidade(profissional);
+        return profissionalRepository.create(estabelecimentoId, profissional);
     }
 
     private void validarDuplicidade(Profissional profissional) {
@@ -29,3 +34,4 @@ public class CreateProfissionalUsecase {
         }
     }
 }
+

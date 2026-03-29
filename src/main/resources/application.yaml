@@ -11,11 +11,36 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    defer-datasource-initialization: true
     show-sql: true
     properties:
       hibernate:
         format_sql: true
 
+  jackson:
+    deserialization:
+      accept-single-value-as-array: true
+
   sql:
     init:
       mode: always
+
+  mail:
+    host: ${SPRING_MAIL_HOST:localhost}
+    port: ${SPRING_MAIL_PORT:1025}
+    username: ${SPRING_MAIL_USERNAME:}
+    password: ${SPRING_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH:false}
+          starttls:
+            enable: ${SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE:false}
+
+notification:
+  email:
+    from: ${NOTIFICATION_EMAIL_FROM:no-reply@gestao-servicos.local}
+
+scheduler:
+  lembrete:
+    delay: ${SCHEDULER_LEMBRETE_DELAY:300000}

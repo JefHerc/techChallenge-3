@@ -1,19 +1,29 @@
 package com.fiap.gestao_servicos.core.usecase.profissional;
 
 import com.fiap.gestao_servicos.core.domain.Profissional;
+import com.fiap.gestao_servicos.core.pagination.PageQuery;
+import com.fiap.gestao_servicos.core.pagination.PageResult;
 import com.fiap.gestao_servicos.core.repository.ProfissionalRepository;
+import com.fiap.gestao_servicos.core.usecase.estabelecimento.FindEstabelecimentoByIdUseCase;
 
-import java.util.List;
-
-public class FindAllProfissionaisUsecase {
+public class FindAllProfissionaisUseCase {
 
     private final ProfissionalRepository profissionalRepository;
+    private final FindEstabelecimentoByIdUseCase findEstabelecimentoByIdUseCase;
 
-    public FindAllProfissionaisUsecase(ProfissionalRepository profissionalRepository) {
+    public FindAllProfissionaisUseCase(ProfissionalRepository profissionalRepository,
+                                       FindEstabelecimentoByIdUseCase findEstabelecimentoByIdUseCase) {
         this.profissionalRepository = profissionalRepository;
+        this.findEstabelecimentoByIdUseCase = findEstabelecimentoByIdUseCase;
     }
 
-    public List<Profissional> findAll() {
-        return profissionalRepository.findAll();
+    public PageResult<Profissional> findAll(PageQuery pageQuery) {
+        return profissionalRepository.findAll(pageQuery);
+    }
+
+    public PageResult<Profissional> findPageByEstabelecimentoId(Long estabelecimentoId, PageQuery pageQuery) {
+        findEstabelecimentoByIdUseCase.findById(estabelecimentoId);
+        return profissionalRepository.findPageByEstabelecimentoId(estabelecimentoId, pageQuery);
     }
 }
+

@@ -76,6 +76,10 @@ public class Cnpj {
         return value.matches("\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}");
     }
 
+    public String getNormalizedValue() {
+        return getCleanValue();
+    }
+
     public String getValue() {
         return value;
     }
@@ -101,3 +105,5 @@ public class Cnpj {
         return getMasked();
     }
 }
+
+

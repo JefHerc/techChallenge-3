@@ -5,9 +5,13 @@ import com.fiap.gestao_servicos.core.domain.Cliente;
 import com.fiap.gestao_servicos.core.repository.ClienteRepository;
 import com.fiap.gestao_servicos.core.domain.Cpf;
 import com.fiap.gestao_servicos.core.domain.Email;
+import com.fiap.gestao_servicos.core.pagination.PageQuery;
+import com.fiap.gestao_servicos.core.pagination.PageResult;
+import com.fiap.gestao_servicos.infrastructure.pagination.SpringPaginationMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ClienteRepositoryImpl implements ClienteRepository {
@@ -19,6 +23,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
     }
 
     @Override
+    @Transactional
     public Cliente create(Cliente cliente) {
         ClienteEntity entity = toEntity(cliente);
         ClienteEntity saved = jpaRepository.save(entity);
@@ -26,6 +31,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
     }
 
     @Override
+    @Transactional
     public Cliente update(Long id, Cliente cliente) {
         ClienteEntity existing = jpaRepository.findById(id)
                 .orElse(null);
@@ -45,25 +51,21 @@ public class ClienteRepositoryImpl implements ClienteRepository {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         jpaRepository.deleteById(id);
     }
 
     @Override
-    public List<Cliente> findAll() {
-        return jpaRepository.findAll().stream()
-                .map(this::toDomain)
-                .toList();
+    public PageResult<Cliente> findAll(PageQuery pageQuery) {
+        return SpringPaginationMapper.toPageResult(
+                jpaRepository.findAll(SpringPaginationMapper.toPageable(pageQuery))
+                        .map(this::toDomain));
     }
 
     @Override
-    public Cliente findById(Long id) {
-        ClienteEntity entity = jpaRepository.findById(id)
-                .orElse(null);
-        if (entity == null) {
-            return null;
-        }
-        return toDomain(entity);
+    public Optional<Cliente> findById(Long id) {
+        return jpaRepository.findById(id).map(this::toDomain);
     }
 
     @Override
@@ -108,3 +110,4 @@ public class ClienteRepositoryImpl implements ClienteRepository {
         );
     }
 }
+

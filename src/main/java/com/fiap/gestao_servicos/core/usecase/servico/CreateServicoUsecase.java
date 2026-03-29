@@ -4,18 +4,26 @@ import com.fiap.gestao_servicos.core.domain.Servico;
 import com.fiap.gestao_servicos.core.exception.NameAlreadyExistsException;
 import com.fiap.gestao_servicos.core.repository.ServicoRepository;
 
-public class CreateServicoUsecase {
+public class CreateServicoUseCase {
 
     private final ServicoRepository servicoRepository;
 
-    public CreateServicoUsecase(ServicoRepository servicoRepository) {
+    public CreateServicoUseCase(ServicoRepository servicoRepository) {
         this.servicoRepository = servicoRepository;
     }
 
     public Servico create(Servico servico) {
-        if (servicoRepository.existsByNomeIgnoreCase(servico.getNome())) {
+        if (servicoRepository.existsByNomeIgnoreCase(servico.getNomeAsString())) {
             throw new NameAlreadyExistsException("Serviço ");
         }
         return servicoRepository.create(servico);
     }
+
+    public Servico create(Long estabelecimentoId, Servico servico) {
+        if (servicoRepository.existsByNomeIgnoreCaseAndEstabelecimentoId(servico.getNomeAsString(), estabelecimentoId)) {
+            throw new NameAlreadyExistsException("Serviço ");
+        }
+        return servicoRepository.create(estabelecimentoId, servico);
+    }
 }
+

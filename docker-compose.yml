@@ -1,0 +1,51 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: gestao-servicos-db
+    environment:
+      MYSQL_DATABASE: gestao_servicos
+      MYSQL_USER: gestao_servicos
+      MYSQL_PASSWORD: gestao_servico
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: gestao-servicos-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gestao-servicos-app
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/gestao_servicos?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: gestao_servicos
+      SPRING_DATASOURCE_PASSWORD: gestao_servico
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SQL_INIT_MODE: always
+      SPRING_MAIL_HOST: mailpit
+      SPRING_MAIL_PORT: 1025
+      NOTIFICATION_EMAIL_FROM: no-reply@gestao-servicos.local
+    ports:
+      - "8080:8080"
+
+volumes:
+  mysql_data:

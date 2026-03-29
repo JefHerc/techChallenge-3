@@ -1,11 +1,20 @@
 package com.fiap.gestao_servicos.infrastructure.persistence.profissional;
 
+import com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento.EstabelecimentoEntity;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "profissional")
@@ -30,6 +39,18 @@ public class ProfissionalEntity {
     private String urlFoto;
 
     private String descricao;
+
+    private String sexo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "estabelecimento_id")
+    private EstabelecimentoEntity estabelecimento;
+
+    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ServicoProfissionalEntity> servicosProfissional = new ArrayList<>();
+
+    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ExpedienteProfissionalEntity> expedientes = new ArrayList<>();
 
     // Constructors
     public ProfissionalEntity() {}
@@ -99,4 +120,43 @@ public class ProfissionalEntity {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+    public List<ServicoProfissionalEntity> getServicosProfissional() {
+        return servicosProfissional;
+    }
+
+    public void setServicosProfissional(List<ServicoProfissionalEntity> servicosProfissional) {
+        this.servicosProfissional = servicosProfissional;
+        if (this.servicosProfissional != null) {
+            this.servicosProfissional.forEach(servicoProfissional -> servicoProfissional.setProfissional(this));
+        }
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
+
+    public EstabelecimentoEntity getEstabelecimento() {
+        return estabelecimento;
+    }
+
+    public void setEstabelecimento(EstabelecimentoEntity estabelecimento) {
+        this.estabelecimento = estabelecimento;
+    }
+
+    public java.util.List<ExpedienteProfissionalEntity> getExpedientes() {
+        return expedientes;
+    }
+
+    public void setExpedientes(java.util.List<ExpedienteProfissionalEntity> expedientes) {
+        this.expedientes = expedientes;
+        if (this.expedientes != null) {
+            this.expedientes.forEach(expediente -> expediente.setProfissional(this));
+        }
+    }
 }
+

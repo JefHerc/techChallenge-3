@@ -11,9 +11,10 @@ public class Estabelecimento {
     private final List<Servico> servicos;
     private final Cnpj cnpj;
     private final List<String> urlFotos;
-    private final String horarioFuncionamento;
+    private final List<HorarioFuncionamento> horarioFuncionamento;
+    private final Double nota;
 
-    public Estabelecimento(Long id, String nome, Endereco endereco, List<Profissional> profissionais, List<Servico> servicos, Cnpj cnpj, List<String> urlFotos, String horarioFuncionamento) {
+    public Estabelecimento(Long id, String nome, Endereco endereco, List<Profissional> profissionais, List<Servico> servicos, Cnpj cnpj, List<String> urlFotos, List<HorarioFuncionamento> horarioFuncionamento) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
         }
@@ -30,7 +31,31 @@ public class Estabelecimento {
 
         this.urlFotos = urlFotos != null ? List.copyOf(urlFotos) : List.of();
 
-        this.horarioFuncionamento = horarioFuncionamento != null ? horarioFuncionamento.trim() : null;
+        this.horarioFuncionamento = horarioFuncionamento != null ? List.copyOf(horarioFuncionamento) : List.of();
+
+        this.nota = null;
+    }
+
+    public Estabelecimento(Long id, String nome, Endereco endereco, List<Profissional> profissionais, List<Servico> servicos, Cnpj cnpj, List<String> urlFotos, List<HorarioFuncionamento> horarioFuncionamento, Double nota) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
+        }
+        this.id = id;
+        this.nome = nome.trim();
+
+        this.endereco = endereco;
+
+        this.profissionais = profissionais != null ? List.copyOf(profissionais) : List.of();
+
+        this.servicos = servicos != null ? List.copyOf(servicos) : List.of();
+
+        this.cnpj = cnpj;
+
+        this.urlFotos = urlFotos != null ? List.copyOf(urlFotos) : List.of();
+
+        this.horarioFuncionamento = horarioFuncionamento != null ? List.copyOf(horarioFuncionamento) : List.of();
+
+        this.nota = nota;
     }
 
     public Long getId() {
@@ -61,12 +86,19 @@ public class Estabelecimento {
         return urlFotos;
     }
 
-    public String getHorarioFuncionamento() {
+    public List<HorarioFuncionamento> getHorarioFuncionamento() {
         return horarioFuncionamento;
     }
 
+    public Double getNota() {
+        return nota;
+    }
+
+    @Override
     public String toString() {
         return String.format("Estabelecimento: %s, Endereço: %s, CNPJ: %s, Horário de Funcionamento: %s, Profissionais: %d, Serviços: %d, Fotos: %d",
-                nome, endereco != null ? endereco.toString() : "N/A", cnpj != null ? cnpj.getMasked() : "N/A", horarioFuncionamento != null ? horarioFuncionamento : "N/A", profissionais.size(), servicos.size(), urlFotos.size());
+                nome, endereco != null ? endereco.toString() : "N/A", cnpj != null ? cnpj.getMasked() : "N/A", horarioFuncionamento != null ? horarioFuncionamento.toString() : "N/A", profissionais.size(), servicos.size(), urlFotos.size());
     }
 }
+
+
