@@ -1,71 +1,51 @@
-# Testes Não Funcionais (Performance e Carga)
+# Testes de Performance e Carga
 
-Este projeto possui um cenário de carga com Gatling focado em alto volume de agendamentos simultâneos.
+Os testes não funcionais ficam em `src/test/java/com/fiap/gestao_servicos/performance/AgendamentoPerformanceTest.java`.
 
 ## Objetivo
 
-Validar que a API suporta concorrência elevada sem degradação significativa:
+Validar que a API de agendamentos:
 
-- Leitura de agendamentos (`GET /estabelecimentos/{id}/agendamentos`)
-- Criação concorrente de agendamentos (`POST /estabelecimentos/{id}/agendamentos`)
+- suporta múltiplos `POST /estabelecimentos/{id}/agendamentos` simultâneos;
+- mantém a consulta `GET /estabelecimentos/{id}/agendamentos` responsiva mesmo com volume elevado de registros;
+- respeita um SLA básico de tempo de resposta em ambiente local/CI.
 
-## Pré-requisitos
+## Cenários cobertos
 
-- Aplicação em execução (ex.: `http://localhost:8080`)
-- Banco com dados mínimos para os IDs usados no teste
+### 1. Carga simultânea de criação
 
-Opcional recomendado para execução local rápida:
+- **48 requisições concorrentes** de criação de agendamentos;
+- validação de **100% de sucesso HTTP 201**;
+- verificação de **tempo total do lote** e **latência p95**.
 
-- Subir a aplicação com perfil dedicado de carga (`loadtest`), que usa H2 em memória e carga inicial automática.
+### 2. Performance de leitura com volume alto
 
-## Execução
+- geração de **80 novos agendamentos** para ampliar a massa de dados;
+- execução repetida da listagem paginada da agenda;
+- validação de **tempo médio** e **pior caso** de resposta.
 
-Comando padrão:
+## Como executar
 
-```bash
-./mvnw gatling:test -Dgatling.simulationClass=com.fiap.gestao_servicos.performance.AgendamentoLoadSimulation
+### Suite completa
+
+No Windows PowerShell:
+
+```powershell
+.\mvnw.cmd test
 ```
 
-Subindo a aplicação local para carga (perfil `loadtest`):
+### Apenas os testes não funcionais
 
-```bash
-./mvnw spring-boot:run -Dspring-boot.run.profiles=loadtest
+```powershell
+.\mvnw.cmd -Dtest=AgendamentoPerformanceTest test
 ```
 
-Com parâmetros de volume e SLA:
+## Ambiente utilizado
 
-```bash
-./mvnw gatling:test \
-  -Dgatling.simulationClass=com.fiap.gestao_servicos.performance.AgendamentoLoadSimulation \
-  -DbaseUrl=http://localhost:8080 \
-  -DestabelecimentoId=1 \
-  -DprofissionalIds=1,2,3,4,5 \
-  -DservicoId=1 \
-  -DclienteId=1 \
-  -DreadUsers=200 \
-  -DwriteUsers=150 \
-  -DrampSeconds=60 \
-  -DdurationSeconds=300 \
-  -DmaxP95Ms=2000 \
-  -DmaxErrorPercent=2.0
-```
+Os testes sobem a aplicação com o perfil `bdd`, usando:
 
-## Parâmetros disponíveis
+- **H2 em memória**;
+- dados iniciais controlados em `src/test/resources/data-bdd.sql`;
+- servidor HTTP embutido em porta aleatória.
 
-- `baseUrl` (default: `http://localhost:8080`)
-- `estabelecimentoId` (default: `1`)
-- `profissionalIds` (default: `1,2,3,4,5`)
-- `servicoId` (default: `1`)
-- `clienteId` (default: `1`)
-- `readUsers` (default: `80`)
-- `writeUsers` (default: `40`)
-- `rampSeconds` (default: `30`)
-- `durationSeconds` (default: `120`)
-- `maxP95Ms` (default: `1500`)
-- `maxErrorPercent` (default: `2.0`)
-
-## Resultado
-
-O Gatling gera relatório HTML em:
-
-- `target/gatling/<nome-da-simulacao>/index.html`
+> Os limites de SLA foram definidos para detectar degradação relevante sem tornar a execução instável em máquinas de desenvolvimento ou CI.

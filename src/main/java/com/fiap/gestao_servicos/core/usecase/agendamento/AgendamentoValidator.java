@@ -30,7 +30,7 @@ public class AgendamentoValidator {
                         Servico servico,
                         Long agendamentoIdIgnorar) {
         validarVinculoProfissionalServico(agendamento.getProfissional().getId(), agendamento.getServico().getId());
-        validarHorarioFuncionamentoEstabelecimento(agendamento, estabelecimento, servico);
+        validarHorarioFuncionamentoEstabelecimento(agendamento, estabelecimento);
         validarConflitoAgendaProfissional(agendamento, agendamentoIdIgnorar);
     }
 
@@ -58,8 +58,7 @@ public class AgendamentoValidator {
     }
 
     private void validarHorarioFuncionamentoEstabelecimento(Agendamento agendamento,
-                                                             Estabelecimento estabelecimento,
-                                                             Servico servico) {
+                                                             Estabelecimento estabelecimento) {
         LocalDateTime dataHoraInicio = agendamento.getDataHoraInicio();
         LocalDateTime dataHoraFim = agendamento.getDataHoraFim();
         DayOfWeek diaSemana = dataHoraInicio.getDayOfWeek();

@@ -127,19 +127,19 @@ public class UpdateAgendamentoUseCase {
         }
 
         private LembreteEvento criarEventoCancelamento(Agendamento agendamento, LembreteDestinatario destinatario) {
-		return new LembreteEvento(
-				null,
-				agendamento.getId(),
-				null,
-				destinatario,
-				LembreteStatus.PENDENTE,
-				"Agendamento cancelado",
-				obterDestinoEmail(agendamento, destinatario),
-				null,
-				null,
-				null
-		);
-	}
+            return new LembreteEvento(
+                    null,
+                    agendamento.getId(),
+                    null,
+                    destinatario,
+                    LembreteStatus.PENDENTE,
+                    "Agendamento cancelado",
+                    obterDestinoEmail(agendamento, destinatario),
+                    null,
+                    null,
+                    null
+            );
+        }
 
         private String obterDestinoEmail(Agendamento agendamento, LembreteDestinatario destinatario) {
                 if (destinatario == LembreteDestinatario.CLIENTE) {

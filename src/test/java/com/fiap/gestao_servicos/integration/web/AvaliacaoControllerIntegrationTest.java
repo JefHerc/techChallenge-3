@@ -129,7 +129,7 @@ class AvaliacaoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
-                .andExpect(jsonPath("$.message").value("Erro de validação na requisição."))
+                .andExpect(jsonPath("$.message").value("notaProfissional: Nota do profissional deve ser entre 0 e 5"))
                     .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos/10/avaliacoes"));
     }
 

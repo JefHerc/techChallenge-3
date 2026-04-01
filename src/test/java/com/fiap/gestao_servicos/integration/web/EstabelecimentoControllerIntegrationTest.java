@@ -122,7 +122,7 @@ class EstabelecimentoControllerIntegrationTest extends WebLayerIntegrationTestBa
                                 .andExpect(status().isBadRequest())
                                 .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
-                                .andExpect(jsonPath("$.message").value("Erro de validação na requisição."))
+                                .andExpect(jsonPath("$.message").value("nome: Nome deve ter entre 2 e 120 caracteres"))
                                 .andExpect(jsonPath("$.path").value("/estabelecimentos"));
         }
 

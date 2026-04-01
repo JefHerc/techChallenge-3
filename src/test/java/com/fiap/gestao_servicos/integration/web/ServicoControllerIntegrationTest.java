@@ -32,6 +32,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -96,7 +98,9 @@ class ServicoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                                 .andExpect(status().isBadRequest())
                                 .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
-                                .andExpect(jsonPath("$.message").value("Erro de validação na requisição."))
+                                .andExpect(jsonPath("$.message", allOf(
+                                        containsString("nome: Nome do serviço é obrigatório"),
+                                        containsString("nome: Nome do serviço deve ter entre 2 e 120 caracteres"))))
                                 .andExpect(jsonPath("$.path").value("/estabelecimentos/1/servicos"));
         }
 

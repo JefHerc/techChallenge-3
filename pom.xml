@@ -32,8 +32,6 @@
 		<maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
 		<maven.pmd.plugin.version>3.28.0</maven.pmd.plugin.version>
 		<spotbugs.maven.plugin.version>4.8.6.6</spotbugs.maven.plugin.version>
-		<gatling.version>3.13.5</gatling.version>
-		<gatling.plugin.version>4.10.0</gatling.plugin.version>
 		<jacoco.maven.plugin.version>0.8.13</jacoco.maven.plugin.version>
 		<cucumber.version>7.22.0</cucumber.version>
 	</properties>
@@ -107,33 +105,21 @@
 			<version>4.8.6</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>io.gatling</groupId>
-			<artifactId>gatling-core-java</artifactId>
-			<version>${gatling.version}</version>
-			<scope>test</scope>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
+
 		<dependency>
-			<groupId>io.gatling</groupId>
-			<artifactId>gatling-http-java</artifactId>
-			<version>${gatling.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.gatling.highcharts</groupId>
-			<artifactId>gatling-charts-highcharts</artifactId>
-			<version>${gatling.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.gatling</groupId>
-			<artifactId>gatling-test-framework</artifactId>
-			<version>${gatling.version}</version>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-java</artifactId>
+			<version>${cucumber.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.cucumber</groupId>
-			<artifactId>cucumber-java</artifactId>
+			<artifactId>cucumber-spring</artifactId>
 			<version>${cucumber.version}</version>
 			<scope>test</scope>
 		</dependency>
@@ -148,10 +134,6 @@
 			<artifactId>junit-platform-suite</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-jsr310</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -159,6 +141,13 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>@{argLine} -Duser.timezone=UTC</argLine>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -211,19 +200,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>io.gatling</groupId>
-				<artifactId>gatling-maven-plugin</artifactId>
-				<version>${gatling.plugin.version}</version>
-				<configuration>
-					<includes>
-						<include>**/*Simulation.java</include>
-					</includes>
-					<jvmArgs>
-						<jvmArg>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmArg>
-					</jvmArgs>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>

@@ -105,7 +105,7 @@ class ClienteControllerIntegrationTest extends WebLayerIntegrationTestBase {
                                 .andExpect(status().isBadRequest())
                                 .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
-                                .andExpect(jsonPath("$.message").value("Erro de validação na requisição."))
+                                .andExpect(jsonPath("$.message").value("email: Email inválido"))
                     .andExpect(jsonPath("$.path").value("/clientes"));
         }
 

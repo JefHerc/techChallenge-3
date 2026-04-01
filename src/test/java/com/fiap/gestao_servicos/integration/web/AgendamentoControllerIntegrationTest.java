@@ -135,7 +135,7 @@ class AgendamentoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
-                .andExpect(jsonPath("$.message").value("Erro de validação na requisição."))
+                .andExpect(jsonPath("$.message").value("status: Status não deve ser informado na criação do agendamento"))
             .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos"));
     }
 

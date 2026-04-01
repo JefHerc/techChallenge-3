@@ -49,7 +49,7 @@ Backend para agendamento e gerenciamento de serviços de beleza e bem-estar, des
 - JUnit 5
 - Cucumber 7.22 (BDD)
 - ArchUnit
-- Gatling
+- Testes de carga concorrente com Spring Boot Test + Java HttpClient
 - Checkstyle, PMD e SpotBugs
 
 ## Diferenciais
@@ -273,7 +273,7 @@ No Windows PowerShell:
 | BDD | `src/test/java/.../bdd/` e `src/test/resources/features/` | Cucumber |
 | Arquitetura | `src/test/java/.../architecture/` | ArchUnit |
 | Camada web | `src/test/java/.../integration/` | Spring MockMvc |
-| Performance | `src/test/java/.../performance/` | Gatling |
+| Performance e carga | `src/test/java/.../performance/` | JUnit 5 + Spring Boot Test + HttpClient |
 
 ### Cobertura de testes
 
@@ -302,79 +302,43 @@ Na pipeline de CI, os relatórios de cobertura e BDD também são publicados com
 ### Executar testes de performance
 
 ```bash
-./mvnw gatling:test
+./mvnw test -Dtest=AgendamentoPerformanceTest
 ```
 
 No Windows PowerShell:
 
 ```powershell
-.\mvnw.cmd gatling:test
+.\mvnw.cmd test "-Dtest=AgendamentoPerformanceTest"
 ```
 
 Para mais detalhes sobre carga e performance, consulte `docs/performance-tests.md`.
 
 ## Teste de Carga (Não Funcional)
 
-O cenário de carga utiliza Gatling para simular alto volume de leituras e criações de agendamento:
+O projeto possui testes não funcionais automatizados para validar cenários de alto volume de agendamentos simultâneos nos endpoints:
 
 - `GET /estabelecimentos/{id}/agendamentos`
 - `POST /estabelecimentos/{id}/agendamentos`
 
-### 1. Subir a aplicação com perfil dedicado de carga
+### O que é validado
+
+- **48 criações concorrentes** de agendamentos com validação de HTTP `201`;
+- **latência p95** e **tempo total do lote** para escrita;
+- leitura paginada com base ampliada em **80 novos registros**;
+- **tempo médio** e **pior caso** da consulta da agenda.
+
+### Como rodar
 
 No Linux/macOS:
 
 ```bash
-./mvnw spring-boot:run -Dspring-boot.run.profiles=loadtest
+./mvnw test -Dtest=AgendamentoPerformanceTest
 ```
 
 No Windows PowerShell:
 
 ```powershell
-.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--spring.profiles.active=loadtest"
+.\mvnw.cmd test "-Dtest=AgendamentoPerformanceTest"
 ```
 
-Esse perfil usa H2 em memória e dados iniciais para execução local de carga.
-
-### 2. Executar o teste de carga com Gatling
-
-Por padrão, a simulação executa alta simultaneidade sustentada (80 usuários de leitura e 40 de escrita).
-
-No Linux/macOS:
-
-```bash
-./mvnw gatling:test -Dgatling.simulationClass=com.fiap.gestao_servicos.performance.AgendamentoLoadSimulation
-```
-
-No Windows PowerShell:
-
-```powershell
-.\mvnw.cmd gatling:test -Dgatling.simulationClass=com.fiap.gestao_servicos.performance.AgendamentoLoadSimulation
-.\mvnw.cmd gatling:test "-Dgatling.simulationClass=com.fiap.gestao_servicos.performance.AgendamentoLoadSimulation" "-DbaseUrl=http://localhost:8080"
-```
-
-### 3. Ajustar volume e SLA (opcional)
-
-Exemplo:
-
-```bash
-./mvnw gatling:test \
-  -Dgatling.simulationClass=com.fiap.gestao_servicos.performance.AgendamentoLoadSimulation \
-  -DbaseUrl=http://localhost:8080 \
-  -DestabelecimentoId=1 \
-  -DprofissionalIds=1,2,3,4,5 \
-  -DservicoId=1 \
-  -DclienteId=1 \
-  -DreadUsers=200 \
-  -DwriteUsers=150 \
-  -DrampSeconds=60 \
-  -DdurationSeconds=300 \
-  -DmaxP95Ms=2000 \
-  -DmaxErrorPercent=2.0
-```
-
-### 4. Relatório
-
-O relatório HTML é gerado em:
-
-- `target/gatling/<nome-da-simulacao>/index.html`
+Esses testes executam a aplicação com o perfil `bdd`, usando H2 em memória e massa de dados controlada para avaliação local e em CI.

@@ -1,4 +1,4 @@
-package com.fiap.gestao_servicos.bdd;
+package com.fiap.gestao_servicos.bdd_config;
 
 import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.IncludeEngines;
@@ -11,7 +11,13 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 @Suite
 @IncludeEngines("cucumber")
 @SelectClasspathResource("features")
-@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "com.fiap.gestao_servicos.bdd")
-@ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty, json:target/cucumber-reports/cucumber.json, html:target/cucumber-reports/cucumber.html")
+@ConfigurationParameter(
+    key = GLUE_PROPERTY_NAME,
+    value = "com.fiap.gestao_servicos.bdd_config,com.fiap.gestao_servicos.bdd.steps"
+)
+@ConfigurationParameter(
+    key = PLUGIN_PROPERTY_NAME,
+    value = "pretty,json:target/cucumber-reports/cucumber.json,html:target/cucumber-reports/cucumber.html"
+)
 public class CucumberRunnerTest {
 }
