@@ -22,27 +22,7 @@ public class Estabelecimento {
                            Cnpj cnpj,
                            List<String> urlFotos,
                            List<HorarioFuncionamento> horarioFuncionamento) {
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new IllegalArgumentException("Nome não pode ser nulo ou vazio");
-        }
-        this.id = id;
-        this.nome = nome.trim();
-
-        this.endereco = endereco;
-
-        this.profissionais = profissionais != null ? List.copyOf(profissionais) : List.of();
-
-        this.servicos = servicos != null ? List.copyOf(servicos) : List.of();
-
-        this.cnpj = cnpj;
-
-        this.urlFotos = urlFotos != null ? List.copyOf(urlFotos) : List.of();
-
-        this.horarioFuncionamento = horarioFuncionamento != null
-            ? List.copyOf(horarioFuncionamento)
-            : List.of();
-
-        this.nota = null;
+        this(id, nome, endereco, profissionais, servicos, cnpj, urlFotos, horarioFuncionamento, null);
     }
 
     public Estabelecimento(Long id,

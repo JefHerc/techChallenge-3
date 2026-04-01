@@ -3,6 +3,8 @@ WORKDIR /app
 
 COPY pom.xml ./
 COPY src ./src
+# CI validation stage: run unit tests during image build.
+RUN mvn -q -Dtest='*Test,!*IntegrationTest,!*RunnerTest,!*Simulation' test
 RUN mvn -q -DskipTests clean package
 
 FROM eclipse-temurin:17-jre

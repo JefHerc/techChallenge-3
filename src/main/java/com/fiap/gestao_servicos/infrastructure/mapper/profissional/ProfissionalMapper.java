@@ -14,8 +14,8 @@ import com.fiap.gestao_servicos.infrastructure.controller.profissional.Profissio
 import com.fiap.gestao_servicos.infrastructure.controller.profissional.ProfissionalSearchResponseDto;
 import com.fiap.gestao_servicos.infrastructure.controller.profissional.ServicoProfissionalDto;
 import com.fiap.gestao_servicos.infrastructure.controller.profissional.ServicoProfissionalResponseDto;
+import com.fiap.gestao_servicos.infrastructure.mapper.DiaSemanaMapper;
 
-import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -86,7 +86,7 @@ public final class ProfissionalMapper {
     private static ExpedienteProfissional toExpediente(ExpedienteProfissionalDto dto) {
         return new ExpedienteProfissional(
                 null,
-                DayOfWeek.valueOf(dto.getDiaSemana()),
+                DiaSemanaMapper.parse(dto.getDiaSemana()),
                 LocalTime.parse(dto.getInicioTurno()),
                 LocalTime.parse(dto.getFimTurno()),
                 dto.getInicioIntervalo() != null ? LocalTime.parse(dto.getInicioIntervalo()) : null,
@@ -114,7 +114,7 @@ public final class ProfissionalMapper {
 
         return expedientes.stream().map(expediente -> {
             ExpedienteProfissionalDto dto = new ExpedienteProfissionalDto();
-            dto.setDiaSemana(expediente.getDiaSemana().name());
+            dto.setDiaSemana(DiaSemanaMapper.toPtBr(expediente.getDiaSemana()));
             dto.setInicioTurno(expediente.getInicioTurno().toString());
             dto.setFimTurno(expediente.getFimTurno().toString());
             dto.setInicioIntervalo(expediente.getInicioIntervalo() != null ? expediente.getInicioIntervalo().toString() : null);

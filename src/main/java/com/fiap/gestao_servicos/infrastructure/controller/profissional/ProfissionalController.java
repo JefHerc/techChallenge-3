@@ -67,24 +67,24 @@ public class ProfissionalController {
                                         name = "profissional",
                                         value = """
                                                         {
-                                                            "nome": "Ana Souza",
-                                                            "cpf": "12345678901",
-                                                            "celular": "11987654321",
-                                                            "email": "ana.souza@email.com",
-                                                            "urlFoto": "https://cdn.exemplo.com/fotos/ana.jpg",
-                                                            "descricao": "Especialista em coloracao e corte",
+                                                            "nome": "Carla Souza",
+                                                            "cpf": "06854809096",
+                                                            "celular": "11988887777",
+                                                            "email": "carla@e1.com",
+                                                            "urlFoto": "https://cdn.exemplo.com/fotos/carla.jpg",
+                                                            "descricao": "Especialista coloração",
                                                             "sexo": "FEMININO",
                                                             "expedientes": [
                                                                 {
-                                                                    "diaSemana": "MONDAY",
-                                                                    "inicioTurno": "09:00",
+                                                                    "diaSemana": "segunda-feira",
+                                                                    "inicioTurno": "08:00",
                                                                     "fimTurno": "18:00"
                                                                 }
                                                             ],
                                                             "servicosProfissional": [
                                                                 {
-                                                                    "servicoId": 20,
-                                                                    "valor": 120.00
+                                                                    "servicoId": 1,
+                                                                    "valor": 80.00
                                                                 }
                                                             ]
                                                         }
@@ -103,13 +103,13 @@ public class ProfissionalController {
                         name = "profissionalCriado",
                         value = """
                                 {
-                                  "id": 5,
-                                  "nome": "Ana Souza",
-                                  "cpf": "12345678901",
-                                  "celular": "11987654321",
-                                  "email": "ana.souza@email.com",
-                                  "urlFoto": "https://cdn.exemplo.com/fotos/ana.jpg",
-                                  "descricao": "Especialista em coloracao e corte",
+                                  "id": 1,
+                                  "nome": "Carla Souza",
+                                  "cpf": "06854809096",
+                                  "celular": "11988887777",
+                                  "email": "carla@e1.com",
+                                  "urlFoto": "https://cdn.exemplo.com/fotos/carla.jpg",
+                                  "descricao": "Especialista coloração",
                                   "sexo": "FEMININO",
                                   "expedientes": [],
                                   "servicosProfissional": []
@@ -119,7 +119,9 @@ public class ProfissionalController {
                 )
             ),
                         @ApiResponse(ref = "#/components/responses/BadRequestError"),
-                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+                        @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                        @ApiResponse(ref = "#/components/responses/DuplicateDataError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<ProfissionalResponseDto> criar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                                          @Valid @RequestBody ProfissionalDto profissionalDto) {
@@ -132,16 +134,19 @@ public class ProfissionalController {
     @GetMapping
         @Operation(summary = "Listar profissionais por estabelecimento")
             @PageableAsQueryParam
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Lista de profissionais retornada com sucesso",
-                        content = @Content(
-                                mediaType = "application/json",
-                                examples = @ExampleObject(
-                                        ref = "#/components/examples/PageResultExample"
-                                )
-                        )
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Lista de profissionais retornada com sucesso",
+                content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                        ref = "#/components/examples/PageResultExample"
+                    )
                 )
+            ),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
+        })
         public ResponseEntity<Page<ProfissionalResponseDto>> listar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                     @ParameterObject Pageable pageable) {
         Page<ProfissionalResponseDto> profissionais = PageUtils.toSpringPage(
@@ -164,13 +169,13 @@ public class ProfissionalController {
                         name = "profissional",
                         value = """
                                 {
-                                  "id": 5,
-                                  "nome": "Ana Souza",
-                                  "cpf": "12345678901",
-                                  "celular": "11987654321",
-                                  "email": "ana.souza@email.com",
-                                  "urlFoto": "https://cdn.exemplo.com/fotos/ana.jpg",
-                                  "descricao": "Especialista em coloracao e corte",
+                                  "id": 1,
+                                  "nome": "Carla Souza",
+                                  "cpf": "06854809096",
+                                  "celular": "11988887777",
+                                  "email": "carla@e1.com",
+                                  "urlFoto": "https://cdn.exemplo.com/fotos/carla.jpg",
+                                  "descricao": "Especialista coloração",
                                   "sexo": "FEMININO",
                                   "expedientes": [],
                                   "servicosProfissional": []
@@ -179,7 +184,8 @@ public class ProfissionalController {
                     )
                 )
             ),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<ProfissionalResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                        @Parameter(description = "ID do profissional", example = "5") @PathVariable Long id) {
@@ -199,23 +205,23 @@ public class ProfissionalController {
                                         name = "profissionalAtualizacao",
                                         value = """
                                                         {
-                                                            "nome": "Ana Souza Lima",
-                                                            "cpf": "12345678901",
-                                                            "celular": "11991234567",
-                                                            "email": "ana.lima@email.com",
-                                                            "urlFoto": "https://cdn.exemplo.com/fotos/ana-lima.jpg",
-                                                            "descricao": "Especialista em coloracao, corte e penteados",
+                                                            "nome": "Carla Souza Premium",
+                                                            "cpf": "06854809096",
+                                                            "celular": "11988887771",
+                                                            "email": "carla.premium@e1.com",
+                                                            "urlFoto": "https://cdn.exemplo.com/fotos/carla-premium.jpg",
+                                                            "descricao": "Especialista coloração e hidratação",
                                                             "sexo": "FEMININO",
                                                             "expedientes": [
                                                                 {
-                                                                    "diaSemana": "TUESDAY",
+                                                                    "diaSemana": "terca-feira",
                                                                     "inicioTurno": "10:00",
                                                                     "fimTurno": "19:00"
                                                                 }
                                                             ],
                                                             "servicosProfissional": [
                                                                 {
-                                                                    "servicoId": 20,
+                                                                    "servicoId": 1,
                                                                     "valor": 130.00
                                                                 }
                                                             ]
@@ -235,13 +241,13 @@ public class ProfissionalController {
                         name = "profissionalAtualizado",
                         value = """
                                 {
-                                  "id": 5,
-                                  "nome": "Ana Souza Lima",
-                                  "cpf": "12345678901",
-                                  "celular": "11991234567",
-                                  "email": "ana.lima@email.com",
-                                  "urlFoto": "https://cdn.exemplo.com/fotos/ana-lima.jpg",
-                                  "descricao": "Especialista em coloracao, corte e penteados",
+                                  "id": 1,
+                                  "nome": "Carla Souza Premium",
+                                  "cpf": "06854809096",
+                                  "celular": "11988887771",
+                                  "email": "carla.premium@e1.com",
+                                  "urlFoto": "https://cdn.exemplo.com/fotos/carla-premium.jpg",
+                                  "descricao": "Especialista coloração e hidratação",
                                   "sexo": "FEMININO",
                                   "expedientes": [],
                                   "servicosProfissional": []
@@ -251,7 +257,9 @@ public class ProfissionalController {
                 )
             ),
                         @ApiResponse(ref = "#/components/responses/BadRequestError"),
-                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+                        @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                        @ApiResponse(ref = "#/components/responses/DuplicateDataError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError"),
         })
         public ResponseEntity<ProfissionalResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                      @Parameter(description = "ID do profissional", example = "5") @PathVariable Long id,
@@ -268,7 +276,10 @@ public class ProfissionalController {
     @Operation(summary = "Remover profissional")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Profissional removido com sucesso"),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
+                @ApiResponse(ref = "#/components/responses/InternalServerError")
+
     })
     public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                         @Parameter(description = "ID do profissional", example = "5") @PathVariable Long id) {

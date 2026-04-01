@@ -6,11 +6,11 @@ import java.math.BigDecimal;
 @Schema(description = "Servico ofertado por um profissional")
 public class ServicoProfissionalResponseDto {
 
-    @Schema(description = "Identificador do servico", example = "20")
+    @Schema(description = "Identificador do servico", example = "1")
     private Long servicoId;
-    @Schema(description = "Nome do servico", example = "Corte feminino", minLength = 2, maxLength = 120)
+    @Schema(description = "Nome do servico", example = "CORTE", minLength = 2, maxLength = 120)
     private String servicoNome;
-    @Schema(description = "Valor cobrado pelo servico", example = "120.00")
+    @Schema(description = "Valor cobrado pelo servico", example = "80.00")
     private BigDecimal valor;
 
     public Long getServicoId() {

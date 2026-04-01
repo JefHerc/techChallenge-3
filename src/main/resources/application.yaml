@@ -16,8 +16,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          time_zone: America/Sao_Paulo
 
   jackson:
+    time-zone: America/Sao_Paulo
     deserialization:
       accept-single-value-as-array: true
 
@@ -43,7 +46,7 @@ notification:
 
 scheduler:
   lembrete:
-    delay: ${SCHEDULER_LEMBRETE_DELAY:300000}
+    delay: ${SCHEDULER_LEMBRETE_DELAY:60000}
 
 springdoc:
   group-configs:
@@ -52,15 +55,19 @@ springdoc:
       paths-to-match:
         - /clientes/**
     - group: estabelecimentos
-      display-name: Estabelecimentos e Catalogo
+      display-name: Estabelecimentos, servicos e profissionais
       paths-to-match:
         - /estabelecimentos/**
+      paths-to-exclude:
+        - /estabelecimentos/*/agendamentos/**
+        - /estabelecimentos/*/avaliacoes/**
     - group: agenda
       display-name: Agenda e Avaliacoes
       paths-to-match:
         - /agendamentos/**
         - /estabelecimentos/*/agendamentos/**
-        - /agendamentos/*/avaliacoes/**
+        - /estabelecimentos/*/agendamentos/avaliacoes/**
+        - /estabelecimentos/*/avaliacoes/**
   api-docs:
     path: /v3/api-docs
   swagger-ui:

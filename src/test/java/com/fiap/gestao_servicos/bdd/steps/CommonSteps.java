@@ -16,14 +16,14 @@ public class CommonSteps {
     @When("o cliente envia POST para {string} com o corpo:")
     public void postComCorpo(String urlTemplate, String body) throws Exception {
         ScenarioContext context = BddTestServer.context();
-        HttpResponse<String> response = BddTestServer.post(resolveUrl(urlTemplate, context), body);
+        HttpResponse<String> response = BddTestServer.post(resolveUrl(urlTemplate, context), resolveTemplate(body, context));
         context.setLastResponse(response);
     }
 
     @When("o cliente envia PUT para {string} com o corpo:")
     public void putComCorpo(String urlTemplate, String body) throws Exception {
         ScenarioContext context = BddTestServer.context();
-        HttpResponse<String> response = BddTestServer.put(resolveUrl(urlTemplate, context), body);
+        HttpResponse<String> response = BddTestServer.put(resolveUrl(urlTemplate, context), resolveTemplate(body, context));
         context.setLastResponse(response);
     }
 
@@ -73,7 +73,13 @@ public class CommonSteps {
     public void respostaDeveConterErroNoCampo(String fieldName) throws Exception {
         JsonNode json = responseJson();
         JsonNode errors = json.get("errors");
-        assertThat(errors).isNotNull();
+        if (errors == null || errors.isNull()) {
+            // Novo contrato de erro nao inclui detalhes por campo.
+            assertThat(json.path("code").asText()).isEqualTo("VALIDACAO_ENTRADA");
+            assertThat(json.path("message").asText().toLowerCase()).contains("valida");
+            return;
+        }
+
         assertThat(errors.isArray()).isTrue();
 
         boolean found = false;
@@ -135,12 +141,19 @@ public class CommonSteps {
     }
 
     private String resolveUrl(String urlTemplate, ScenarioContext context) {
-        String url = urlTemplate;
+        return resolveTemplate(urlTemplate, context);
+    }
+
+    private String resolveTemplate(String template, ScenarioContext context) {
+        String url = template;
         if (context.getLastCreatedId() != null) {
             url = url.replace("{lastId}", String.valueOf(context.getLastCreatedId()));
         }
         if (context.getLastAgendamentoId() != null) {
             url = url.replace("{agendamentoId}", String.valueOf(context.getLastAgendamentoId()));
+        }
+        if (context.getLastEstabelecimentoId() != null) {
+            url = url.replace("{estabelecimentoId}", String.valueOf(context.getLastEstabelecimentoId()));
         }
         return url;
     }

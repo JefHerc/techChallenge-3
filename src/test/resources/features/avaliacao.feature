@@ -5,9 +5,10 @@ Feature: Avaliações e Comentários
 
   Scenario: Criar avaliação após agendamento com dados válidos
     Given que existe um agendamento criado para o estabelecimento 1
-    When o cliente envia POST para "/agendamentos/{agendamentoId}/avaliacoes" com o corpo:
+    When o cliente envia POST para "/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes" com o corpo:
       """
       {
+        "agendamentoId": {agendamentoId},
         "notaEstabelecimento": 4.5,
         "notaProfissional": 5.0,
         "comentarioEstabelecimento": "Ambiente limpo e atendimento excelente",
@@ -21,9 +22,10 @@ Feature: Avaliações e Comentários
 
   Scenario: Tentar criar avaliação com nota de profissional maior que 5 retorna erro de validação
     Given que existe um agendamento criado para o estabelecimento 1
-    When o cliente envia POST para "/agendamentos/{agendamentoId}/avaliacoes" com o corpo:
+    When o cliente envia POST para "/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes" com o corpo:
       """
       {
+        "agendamentoId": {agendamentoId},
         "notaEstabelecimento": 4.5,
         "notaProfissional": 5.5,
         "comentarioEstabelecimento": "Bom atendimento",
@@ -36,15 +38,16 @@ Feature: Avaliações e Comentários
 
   Scenario: Buscar avaliação inexistente retorna not found
     Given que existe um agendamento criado para o estabelecimento 1
-    When o cliente envia GET para "/agendamentos/{agendamentoId}/avaliacoes/99999"
+    When o cliente envia GET para "/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes/99999"
     Then o status HTTP da resposta deve ser 404
     And o campo JSON "code" deve ser "NAO_ENCONTRADO"
 
   Scenario: Criar e em seguida atualizar avaliação
     Given que existe um agendamento criado para o estabelecimento 1
-    When o cliente envia POST para "/agendamentos/{agendamentoId}/avaliacoes" com o corpo:
+    When o cliente envia POST para "/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes" com o corpo:
       """
       {
+        "agendamentoId": {agendamentoId},
         "notaEstabelecimento": 3.0,
         "notaProfissional": 4.0,
         "comentarioEstabelecimento": "Bom",
@@ -53,7 +56,7 @@ Feature: Avaliações e Comentários
       """
     Then o status HTTP da resposta deve ser 201
     And salvo o id do recurso criado
-    When o cliente envia PUT para "/agendamentos/{agendamentoId}/avaliacoes/{lastId}" com o corpo:
+    When o cliente envia PUT para "/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes/{lastId}" com o corpo:
       """
       {
         "notaEstabelecimento": 5.0,
@@ -68,9 +71,10 @@ Feature: Avaliações e Comentários
 
   Scenario: Criar avaliação e em seguida excluí-la
     Given que existe um agendamento criado para o estabelecimento 1
-    When o cliente envia POST para "/agendamentos/{agendamentoId}/avaliacoes" com o corpo:
+    When o cliente envia POST para "/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes" com o corpo:
       """
       {
+        "agendamentoId": {agendamentoId},
         "notaEstabelecimento": 4.0,
         "notaProfissional": 4.0,
         "comentarioEstabelecimento": "Atendimento ok",
@@ -79,5 +83,5 @@ Feature: Avaliações e Comentários
       """
     Then o status HTTP da resposta deve ser 201
     And salvo o id do recurso criado
-    When o cliente envia DELETE para "/agendamentos/{agendamentoId}/avaliacoes/{lastId}"
+    When o cliente envia DELETE para "/estabelecimentos/{estabelecimentoId}/agendamentos/avaliacoes/{lastId}"
     Then o status HTTP da resposta deve ser 204

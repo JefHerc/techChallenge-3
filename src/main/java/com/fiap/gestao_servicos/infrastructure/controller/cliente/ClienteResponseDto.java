@@ -9,16 +9,16 @@ public class ClienteResponseDto {
     private Long id;
         @Schema(
             description = "Nome completo do cliente",
-            example = "Maria da Silva",
+            example = "João Silva",
             minLength = 2,
             maxLength = 120
         )
     private String nome;
-    @Schema(description = "CPF do cliente", example = "12345678901")
+    @Schema(description = "CPF do cliente", example = "34028317088")
     private String cpf;
-    @Schema(description = "Telefone celular", example = "11987654321")
+    @Schema(description = "Telefone celular", example = "11999998888")
     private String celular;
-    @Schema(description = "Email do cliente", example = "maria.silva@email.com")
+    @Schema(description = "Email do cliente", example = "joao@cliente.com")
     private String email;
         @Schema(
             description = "Sexo do cliente",

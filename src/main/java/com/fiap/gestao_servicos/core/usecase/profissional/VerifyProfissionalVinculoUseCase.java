@@ -6,6 +6,7 @@ import com.fiap.gestao_servicos.core.domain.HorarioFuncionamento;
 import com.fiap.gestao_servicos.core.domain.Profissional;
 import com.fiap.gestao_servicos.core.domain.Servico;
 import com.fiap.gestao_servicos.core.domain.ServicoProfissional;
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 
 import java.time.DayOfWeek;
 import java.util.Map;
@@ -40,21 +41,21 @@ public class VerifyProfissionalVinculoUseCase {
         for (ExpedienteProfissional expediente : profissional.getExpedientes()) {
             HorarioFuncionamento horario = horariosPorDia.get(expediente.getDiaSemana());
             if (horario == null || horario.isFechado()) {
-                throw new IllegalArgumentException(String.format(EXPEDIENTE_FORA_DO_HORARIO, expediente.getDiaSemana()));
+                throw new BusinessRuleException(String.format(EXPEDIENTE_FORA_DO_HORARIO, expediente.getDiaSemana()));
             }
             if (expediente.getInicioTurno().isBefore(horario.getAbertura())
                     || expediente.getFimTurno().isAfter(horario.getFechamento())) {
-                throw new IllegalArgumentException(String.format(EXPEDIENTE_FORA_DO_HORARIO, expediente.getDiaSemana()));
+                throw new BusinessRuleException(String.format(EXPEDIENTE_FORA_DO_HORARIO, expediente.getDiaSemana()));
             }
             if (expediente.getInicioIntervalo() != null
                     && (expediente.getInicioIntervalo().isBefore(horario.getAbertura())
                         || expediente.getInicioIntervalo().isAfter(horario.getFechamento()))) {
-                throw new IllegalArgumentException(String.format(INTERVALO_FORA_DO_HORARIO, expediente.getDiaSemana()));
+                throw new BusinessRuleException(String.format(INTERVALO_FORA_DO_HORARIO, expediente.getDiaSemana()));
             }
             if (expediente.getFimIntervalo() != null
                     && (expediente.getFimIntervalo().isBefore(horario.getAbertura())
                         || expediente.getFimIntervalo().isAfter(horario.getFechamento()))) {
-                throw new IllegalArgumentException(String.format(INTERVALO_FORA_DO_HORARIO, expediente.getDiaSemana()));
+                throw new BusinessRuleException(String.format(INTERVALO_FORA_DO_HORARIO, expediente.getDiaSemana()));
             }
         }
     }
@@ -75,7 +76,7 @@ public class VerifyProfissionalVinculoUseCase {
                     ? servicoProfissional.getServico().getId()
                     : null;
             if (servicoId == null || !servicosDoEstabelecimento.contains(servicoId)) {
-                throw new IllegalArgumentException(String.format(SERVICO_INVALIDO_PARA_ESTABELECIMENTO, servicoId));
+                throw new BusinessRuleException(String.format(SERVICO_INVALIDO_PARA_ESTABELECIMENTO, servicoId));
             }
         }
     }

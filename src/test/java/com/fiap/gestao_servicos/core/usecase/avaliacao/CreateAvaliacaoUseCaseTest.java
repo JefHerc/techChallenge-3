@@ -4,6 +4,7 @@ import com.fiap.gestao_servicos.core.domain.Agendamento;
 import com.fiap.gestao_servicos.core.domain.Avaliacao;
 import com.fiap.gestao_servicos.core.domain.Estabelecimento;
 import com.fiap.gestao_servicos.core.domain.Profissional;
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
 import com.fiap.gestao_servicos.core.repository.AvaliacaoRepository;
@@ -82,7 +83,7 @@ class CreateAvaliacaoUseCaseTest {
         when(agendamentoRepository.existsById(10L)).thenReturn(true);
         when(agendamentoRepository.isConcluido(10L)).thenReturn(false);
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> useCase.create(avaliacao));
+        BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> useCase.create(avaliacao));
 
         assertEquals("Agendamento deve estar com status CONCLUIDO para receber avaliação", ex.getMessage());
         verify(avaliacaoRepository, never()).create(avaliacao);

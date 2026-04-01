@@ -4,16 +4,16 @@ import java.util.List;
 
 public class Profissional {
 
-    private Long id;
-    private String nome;
-    private Cpf cpf;
-    private Celular celular;
-    private Email email;
-    private String urlFoto;
-    private String descricao;
-    private List<ExpedienteProfissional> expedientes;
-    private Sexo sexo;
-    private List<ServicoProfissional> servicosProfissional;
+    private final Long id;
+    private final String nome;
+    private final Cpf cpf;
+    private final Celular celular;
+    private final Email email;
+    private final String urlFoto;
+    private final String descricao;
+    private final List<ExpedienteProfissional> expedientes;
+    private final Sexo sexo;
+    private final List<ServicoProfissional> servicosProfissional;
 
     public Profissional(Long id,
                         String nome,

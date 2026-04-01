@@ -6,16 +6,16 @@ import jakarta.validation.constraints.NotBlank;
 public class ExpedienteProfissionalDto {
 
     @Schema(
-        description = "Dia da semana em padrao DayOfWeek",
-        example = "MONDAY",
+        description = "Dia da semana em portugues (pt-BR)",
+        example = "segunda-feira",
         allowableValues = {
-            "MONDAY",
-            "TUESDAY",
-            "WEDNESDAY",
-            "THURSDAY",
-            "FRIDAY",
-            "SATURDAY",
-            "SUNDAY"
+            "segunda-feira",
+            "terca-feira",
+            "quarta-feira",
+            "quinta-feira",
+            "sexta-feira",
+            "sabado",
+            "domingo"
         }
     )
     @NotBlank(message = "Dia da semana é obrigatório")

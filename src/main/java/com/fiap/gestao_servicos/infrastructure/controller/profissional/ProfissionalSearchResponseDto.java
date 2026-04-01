@@ -5,13 +5,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Dados resumidos de profissional para listagens e busca")
 public class ProfissionalSearchResponseDto {
 
-    @Schema(description = "Identificador do profissional", example = "5")
+    @Schema(description = "Identificador do profissional", example = "1")
     private Long id;
-    @Schema(description = "Nome do profissional", example = "Ana Souza", minLength = 2, maxLength = 120)
+    @Schema(description = "Nome do profissional", example = "Carla Souza", minLength = 2, maxLength = 120)
     private String nome;
-    @Schema(description = "URL da foto do profissional", example = "https://cdn.exemplo.com/fotos/ana.jpg")
+    @Schema(description = "URL da foto do profissional", example = "https://cdn.exemplo.com/fotos/carla.jpg")
     private String urlFoto;
-    @Schema(description = "Descricao resumida do profissional", example = "Especialista em coloracao e corte", maxLength = 500)
+    @Schema(description = "Descricao resumida do profissional", example = "Especialista coloração", maxLength = 500)
     private String descricao;
 
     public Long getId() {

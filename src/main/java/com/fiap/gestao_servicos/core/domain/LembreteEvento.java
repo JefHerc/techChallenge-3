@@ -4,94 +4,85 @@ import java.time.LocalDateTime;
 
 public class LembreteEvento {
 
-    private Long id;
-    private Long agendamentoId;
-    private LembreteTipo tipo;
-    private LembreteDestinatario destinatario;
-    private LembreteStatus status;
-    private String mensagem;
-    private String destinoEmail;
-    private LocalDateTime criadoEm;
-    private LocalDateTime enviadoEm;
-    private String erro;
+    private final Long id;
+    private final Long agendamentoId;
+    private final LembreteTipo tipo;
+    private final LembreteDestinatario destinatario;
+    private final LembreteStatus status;
+    private final String mensagem;
+    private final String destinoEmail;
+    private final LocalDateTime criadoEm;
+    private final LocalDateTime enviadoEm;
+    private final String erro;
+
+    public LembreteEvento(Long id, Long agendamentoId, LembreteTipo tipo,
+                          LembreteDestinatario destinatario, LembreteStatus status,
+                          String mensagem, String destinoEmail,
+                          LocalDateTime criadoEm, LocalDateTime enviadoEm, String erro) {
+        this.id = id;
+        this.agendamentoId = agendamentoId;
+        this.tipo = tipo;
+        this.destinatario = destinatario;
+        this.status = status;
+        this.mensagem = mensagem;
+        this.destinoEmail = destinoEmail;
+        this.criadoEm = criadoEm;
+        this.enviadoEm = enviadoEm;
+        this.erro = erro;
+    }
+
+    public LembreteEvento comId(Long novoId) {
+        return new LembreteEvento(novoId, agendamentoId, tipo, destinatario, status,
+                mensagem, destinoEmail, criadoEm, enviadoEm, erro);
+    }
+
+    public LembreteEvento marcarComoEnviado(LocalDateTime momentoEnvio) {
+        return new LembreteEvento(id, agendamentoId, tipo, destinatario, LembreteStatus.ENVIADO,
+                mensagem, destinoEmail, criadoEm, momentoEnvio, null);
+    }
+
+    public LembreteEvento marcarComoFalha(String erroMensagem) {
+        return new LembreteEvento(id, agendamentoId, tipo, destinatario, LembreteStatus.FALHA,
+                mensagem, destinoEmail, criadoEm, enviadoEm, erroMensagem);
+    }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Long getAgendamentoId() {
         return agendamentoId;
     }
 
-    public void setAgendamentoId(Long agendamentoId) {
-        this.agendamentoId = agendamentoId;
-    }
-
     public LembreteTipo getTipo() {
         return tipo;
-    }
-
-    public void setTipo(LembreteTipo tipo) {
-        this.tipo = tipo;
     }
 
     public LembreteDestinatario getDestinatario() {
         return destinatario;
     }
 
-    public void setDestinatario(LembreteDestinatario destinatario) {
-        this.destinatario = destinatario;
-    }
-
     public LembreteStatus getStatus() {
         return status;
-    }
-
-    public void setStatus(LembreteStatus status) {
-        this.status = status;
     }
 
     public String getMensagem() {
         return mensagem;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
-    }
-
     public String getDestinoEmail() {
         return destinoEmail;
-    }
-
-    public void setDestinoEmail(String destinoEmail) {
-        this.destinoEmail = destinoEmail;
     }
 
     public LocalDateTime getCriadoEm() {
         return criadoEm;
     }
 
-    public void setCriadoEm(LocalDateTime criadoEm) {
-        this.criadoEm = criadoEm;
-    }
-
     public LocalDateTime getEnviadoEm() {
         return enviadoEm;
     }
 
-    public void setEnviadoEm(LocalDateTime enviadoEm) {
-        this.enviadoEm = enviadoEm;
-    }
-
     public String getErro() {
         return erro;
-    }
-
-    public void setErro(String erro) {
-        this.erro = erro;
     }
 }

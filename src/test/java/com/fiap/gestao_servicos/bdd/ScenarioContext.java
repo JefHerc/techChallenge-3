@@ -7,6 +7,7 @@ public class ScenarioContext {
     private HttpResponse<String> lastResponse;
     private Long lastCreatedId;
     private Long lastAgendamentoId;
+    private Integer lastEstabelecimentoId;
 
     public HttpResponse<String> getLastResponse() {
         return lastResponse;
@@ -32,9 +33,18 @@ public class ScenarioContext {
         this.lastAgendamentoId = lastAgendamentoId;
     }
 
+    public Integer getLastEstabelecimentoId() {
+        return lastEstabelecimentoId;
+    }
+
+    public void setLastEstabelecimentoId(Integer lastEstabelecimentoId) {
+        this.lastEstabelecimentoId = lastEstabelecimentoId;
+    }
+
     public void reset() {
         lastResponse = null;
         lastCreatedId = null;
         lastAgendamentoId = null;
+        lastEstabelecimentoId = null;
     }
 }

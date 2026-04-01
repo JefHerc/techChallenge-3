@@ -2,6 +2,7 @@ package com.fiap.gestao_servicos.core.usecase.agendamento;
 
 import com.fiap.gestao_servicos.core.domain.Agendamento;
 import com.fiap.gestao_servicos.core.domain.AgendamentoStatus;
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
 import org.junit.jupiter.api.Test;
@@ -55,7 +56,7 @@ class DeleteAgendamentoUseCaseTest {
         when(repository.findById(3L)).thenReturn(Optional.of(agendamento));
         when(agendamento.getStatus()).thenReturn(AgendamentoStatus.CONCLUIDO);
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> UseCase.deleteById(3L));
+        BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> UseCase.deleteById(3L));
 
         assertEquals("Nao e permitido excluir agendamento com status CONCLUIDO.", ex.getMessage());
         verify(repository, never()).deleteById(3L);

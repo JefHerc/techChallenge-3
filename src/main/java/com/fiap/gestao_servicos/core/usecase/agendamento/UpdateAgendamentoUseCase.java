@@ -1,8 +1,13 @@
 package com.fiap.gestao_servicos.core.usecase.agendamento;
 
 import com.fiap.gestao_servicos.core.domain.Agendamento;
+import com.fiap.gestao_servicos.core.domain.AgendamentoStatus;
+import com.fiap.gestao_servicos.core.domain.LembreteDestinatario;
+import com.fiap.gestao_servicos.core.domain.LembreteEvento;
+import com.fiap.gestao_servicos.core.domain.LembreteStatus;
 import com.fiap.gestao_servicos.core.exception.ErrorMessages;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
+import com.fiap.gestao_servicos.core.notification.NotificationPort;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
 import com.fiap.gestao_servicos.core.repository.EstabelecimentoRepository;
 import com.fiap.gestao_servicos.core.repository.ServicoRepository;
@@ -18,25 +23,46 @@ public class UpdateAgendamentoUseCase {
     private final ProfissionalRepository profissionalRepository;
     private final ClienteRepository clienteRepository;
     private final AgendamentoValidator agendamentoValidator;
+        private final NotificationPort notificationPort;
 
     public UpdateAgendamentoUseCase(
             AgendamentoRepository agendamentoRepository,
             EstabelecimentoRepository estabelecimentoRepository,
             ServicoRepository servicoRepository,
             ProfissionalRepository profissionalRepository,
-            ClienteRepository clienteRepository) {
+                        ClienteRepository clienteRepository,
+                        NotificationPort notificationPort) {
+                this(
+                                agendamentoRepository,
+                                estabelecimentoRepository,
+                                servicoRepository,
+                                profissionalRepository,
+                                clienteRepository,
+                                                                notificationPort,
+                                new AgendamentoValidator(agendamentoRepository, profissionalRepository)
+                );
+        }
+
+        public UpdateAgendamentoUseCase(
+                        AgendamentoRepository agendamentoRepository,
+                        EstabelecimentoRepository estabelecimentoRepository,
+                        ServicoRepository servicoRepository,
+                        ProfissionalRepository profissionalRepository,
+                        ClienteRepository clienteRepository,
+                                                NotificationPort notificationPort,
+                        AgendamentoValidator agendamentoValidator) {
         this.agendamentoRepository = agendamentoRepository;
         this.estabelecimentoRepository = estabelecimentoRepository;
         this.servicoRepository = servicoRepository;
         this.profissionalRepository = profissionalRepository;
         this.clienteRepository = clienteRepository;
-        this.agendamentoValidator = new AgendamentoValidator(agendamentoRepository, profissionalRepository);
+                this.notificationPort = notificationPort;
+                this.agendamentoValidator = agendamentoValidator;
     }
 
     public Agendamento update(Long id, AgendamentoInput input) {
-        if (!agendamentoRepository.existsById(id)) {
-            throw new ResourceNotFoundException(String.format(ErrorMessages.NOT_FOUND_BY_ID, "Agendamento", id));
-        }
+                Agendamento agendamentoAtual = agendamentoRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(String.format(ErrorMessages.NOT_FOUND_BY_ID, "Agendamento", id)));
 
         var profissional = profissionalRepository.findByIdAndEstabelecimentoId(
                         input.getProfissionalId(),
@@ -83,8 +109,49 @@ public class UpdateAgendamentoUseCase {
             throw new ResourceNotFoundException(String.format(ErrorMessages.NOT_FOUND_BY_ID, "Agendamento", id));
         }
 
+                if (deveNotificarCancelamento(agendamentoAtual, atualizado)) {
+                        notificarCancelamento(atualizado);
+                }
+
         return atualizado;
     }
+
+        private boolean deveNotificarCancelamento(Agendamento agendamentoAtual, Agendamento atualizado) {
+                return agendamentoAtual.getStatus() != AgendamentoStatus.CANCELADO
+                                && atualizado.getStatus() == AgendamentoStatus.CANCELADO;
+        }
+
+        private void notificarCancelamento(Agendamento agendamento) {
+                notificationPort.send(criarEventoCancelamento(agendamento, LembreteDestinatario.CLIENTE));
+                notificationPort.send(criarEventoCancelamento(agendamento, LembreteDestinatario.PROFISSIONAL));
+        }
+
+        private LembreteEvento criarEventoCancelamento(Agendamento agendamento, LembreteDestinatario destinatario) {
+		return new LembreteEvento(
+				null,
+				agendamento.getId(),
+				null,
+				destinatario,
+				LembreteStatus.PENDENTE,
+				"Agendamento cancelado",
+				obterDestinoEmail(agendamento, destinatario),
+				null,
+				null,
+				null
+		);
+	}
+
+        private String obterDestinoEmail(Agendamento agendamento, LembreteDestinatario destinatario) {
+                if (destinatario == LembreteDestinatario.CLIENTE) {
+                        return agendamento.getCliente() != null && agendamento.getCliente().getEmail() != null
+                                        ? agendamento.getCliente().getEmail().getValue()
+                                        : null;
+                }
+
+                return agendamento.getProfissional() != null && agendamento.getProfissional().getEmail() != null
+                                ? agendamento.getProfissional().getEmail().getValue()
+                                : null;
+        }
 }
 
 

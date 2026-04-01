@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -58,6 +59,9 @@ class AgendamentoControllerIntegrationTest extends WebLayerIntegrationTestBase {
     private FindAgendamentoByIdUseCase findAgendamentoByIdUseCase;
 
     @Autowired
+    private FindAllAgendamentosUseCase findAllAgendamentosUseCase;
+
+    @Autowired
     private UpdateAgendamentoUseCase updateAgendamentoUseCase;
 
     @Autowired
@@ -71,8 +75,7 @@ class AgendamentoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                   "profissionalId": 5,
                   "servicoId": 20,
                   "clienteId": 12,
-                  "dataHoraInicio": "2026-04-20T14:30:00",
-                  "status": "AGENDADO"
+                                    "dataHoraInicio": "2026-04-20T14:30:00"
                 }
                 """;
 
@@ -114,15 +117,15 @@ class AgendamentoControllerIntegrationTest extends WebLayerIntegrationTestBase {
     }
 
     @Test
-    @DisplayName("POST /estabelecimentos/{id}/agendamentos deve retornar 400 quando payload for invalido")
-    void deveRetornarBadRequestQuandoPayloadForInvalido() throws Exception {
+        @DisplayName("POST /estabelecimentos/{id}/agendamentos deve retornar 400 quando status for informado")
+        void deveRetornarBadRequestQuandoStatusForInformadoNoPost() throws Exception {
         String request = """
                 {
                   "profissionalId": 5,
                   "servicoId": 20,
                   "clienteId": 12,
                   "dataHoraInicio": "2026-04-20T14:30:00",
-                  "status": ""
+                                    "status": "AGENDADO"
                 }
                 """;
 
@@ -133,9 +136,7 @@ class AgendamentoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
                 .andExpect(jsonPath("$.message").value("Erro de validação na requisição."))
-                .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos"))
-                .andExpect(jsonPath("$.errors[0].field").value("status"))
-                .andExpect(jsonPath("$.errors[0].detail").value("Status é obrigatório"));
+            .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos"));
     }
 
             @Test
@@ -186,9 +187,7 @@ class AgendamentoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
-                .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos/10"))
-                .andExpect(jsonPath("$.errors[0].field").value("status"))
-                .andExpect(jsonPath("$.errors[0].detail").value("Status é obrigatório"));
+                .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos/10"));
             }
 
             @Test
@@ -216,6 +215,28 @@ class AgendamentoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                 .andExpect(jsonPath("$.message").value("Agendamento não encontrado"))
                 .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos/999"));
             }
+
+    @Test
+    @DisplayName("GET /estabelecimentos/{id}/agendamentos/periodo deve retornar agendamentos do intervalo informado")
+    void deveListarAgendamentosPorPeriodo() throws Exception {
+        Agendamento primeiro = novoAgendamento(10L, LocalDateTime.parse("2026-04-20T14:30:00"), AgendamentoStatus.AGENDADO);
+        Agendamento segundo = novoAgendamento(11L, LocalDateTime.parse("2026-04-21T09:00:00"), AgendamentoStatus.CONCLUIDO);
+
+        when(findAllAgendamentosUseCase.findByEstabelecimentoIdAndPeriodo(
+                eq(1L),
+                eq(LocalDate.of(2026, 4, 20)),
+                eq(LocalDate.of(2026, 4, 21))))
+                .thenReturn(List.of(primeiro, segundo));
+
+        mockMvc.perform(get("/estabelecimentos/{estabelecimentoId}/agendamentos/periodo", 1L)
+                        .param("dataInicial", "2026-04-20")
+                        .param("dataFinal", "2026-04-21"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(10))
+                .andExpect(jsonPath("$[0].status").value("AGENDADO"))
+                .andExpect(jsonPath("$[1].id").value(11))
+                .andExpect(jsonPath("$[1].status").value("CONCLUIDO"));
+    }
 
     @Test
     @DisplayName("GET /estabelecimentos/{id}/agendamentos/{agendamentoId} deve retornar erro padronizado quando nao existe")

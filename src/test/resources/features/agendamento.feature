@@ -10,8 +10,7 @@ Feature: Agendamento de Serviços
         "profissionalId": 1,
         "servicoId": 1,
         "clienteId": 1,
-        "dataHoraInicio": "2030-07-01T09:00:00",
-        "status": "AGENDADO"
+        "dataHoraInicio": "2030-07-01T09:00:00"
       }
       """
     Then o status HTTP da resposta deve ser 201
@@ -19,7 +18,7 @@ Feature: Agendamento de Serviços
     And o campo JSON "profissionalId" deve ser "1"
     And o campo JSON "clienteId" deve ser "1"
 
-  Scenario: Tentar criar agendamento sem informar status retorna erro de validação
+  Scenario: Tentar criar agendamento informando status retorna erro de validação
     When o cliente envia POST para "/estabelecimentos/1/agendamentos" com o corpo:
       """
       {
@@ -27,7 +26,7 @@ Feature: Agendamento de Serviços
         "servicoId": 1,
         "clienteId": 1,
         "dataHoraInicio": "2030-07-02T10:00:00",
-        "status": ""
+        "status": "AGENDADO"
       }
       """
     Then o status HTTP da resposta deve ser 400
@@ -46,8 +45,7 @@ Feature: Agendamento de Serviços
         "profissionalId": 1,
         "servicoId": 1,
         "clienteId": 1,
-        "dataHoraInicio": "2030-08-15T14:00:00",
-        "status": "AGENDADO"
+        "dataHoraInicio": "2030-08-15T14:00:00"
       }
       """
     Then o status HTTP da resposta deve ser 201
@@ -72,8 +70,7 @@ Feature: Agendamento de Serviços
         "profissionalId": 1,
         "servicoId": 1,
         "clienteId": 1,
-        "dataHoraInicio": "2030-09-20T10:00:00",
-        "status": "AGENDADO"
+        "dataHoraInicio": "2030-09-20T10:00:00"
       }
       """
     Then o status HTTP da resposta deve ser 201
@@ -84,3 +81,19 @@ Feature: Agendamento de Serviços
   Scenario: Listar agendamentos de um estabelecimento retorna paginação
     When o cliente envia GET para "/estabelecimentos/1/agendamentos?page=0&size=20"
     Then o status HTTP da resposta deve ser 200
+
+  Scenario: Listar agendamentos de um estabelecimento por período informado
+    When o cliente envia POST para "/estabelecimentos/1/agendamentos" com o corpo:
+      """
+      {
+        "profissionalId": 1,
+        "servicoId": 1,
+        "clienteId": 1,
+        "dataHoraInicio": "2031-10-15T13:00:00"
+      }
+      """
+    Then o status HTTP da resposta deve ser 201
+    When o cliente envia GET para "/estabelecimentos/1/agendamentos/periodo?dataInicial=2031-10-01&dataFinal=2031-10-31"
+    Then o status HTTP da resposta deve ser 200
+    And o campo JSON "[0].estabelecimentoId" deve ser "1"
+    And o campo JSON "[0].status" deve ser "AGENDADO"

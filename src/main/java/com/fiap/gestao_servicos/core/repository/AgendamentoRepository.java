@@ -16,6 +16,9 @@ public interface AgendamentoRepository {
     void deleteById(Long id);
     PageResult<Agendamento> findAll(PageQuery pageQuery);
     PageResult<Agendamento> findByEstabelecimentoId(Long estabelecimentoId, PageQuery pageQuery);
+    List<Agendamento> findByEstabelecimentoIdAndDataHoraInicioBetween(Long estabelecimentoId,
+                                                                      LocalDateTime inicio,
+                                                                      LocalDateTime fim);
     List<Agendamento> findByStatusAndDataHoraInicioBetween(AgendamentoStatus status,
                                                            LocalDateTime inicio,
                                                            LocalDateTime fim);

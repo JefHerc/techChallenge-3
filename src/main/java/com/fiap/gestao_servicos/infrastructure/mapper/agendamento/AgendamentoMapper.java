@@ -14,6 +14,7 @@ import com.fiap.gestao_servicos.core.domain.Profissional;
 import com.fiap.gestao_servicos.core.domain.Servico;
 import com.fiap.gestao_servicos.core.domain.ServicoEnum;
 import com.fiap.gestao_servicos.core.usecase.agendamento.input.AgendamentoInput;
+import com.fiap.gestao_servicos.infrastructure.controller.agendamento.AgendamentoCreateDto;
 import com.fiap.gestao_servicos.infrastructure.controller.agendamento.AgendamentoDto;
 import com.fiap.gestao_servicos.infrastructure.controller.agendamento.AgendamentoResponseDto;
 import com.fiap.gestao_servicos.infrastructure.persistence.EnderecoEntity;
@@ -42,7 +43,22 @@ public final class AgendamentoMapper {
                 dto.getEstabelecimentoId(),
                 dto.getClienteId(),
                 dto.getDataHoraInicio(),
-                parseStatus(dto.getStatus())
+                AgendamentoStatus.parse(dto.getStatus())
+        );
+    }
+
+    public static AgendamentoInput toCreateDomain(AgendamentoCreateDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        return new AgendamentoInput(
+                dto.getProfissionalId(),
+                dto.getServicoId(),
+                dto.getEstabelecimentoId(),
+                dto.getClienteId(),
+                dto.getDataHoraInicio(),
+                AgendamentoStatus.AGENDADO
         );
     }
 
@@ -81,18 +97,6 @@ public final class AgendamentoMapper {
                 entity.getDataHoraInicio(),
                 entity.getStatus()
         );
-    }
-
-    private static AgendamentoStatus parseStatus(String status) {
-        if (status == null || status.trim().isEmpty()) {
-            throw new IllegalArgumentException("Status não pode ser nulo ou vazio");
-        }
-
-        try {
-            return AgendamentoStatus.valueOf(status.trim().toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("Status inválido. Valores permitidos: AGENDADO, CANCELADO, CONCLUIDO");
-        }
     }
 
     private static Profissional toProfissional(ProfissionalEntity entity) {

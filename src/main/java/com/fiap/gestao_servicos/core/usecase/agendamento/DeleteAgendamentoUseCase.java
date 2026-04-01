@@ -2,6 +2,7 @@ package com.fiap.gestao_servicos.core.usecase.agendamento;
 
 import com.fiap.gestao_servicos.core.domain.Agendamento;
 import com.fiap.gestao_servicos.core.domain.AgendamentoStatus;
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 import com.fiap.gestao_servicos.core.exception.ErrorMessages;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
@@ -22,7 +23,7 @@ public class DeleteAgendamentoUseCase {
                         id)));
 
         if (AgendamentoStatus.CONCLUIDO.equals(agendamento.getStatus())) {
-            throw new IllegalArgumentException("Nao e permitido excluir agendamento com status CONCLUIDO.");
+            throw new BusinessRuleException("Nao e permitido excluir agendamento com status CONCLUIDO.");
         }
 
         agendamentoRepository.deleteById(id);

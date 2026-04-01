@@ -86,6 +86,19 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
     }
 
     @Override
+    public List<Agendamento> findByEstabelecimentoIdAndDataHoraInicioBetween(Long estabelecimentoId,
+                                                                              LocalDateTime inicio,
+                                                                              LocalDateTime fim) {
+        return agendamentoRepositoryJpa.findByEstabelecimentoIdAndDataHoraInicioBetweenOrderByDataHoraInicioAsc(
+                        estabelecimentoId,
+                        inicio,
+                        fim)
+                .stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
+    @Override
     public List<Agendamento> findByStatusAndDataHoraInicioBetween(AgendamentoStatus status,
                                                                    LocalDateTime inicio,
                                                                    LocalDateTime fim) {
@@ -154,18 +167,8 @@ public class AgendamentoRepositoryImpl implements AgendamentoRepository {
         entity.setEstabelecimento(estabelecimento);
         entity.setCliente(cliente);
         entity.setDataHoraInicio(agendamento.getDataHoraInicio());
-        entity.setDataHoraFim(calcularDataHoraFim(agendamento.getDataHoraInicio(), servico));
+        entity.setDataHoraFim(agendamento.getDataHoraFim());
         entity.setStatus(agendamento.getStatus());
-    }
-
-    private LocalDateTime calcularDataHoraFim(LocalDateTime dataHoraInicio, ServicoEntity servico) {
-        if (dataHoraInicio == null) {
-            throw new IllegalArgumentException("Data/Hora de início não pode ser nula");
-        }
-        if (servico == null || servico.getDuracaoMedia() == null) {
-            throw new IllegalArgumentException("Serviço informado não possui duração média válida");
-        }
-        return dataHoraInicio.plusMinutes(servico.getDuracaoMedia().toMinutes());
     }
 
     private Agendamento toDomain(AgendamentoEntity entity) {

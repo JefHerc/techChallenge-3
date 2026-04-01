@@ -1,4 +1,4 @@
-# Gestao de Servicos
+# Gestão de Serviços
 
 ![Java 17](https://img.shields.io/badge/Java-17-ED8B00?logo=openjdk&logoColor=white)
 ![Spring Boot 4.0.3](https://img.shields.io/badge/Spring%20Boot-4.0.3-6DB33F?logo=springboot&logoColor=white)
@@ -29,11 +29,9 @@ Backend para agendamento e gerenciamento de serviços de beleza e bem-estar, des
 | OpenAPI JSON | `http://localhost:8080/v3/api-docs` |
 | Mailpit | `http://localhost:8025` |
 | Guia de performance | `docs/performance-tests.md` |
-| Execução local | `Como Rodar o Projeto` |
-| Testes | `Como Rodar os Testes` |
+| Execução local | [Como Rodar o Projeto](#como-rodar-o-projeto) |
+| Testes | [Como Rodar os Testes](#como-rodar-os-testes) |
 | CI | `.github/workflows/ci.yml` |
-
-Para evoluir a apresentação do repositório, vale adicionar badge de licença e, se fizer sentido para o projeto, publicar a cobertura em um serviço externo para expor esse indicador no README.
 
 ## Tecnologias Utilizadas
 
@@ -41,15 +39,15 @@ Para evoluir a apresentação do repositório, vale adicionar badge de licença 
 - Spring Boot 4.0.3
 - Spring Web MVC
 - Spring Data JPA
-- Spring GraphQL
 - Spring Validation
 - Spring Mail
-- Springdoc OpenAPI Swagger UI
+- Springdoc OpenAPI / Swagger UI
 - MySQL 8.4
-- H2 Database
+- H2 Database (testes)
 - Maven Wrapper
 - Docker e Docker Compose
 - JUnit 5
+- Cucumber 7.22 (BDD)
 - ArchUnit
 - Gatling
 - Checkstyle, PMD e SpotBugs
@@ -59,9 +57,10 @@ Para evoluir a apresentação do repositório, vale adicionar badge de licença 
 - Estrutura em camadas inspirada em Clean Architecture, com separação clara entre domínio, casos de uso e infraestrutura.
 - Documentação da API com Swagger/OpenAPI para facilitar exploração e validação dos contratos.
 - Tratamento padronizado de erros e validações de entrada para manter consistência nas respostas HTTP.
-- Testes em diferentes níveis: domínio, casos de uso, arquitetura, camada web e carga.
+- Testes em diferentes níveis: domínio, casos de uso, BDD, arquitetura, camada web e carga.
 - Ambiente local pronto com Docker Compose, incluindo MySQL e Mailpit.
 - Análise estática com Checkstyle, PMD e SpotBugs.
+- Pipeline de CI automatizada com publicação de relatórios de cobertura e BDD.
 
 ## Arquitetura e Estrutura
 
@@ -71,7 +70,8 @@ O projeto adota uma organização inspirada em Clean Architecture para separar r
 
 - `core.domain`: entidades, value objects e regras centrais do negócio.
 - `core.usecase`: casos de uso da aplicação e validações associadas.
-- `core.repository` e `core.notification`: contratos usados pelo núcleo da aplicação.
+- `core.repository` e `core.notification`: contratos (ports) usados pelo núcleo da aplicação.
+- `core.exception`: exceções de domínio e regras de negócio.
 - `infrastructure.controller`: adaptadores de entrada HTTP e tratamento global de erros.
 - `infrastructure.persistence`: implementações de persistência com JPA.
 - `infrastructure.mapper`: conversão entre DTOs, entidades de persistência e domínio.
@@ -85,6 +85,9 @@ src/
     java/com/fiap/gestao_servicos/
       core/
         domain/
+        exception/
+        notification/
+        pagination/
         repository/
         usecase/
       infrastructure/
@@ -99,10 +102,13 @@ src/
   test/
     java/com/fiap/gestao_servicos/
       architecture/
+      bdd/
       core/
       infrastructure/
-      integration/web/
+      integration/
       performance/
+    resources/
+      features/
 ```
 
 ## Pré-requisitos
@@ -124,7 +130,7 @@ cd gestao-servicos
 
 ### 2. Configurar variáveis de ambiente
 
-Não existe arquivo `.env.example` neste repositório. Para execução local, a aplicação já possui valores padrão em `application.yaml`, mas você pode sobrescrever as configurações via variáveis de ambiente quando necessário.
+Para execução local, a aplicação já possui valores padrão em `application.yaml`, mas você pode sobrescrever as configurações via variáveis de ambiente quando necessário.
 
 Principais variáveis:
 
@@ -179,24 +185,71 @@ Depois de iniciar a aplicação, a documentação interativa da API REST fica di
 
 ### Principais endpoints REST
 
-- `GET /clientes`: lista clientes.
-- `POST /clientes`: cria um cliente.
-- `GET /clientes/{id}`: busca um cliente por id.
-- `GET /estabelecimentos`: lista estabelecimentos.
-- `GET /estabelecimentos/busca`: busca estabelecimentos com filtros.
-- `POST /estabelecimentos`: cria um estabelecimento.
-- `GET /estabelecimentos/{estabelecimentoId}/servicos`: lista serviços de um estabelecimento.
-- `POST /estabelecimentos/{estabelecimentoId}/servicos`: cria serviço para um estabelecimento.
-- `GET /estabelecimentos/{estabelecimentoId}/profissionais`: lista profissionais de um estabelecimento.
-- `POST /estabelecimentos/{estabelecimentoId}/profissionais`: cria profissional para um estabelecimento.
-- `GET /estabelecimentos/{estabelecimentoId}/agendamentos`: lista agendamentos de um estabelecimento.
-- `POST /estabelecimentos/{estabelecimentoId}/agendamentos`: cria agendamento.
-- `GET /agendamentos/{agendamentoId}/avaliacoes`: lista avaliações de um agendamento.
-- `POST /agendamentos/{agendamentoId}/avaliacoes`: cria avaliação.
+#### Clientes (`/clientes`)
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| POST | `/clientes` | Cria um cliente |
+| GET | `/clientes` | Lista clientes (paginado) |
+| GET | `/clientes/{id}` | Busca cliente por id |
+| PUT | `/clientes/{id}` | Atualiza um cliente |
+| DELETE | `/clientes/{id}` | Remove um cliente |
+
+#### Estabelecimentos (`/estabelecimentos`)
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| POST | `/estabelecimentos` | Cria um estabelecimento |
+| GET | `/estabelecimentos` | Lista estabelecimentos (paginado) |
+| GET | `/estabelecimentos/{id}` | Busca estabelecimento por id |
+| PUT | `/estabelecimentos/{id}` | Atualiza um estabelecimento |
+| DELETE | `/estabelecimentos/{id}` | Remove um estabelecimento |
+| GET | `/estabelecimentos/busca` | Busca com filtros |
+
+#### Serviços (`/estabelecimentos/{estabelecimentoId}/servicos`)
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| POST | `/estabelecimentos/{id}/servicos` | Cria serviços para um estabelecimento |
+| GET | `/estabelecimentos/{id}/servicos` | Lista serviços (paginado) |
+| GET | `/estabelecimentos/{id}/servicos/{sid}` | Busca serviço por id |
+| PUT | `/estabelecimentos/{id}/servicos/{sid}` | Atualiza um serviço |
+| DELETE | `/estabelecimentos/{id}/servicos/{sid}` | Remove um serviço |
+
+#### Profissionais (`/estabelecimentos/{estabelecimentoId}/profissionais`)
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| POST | `/estabelecimentos/{id}/profissionais` | Cria profissional para um estabelecimento |
+| GET | `/estabelecimentos/{id}/profissionais` | Lista profissionais (paginado) |
+| GET | `/estabelecimentos/{id}/profissionais/{pid}` | Busca profissional por id |
+| PUT | `/estabelecimentos/{id}/profissionais/{pid}` | Atualiza um profissional |
+| DELETE | `/estabelecimentos/{id}/profissionais/{pid}` | Remove um profissional |
+
+#### Agendamentos (`/estabelecimentos/{estabelecimentoId}/agendamentos`)
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| POST | `/estabelecimentos/{id}/agendamentos` | Cria um agendamento |
+| GET | `/estabelecimentos/{id}/agendamentos` | Lista agendamentos (paginado) |
+| GET | `/estabelecimentos/{id}/agendamentos/periodo` | Lista agendamentos por período |
+| GET | `/estabelecimentos/{id}/agendamentos/{aid}` | Busca agendamento por id |
+| PUT | `/estabelecimentos/{id}/agendamentos/{aid}` | Atualiza um agendamento |
+| DELETE | `/estabelecimentos/{id}/agendamentos/{aid}` | Remove um agendamento |
+
+#### Avaliações (`/estabelecimentos/{estabelecimentoId}/...`)
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| POST | `/estabelecimentos/{id}/agendamentos/{aid}/avaliacoes` | Cria avaliação para um agendamento |
+| GET | `/estabelecimentos/{id}/avaliacoes` | Lista avaliações do estabelecimento (paginado) |
+| GET | `/estabelecimentos/{id}/agendamentos/{aid}/avaliacoes/{vid}` | Busca avaliação por id |
+| PUT | `/estabelecimentos/{id}/agendamentos/{aid}/avaliacoes/{vid}` | Atualiza uma avaliação |
+| DELETE | `/estabelecimentos/{id}/agendamentos/avaliacoes/{vid}` | Remove uma avaliação |
 
 ## Como Rodar os Testes
 
-O projeto possui testes de domínio, casos de uso, camada web, integração, arquitetura e performance.
+O projeto possui testes de domínio, casos de uso, BDD, camada web, integração, arquitetura e performance.
 
 ### Suite principal
 
@@ -214,10 +267,13 @@ No Windows PowerShell:
 
 ### Tipos de teste
 
-- Testes unitários de domínio e casos de uso em `src/test/java/com/fiap/gestao_servicos/core`.
-- Testes de arquitetura com ArchUnit em `src/test/java/com/fiap/gestao_servicos/architecture`.
-- Testes da camada web em `src/test/java/com/fiap/gestao_servicos/integration/web`.
-- Testes de performance com Gatling em `src/test/java/com/fiap/gestao_servicos/performance`.
+| Tipo | Localização | Ferramenta |
+| --- | --- | --- |
+| Unitários (domínio e casos de uso) | `src/test/java/.../core/` | JUnit 5, Mockito |
+| BDD | `src/test/java/.../bdd/` e `src/test/resources/features/` | Cucumber |
+| Arquitetura | `src/test/java/.../architecture/` | ArchUnit |
+| Camada web | `src/test/java/.../integration/` | Spring MockMvc |
+| Performance | `src/test/java/.../performance/` | Gatling |
 
 ### Cobertura de testes
 
@@ -237,10 +293,11 @@ No Windows PowerShell:
 
 Relatórios gerados localmente:
 
-- HTML: `target/site/jacoco/index.html`
-- XML: `target/site/jacoco/jacoco.xml`
+- **JaCoCo HTML**: `target/site/jacoco/index.html`
+- **JaCoCo XML**: `target/site/jacoco/jacoco.xml`
+- **Cucumber HTML**: `target/cucumber-reports/cucumber.html`
 
-Na pipeline de CI, o relatório também é publicado como artifact após cada execução.
+Na pipeline de CI, os relatórios de cobertura e BDD também são publicados como artifacts.
 
 ### Executar testes de performance
 
@@ -274,7 +331,7 @@ No Linux/macOS:
 No Windows PowerShell:
 
 ```powershell
-.\mvnw.cmd spring-boot:run -Dspring-boot.run.profiles=loadtest
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--spring.profiles.active=loadtest"
 ```
 
 Esse perfil usa H2 em memória e dados iniciais para execução local de carga.
@@ -293,6 +350,7 @@ No Windows PowerShell:
 
 ```powershell
 .\mvnw.cmd gatling:test -Dgatling.simulationClass=com.fiap.gestao_servicos.performance.AgendamentoLoadSimulation
+.\mvnw.cmd gatling:test "-Dgatling.simulationClass=com.fiap.gestao_servicos.performance.AgendamentoLoadSimulation" "-DbaseUrl=http://localhost:8080"
 ```
 
 ### 3. Ajustar volume e SLA (opcional)

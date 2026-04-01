@@ -11,22 +11,29 @@ public final class LembreteEventoMapper {
     }
 
     public static LembreteEvento toDomain(LembreteEventoEntity entity) {
-        String destinoEmail = entity.getDestinatario() == LembreteDestinatario.CLIENTE
-                ? entity.getAgendamento().getCliente().getEmail()
-                : entity.getAgendamento().getProfissional().getEmail();
+        String destinoEmail = null;
+        if (entity.getAgendamento() != null) {
+            if (entity.getDestinatario() == LembreteDestinatario.CLIENTE
+                    && entity.getAgendamento().getCliente() != null) {
+                destinoEmail = entity.getAgendamento().getCliente().getEmail();
+            } else if (entity.getDestinatario() == LembreteDestinatario.PROFISSIONAL
+                    && entity.getAgendamento().getProfissional() != null) {
+                destinoEmail = entity.getAgendamento().getProfissional().getEmail();
+            }
+        }
 
-        LembreteEvento domain = new LembreteEvento();
-        domain.setId(entity.getId());
-        domain.setAgendamentoId(entity.getAgendamento().getId());
-        domain.setTipo(entity.getTipo());
-        domain.setDestinatario(entity.getDestinatario());
-        domain.setStatus(entity.getStatus());
-        domain.setMensagem(entity.getMensagem());
-        domain.setDestinoEmail(destinoEmail);
-        domain.setCriadoEm(entity.getCriadoEm());
-        domain.setEnviadoEm(entity.getEnviadoEm());
-        domain.setErro(entity.getErro());
-        return domain;
+        return new LembreteEvento(
+                entity.getId(),
+                entity.getAgendamento() != null ? entity.getAgendamento().getId() : null,
+                entity.getTipo(),
+                entity.getDestinatario(),
+                entity.getStatus(),
+                entity.getMensagem(),
+                destinoEmail,
+                entity.getCriadoEm(),
+                entity.getEnviadoEm(),
+                entity.getErro()
+        );
     }
 
     public static LembreteEventoEntity toEntity(LembreteEvento domain) {

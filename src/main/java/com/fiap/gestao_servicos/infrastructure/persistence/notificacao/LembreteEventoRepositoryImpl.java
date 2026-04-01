@@ -8,6 +8,7 @@ import com.fiap.gestao_servicos.core.repository.LembreteEventoRepository;
 import com.fiap.gestao_servicos.infrastructure.mapper.notificacao.LembreteEventoMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.EnumSet;
 import java.util.List;
 
 @Component
@@ -23,13 +24,13 @@ public class LembreteEventoRepositoryImpl implements LembreteEventoRepository {
     public LembreteEvento save(LembreteEvento evento) {
         LembreteEventoEntity entity = LembreteEventoMapper.toEntity(evento);
         LembreteEventoEntity saved = lembreteEventoRepositoryJpa.save(entity);
-        return LembreteEventoMapper.toDomain(saved);
+        return evento.comId(saved.getId());
     }
 
     @Override
     public List<LembreteEvento> findTop200Pendentes() {
         return lembreteEventoRepositoryJpa
-                .findTop200ByStatusOrderByCriadoEmAsc(LembreteStatus.PENDENTE)
+                .findTop200ByStatusInOrderByCriadoEmAsc(EnumSet.of(LembreteStatus.PENDENTE, LembreteStatus.FALHA))
                 .stream()
                 .map(LembreteEventoMapper::toDomain)
                 .toList();

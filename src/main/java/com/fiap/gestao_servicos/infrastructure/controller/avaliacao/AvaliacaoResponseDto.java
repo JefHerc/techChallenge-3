@@ -5,17 +5,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Dados de avaliacao retornados pela API")
 public class AvaliacaoResponseDto {
 
-    @Schema(description = "Identificador da avaliacao", example = "30")
+    @Schema(description = "Identificador da avaliacao", example = "1")
     private Long id;
-    @Schema(description = "ID do agendamento", example = "10")
+    @Schema(description = "ID do agendamento", example = "1")
     private Long agendamentoId;
-    @Schema(description = "ID do profissional", example = "5")
+    @Schema(description = "ID do profissional", example = "1")
     private Long profissionalId;
-    @Schema(description = "Nome do profissional", example = "Ana Souza", minLength = 2, maxLength = 120)
+    @Schema(description = "Nome do profissional", example = "Carla Souza", minLength = 2, maxLength = 120)
     private String profissionalNome;
     @Schema(description = "ID do estabelecimento", example = "1")
     private Long estabelecimentoId;
-    @Schema(description = "Nome do estabelecimento", example = "Studio Beleza Centro", minLength = 2, maxLength = 120)
+    @Schema(description = "Nome do estabelecimento", example = "Studio Bela Vida", minLength = 2, maxLength = 120)
     private String estabelecimentoNome;
         @Schema(
             description = "Status do agendamento",

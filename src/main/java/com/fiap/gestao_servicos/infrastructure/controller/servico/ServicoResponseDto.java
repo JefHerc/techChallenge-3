@@ -6,11 +6,35 @@ import java.time.Duration;
 @Schema(description = "Dados de servico retornados pela API")
 public class ServicoResponseDto {
 
-    @Schema(description = "Identificador do servico", example = "20")
+    @Schema(description = "Identificador do servico", example = "1")
     private Long id;
-    @Schema(description = "Nome do servico", example = "Corte feminino", minLength = 2, maxLength = 120)
+
+    @Schema(
+            description = "Nome do servico",
+            example = "CORTE",
+            minLength = 2,
+            maxLength = 120,
+            allowableValues = {
+                    "HIDRATACAO",
+                    "CORTE",
+                    "COLORACAO",
+                    "PINTURA",
+                    "ESCOVA",
+                    "MANICURE",
+                    "PEDICURE",
+                    "MASSAGEM",
+                    "DEPILACAO",
+                    "BARBA",
+                    "BIGODE",
+                    "SOBRANCELHA",
+                    "LIMPEZA_DE_PELE",
+                    "ESCOVA_DEFINITIVA",
+                    "PROGRESSIVA"
+            }
+    )
     private String nome;
-        @Schema(
+
+    @Schema(
             description = "Duracao media em formato ISO-8601 duration (ex.: PT1H, PT45M, PT1H30M)",
             example = "PT1H",
             type = "string",

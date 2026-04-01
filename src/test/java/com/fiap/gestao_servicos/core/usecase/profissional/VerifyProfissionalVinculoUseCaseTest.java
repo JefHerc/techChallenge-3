@@ -6,6 +6,7 @@ import com.fiap.gestao_servicos.core.domain.HorarioFuncionamento;
 import com.fiap.gestao_servicos.core.domain.Profissional;
 import com.fiap.gestao_servicos.core.domain.Servico;
 import com.fiap.gestao_servicos.core.domain.ServicoProfissional;
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -70,7 +71,7 @@ class VerifyProfissionalVinculoUseCaseTest {
         when(profissional.getExpedientes()).thenReturn(List.of(expediente));
         when(profissional.getServicosProfissional()).thenReturn(List.of());
 
-        assertThrows(IllegalArgumentException.class, () -> useCase.verify(estabelecimento, profissional));
+        assertThrows(BusinessRuleException.class, () -> useCase.verify(estabelecimento, profissional));
     }
 
     @Test
@@ -93,7 +94,7 @@ class VerifyProfissionalVinculoUseCaseTest {
         when(profissional.getExpedientes()).thenReturn(List.of(expediente));
         when(profissional.getServicosProfissional()).thenReturn(List.of());
 
-        assertThrows(IllegalArgumentException.class, () -> useCase.verify(estabelecimento, profissional));
+        assertThrows(BusinessRuleException.class, () -> useCase.verify(estabelecimento, profissional));
     }
 
     @Test
@@ -115,7 +116,7 @@ class VerifyProfissionalVinculoUseCaseTest {
         when(profissional.getExpedientes()).thenReturn(List.of());
         when(profissional.getServicosProfissional()).thenReturn(List.of(servicoProfissional));
 
-        assertThrows(IllegalArgumentException.class, () -> useCase.verify(estabelecimento, profissional));
+        assertThrows(BusinessRuleException.class, () -> useCase.verify(estabelecimento, profissional));
     }
 
     @Test

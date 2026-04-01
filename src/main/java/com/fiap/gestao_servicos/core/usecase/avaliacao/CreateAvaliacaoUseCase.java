@@ -1,6 +1,7 @@
 package com.fiap.gestao_servicos.core.usecase.avaliacao;
 
 import com.fiap.gestao_servicos.core.domain.Avaliacao;
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
 import com.fiap.gestao_servicos.core.repository.AvaliacaoRepository;
@@ -39,7 +40,7 @@ public class CreateAvaliacaoUseCase {
         }
 
         if (!agendamentoRepository.isConcluido(agendamentoId)) {
-            throw new IllegalArgumentException("Agendamento deve estar com status CONCLUIDO para receber avaliação");
+            throw new BusinessRuleException("Agendamento deve estar com status CONCLUIDO para receber avaliação");
         }
 
         if (!profissionalRepository.existsById(profissionalId)) {
@@ -51,11 +52,11 @@ public class CreateAvaliacaoUseCase {
         }
 
         if (!estabelecimentoRepository.temProfissional(estabelecimentoId, profissionalId)) {
-            throw new IllegalArgumentException("Profissional informado não pertence ao estabelecimento informado");
+            throw new BusinessRuleException("Profissional informado não pertence ao estabelecimento informado");
         }
 
         if (!agendamentoRepository.pertenceAoProfissionalEEstabelecimento(agendamentoId, profissionalId, estabelecimentoId)) {
-            throw new IllegalArgumentException("Agendamento informado não pertence ao profissional e estabelecimento informados");
+            throw new BusinessRuleException("Agendamento informado não pertence ao profissional e estabelecimento informados");
         }
     }
 

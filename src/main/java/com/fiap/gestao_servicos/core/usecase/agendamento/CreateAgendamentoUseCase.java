@@ -1,6 +1,7 @@
 package com.fiap.gestao_servicos.core.usecase.agendamento;
 
 import com.fiap.gestao_servicos.core.domain.Agendamento;
+import com.fiap.gestao_servicos.core.domain.AgendamentoStatus;
 import com.fiap.gestao_servicos.core.exception.ErrorMessages;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
@@ -25,12 +26,29 @@ public class CreateAgendamentoUseCase {
             ServicoRepository servicoRepository,
             ProfissionalRepository profissionalRepository,
             ClienteRepository clienteRepository) {
+                this(
+                                agendamentoRepository,
+                                estabelecimentoRepository,
+                                servicoRepository,
+                                profissionalRepository,
+                                clienteRepository,
+                                new AgendamentoValidator(agendamentoRepository, profissionalRepository)
+                );
+        }
+
+        public CreateAgendamentoUseCase(
+                        AgendamentoRepository agendamentoRepository,
+                        EstabelecimentoRepository estabelecimentoRepository,
+                        ServicoRepository servicoRepository,
+                        ProfissionalRepository profissionalRepository,
+                        ClienteRepository clienteRepository,
+                        AgendamentoValidator agendamentoValidator) {
         this.agendamentoRepository = agendamentoRepository;
         this.estabelecimentoRepository = estabelecimentoRepository;
         this.servicoRepository = servicoRepository;
         this.profissionalRepository = profissionalRepository;
         this.clienteRepository = clienteRepository;
-        this.agendamentoValidator = new AgendamentoValidator(agendamentoRepository, profissionalRepository);
+                this.agendamentoValidator = agendamentoValidator;
     }
 
     public Agendamento create(AgendamentoInput input) {
@@ -69,7 +87,7 @@ public class CreateAgendamentoUseCase {
                 estabelecimento,
                 cliente,
                 input.getDataHoraInicio(),
-                input.getStatus()
+                AgendamentoStatus.AGENDADO
         );
 
         agendamentoValidator.validar(agendamento, estabelecimento, servico, null);

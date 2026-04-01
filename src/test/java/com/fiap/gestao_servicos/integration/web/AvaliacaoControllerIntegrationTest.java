@@ -68,10 +68,11 @@ class AvaliacaoControllerIntegrationTest extends WebLayerIntegrationTestBase {
     private DeleteAvaliacaoUseCase deleteAvaliacaoUseCase;
 
     @Test
-    @DisplayName("POST /agendamentos/{id}/avaliacoes deve retornar 201 e payload de avaliacao")
+        @DisplayName("POST /estabelecimentos/{id}/agendamentos/{agendamentoId}/avaliacoes deve retornar 201 e payload de avaliacao")
     void deveCriarAvaliacaoComSucesso() throws Exception {
         String request = """
                 {
+                                    "agendamentoId": 10,
                   "notaEstabelecimento": 4.5,
                   "notaProfissional": 5.0,
                   "comentarioEstabelecimento": "Ambiente limpo e atendimento excelente",
@@ -92,7 +93,7 @@ class AvaliacaoControllerIntegrationTest extends WebLayerIntegrationTestBase {
         when(findAgendamentoByIdUseCase.findById(eq(10L))).thenReturn(agendamento);
         when(createAvaliacaoUseCase.create(any(Avaliacao.class))).thenReturn(avaliacaoCriada);
 
-        mockMvc.perform(post("/agendamentos/{agendamentoId}/avaliacoes", 10L)
+        mockMvc.perform(post("/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes", 1L, 10L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 .andExpect(status().isCreated())
@@ -110,10 +111,11 @@ class AvaliacaoControllerIntegrationTest extends WebLayerIntegrationTestBase {
     }
 
     @Test
-    @DisplayName("POST /agendamentos/{id}/avaliacoes deve retornar 400 quando payload for invalido")
+        @DisplayName("POST /estabelecimentos/{id}/agendamentos/{agendamentoId}/avaliacoes deve retornar 400 quando payload for invalido")
     void deveRetornarBadRequestQuandoPayloadForInvalido() throws Exception {
         String request = """
                 {
+                                    "agendamentoId": 10,
                   "notaEstabelecimento": 4.5,
                   "notaProfissional": 5.5,
                   "comentarioEstabelecimento": "Ambiente limpo e atendimento excelente",
@@ -121,20 +123,18 @@ class AvaliacaoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                 }
                 """;
 
-        mockMvc.perform(post("/agendamentos/{agendamentoId}/avaliacoes", 10L)
+        mockMvc.perform(post("/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes", 1L, 10L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
                 .andExpect(jsonPath("$.message").value("Erro de validação na requisição."))
-                .andExpect(jsonPath("$.path").value("/agendamentos/10/avaliacoes"))
-                .andExpect(jsonPath("$.errors[0].field").value("notaProfissional"))
-                .andExpect(jsonPath("$.errors[0].detail").value("Nota do profissional deve ser entre 0 e 5"));
+                    .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos/10/avaliacoes"));
     }
 
             @Test
-            @DisplayName("PUT /agendamentos/{id}/avaliacoes/{avaliacaoId} deve retornar 200 e payload atualizado")
+            @DisplayName("PUT /estabelecimentos/{id}/agendamentos/{agendamentoId}/avaliacoes/{avaliacaoId} deve retornar 200 e payload atualizado")
             void deveAtualizarAvaliacaoComSucesso() throws Exception {
             String request = """
                 {
@@ -164,10 +164,9 @@ class AvaliacaoControllerIntegrationTest extends WebLayerIntegrationTestBase {
             );
 
             when(findAvaliacaoByIdUseCase.findById(eq(30L))).thenReturn(avaliacaoAtual);
-            when(findAgendamentoByIdUseCase.findById(eq(10L))).thenReturn(agendamento);
             when(updateAvaliacaoUseCase.update(eq(30L), any(Avaliacao.class))).thenReturn(avaliacaoAtualizada);
 
-            mockMvc.perform(put("/agendamentos/{agendamentoId}/avaliacoes/{id}", 10L, 30L)
+                mockMvc.perform(put("/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes/{id}", 1L, 10L, 30L)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(request))
                 .andExpect(status().isOk())
@@ -180,7 +179,7 @@ class AvaliacaoControllerIntegrationTest extends WebLayerIntegrationTestBase {
             }
 
             @Test
-            @DisplayName("PUT /agendamentos/{id}/avaliacoes/{avaliacaoId} deve retornar 400 quando payload for invalido")
+            @DisplayName("PUT /estabelecimentos/{id}/agendamentos/{agendamentoId}/avaliacoes/{avaliacaoId} deve retornar 400 quando payload for invalido")
             void deveRetornarBadRequestNoPutQuandoPayloadForInvalido() throws Exception {
             String request = """
                 {
@@ -191,19 +190,17 @@ class AvaliacaoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                 }
                 """;
 
-            mockMvc.perform(put("/agendamentos/{agendamentoId}/avaliacoes/{id}", 10L, 30L)
+                mockMvc.perform(put("/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes/{id}", 1L, 10L, 30L)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(request))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
-                .andExpect(jsonPath("$.path").value("/agendamentos/10/avaliacoes/30"))
-                .andExpect(jsonPath("$.errors[0].field").value("notaProfissional"))
-                .andExpect(jsonPath("$.errors[0].detail").value("Nota do profissional deve ser entre 0 e 5"));
+                    .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos/10/avaliacoes/30"));
             }
 
             @Test
-            @DisplayName("DELETE /agendamentos/{id}/avaliacoes/{avaliacaoId} deve retornar 204 quando exclusao ocorrer com sucesso")
+            @DisplayName("DELETE /estabelecimentos/{id}/agendamentos/avaliacoes/{avaliacaoId} deve retornar 204 quando exclusao ocorrer com sucesso")
             void deveDeletarAvaliacaoComSucesso() throws Exception {
             Avaliacao avaliacao = new Avaliacao(
                 30L,
@@ -216,38 +213,38 @@ class AvaliacaoControllerIntegrationTest extends WebLayerIntegrationTestBase {
 
             when(findAvaliacaoByIdUseCase.findById(eq(30L))).thenReturn(avaliacao);
 
-            mockMvc.perform(delete("/agendamentos/{agendamentoId}/avaliacoes/{id}", 10L, 30L))
+            mockMvc.perform(delete("/estabelecimentos/{estabelecimentoId}/agendamentos/avaliacoes/{id}", 1L, 30L))
                 .andExpect(status().isNoContent());
             }
 
             @Test
-            @DisplayName("DELETE /agendamentos/{id}/avaliacoes/{avaliacaoId} deve retornar erro padronizado quando nao existe")
+            @DisplayName("DELETE /estabelecimentos/{id}/agendamentos/avaliacoes/{avaliacaoId} deve retornar erro padronizado quando nao existe")
             void deveRetornarNotFoundNoDeleteQuandoAvaliacaoNaoExiste() throws Exception {
             when(findAvaliacaoByIdUseCase.findById(eq(999L)))
                 .thenThrow(new ResourceNotFoundException("Avaliação não encontrada"));
             doThrow(new ResourceNotFoundException("Avaliação não encontrada"))
                 .when(deleteAvaliacaoUseCase).deleteById(eq(999L));
 
-            mockMvc.perform(delete("/agendamentos/{agendamentoId}/avaliacoes/{id}", 10L, 999L))
+            mockMvc.perform(delete("/estabelecimentos/{estabelecimentoId}/agendamentos/avaliacoes/{id}", 1L, 999L))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.code").value("NAO_ENCONTRADO"))
                 .andExpect(jsonPath("$.message").value("Avaliação não encontrada"))
-                .andExpect(jsonPath("$.path").value("/agendamentos/10/avaliacoes/999"));
+                .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos/avaliacoes/999"));
             }
 
     @Test
-    @DisplayName("GET /agendamentos/{id}/avaliacoes/{avaliacaoId} deve retornar erro padronizado quando nao existe")
+    @DisplayName("GET /estabelecimentos/{id}/agendamentos/{agendamentoId}/avaliacoes/{avaliacaoId} deve retornar erro padronizado quando nao existe")
     void deveRetornarNotFoundComFormatoPadrao() throws Exception {
         when(findAvaliacaoByIdUseCase.findById(eq(999L)))
                 .thenThrow(new ResourceNotFoundException("Avaliação não encontrada"));
 
-        mockMvc.perform(get("/agendamentos/{agendamentoId}/avaliacoes/{id}", 10L, 999L))
+        mockMvc.perform(get("/estabelecimentos/{estabelecimentoId}/agendamentos/{agendamentoId}/avaliacoes/{id}", 1L, 10L, 999L))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.code").value("NAO_ENCONTRADO"))
                 .andExpect(jsonPath("$.message").value("Avaliação não encontrada"))
-                .andExpect(jsonPath("$.path").value("/agendamentos/10/avaliacoes/999"));
+            .andExpect(jsonPath("$.path").value("/estabelecimentos/1/agendamentos/10/avaliacoes/999"));
     }
 
     private Agendamento novoAgendamento(Long id) {

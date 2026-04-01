@@ -28,6 +28,11 @@ public interface AgendamentoRepositoryJpa extends JpaRepository<AgendamentoEntit
             Long estabelecimentoId,
             Pageable pageable);
 
+    List<AgendamentoEntity> findByEstabelecimentoIdAndDataHoraInicioBetweenOrderByDataHoraInicioAsc(
+            Long estabelecimentoId,
+            LocalDateTime inicio,
+            LocalDateTime fim);
+
     @Query("""
                                                 SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END
                                                 FROM AgendamentoEntity a

@@ -123,9 +123,7 @@ class EstabelecimentoControllerIntegrationTest extends WebLayerIntegrationTestBa
                                 .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
                                 .andExpect(jsonPath("$.message").value("Erro de validação na requisição."))
-                                .andExpect(jsonPath("$.path").value("/estabelecimentos"))
-                                .andExpect(jsonPath("$.errors[0].field").value("nome"))
-                                .andExpect(jsonPath("$.errors[0].detail").value("Nome deve ter entre 2 e 120 caracteres"));
+                                .andExpect(jsonPath("$.path").value("/estabelecimentos"));
         }
 
                             @Test
@@ -197,9 +195,7 @@ class EstabelecimentoControllerIntegrationTest extends WebLayerIntegrationTestBa
                                 .andExpect(status().isBadRequest())
                                 .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
-                                .andExpect(jsonPath("$.path").value("/estabelecimentos/1"))
-                                .andExpect(jsonPath("$.errors[0].field").value("nome"))
-                                .andExpect(jsonPath("$.errors[0].detail").value("Nome deve ter entre 2 e 120 caracteres"));
+                                .andExpect(jsonPath("$.path").value("/estabelecimentos/1"));
                             }
 
                             @Test

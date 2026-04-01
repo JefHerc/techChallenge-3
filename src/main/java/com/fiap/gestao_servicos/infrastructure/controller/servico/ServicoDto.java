@@ -10,12 +10,29 @@ import java.time.Duration;
 @Schema(description = "Payload para criacao/atualizacao de servico")
 public class ServicoDto {
 
-        @Schema(
+    @Schema(
             description = "Nome do servico",
-            example = "Corte feminino",
+            example = "CORTE",
             minLength = 2,
-            maxLength = 120
-        )
+            maxLength = 120,
+            allowableValues = {
+                    "HIDRATACAO",
+                    "CORTE",
+                    "COLORACAO",
+                    "PINTURA",
+                    "ESCOVA",
+                    "MANICURE",
+                    "PEDICURE",
+                    "MASSAGEM",
+                    "DEPILACAO",
+                    "BARBA",
+                    "BIGODE",
+                    "SOBRANCELHA",
+                    "LIMPEZA_DE_PELE",
+                    "ESCOVA_DEFINITIVA",
+                    "PROGRESSIVA"
+            }
+    )
     @NotBlank(message = "Nome do serviço é obrigatório")
         @Size(min = 2, max = 120, message = "Nome do serviço deve ter entre 2 e 120 caracteres")
     private String nome;

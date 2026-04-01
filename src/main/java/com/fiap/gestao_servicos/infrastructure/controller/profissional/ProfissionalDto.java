@@ -14,28 +14,28 @@ public class ProfissionalDto {
 
         @Schema(
             description = "Nome do profissional",
-            example = "Ana Souza",
+            example = "Carla Souza",
             minLength = 2,
             maxLength = 120
         )
     @NotBlank(message = "Nome é obrigatório")
         @Size(min = 2, max = 120, message = "Nome deve ter entre 2 e 120 caracteres")
     private String nome;
-    @Schema(description = "CPF do profissional", example = "12345678901")
+    @Schema(description = "CPF do profissional", example = "06854809096")
     @NotBlank(message = "CPF é obrigatório")
     private String cpf;
-    @Schema(description = "Celular do profissional", example = "11987654321")
+    @Schema(description = "Celular do profissional", example = "11988887777")
     @NotBlank(message = "Celular é obrigatório")
     private String celular;
-    @Schema(description = "Email do profissional", example = "ana.souza@email.com")
+    @Schema(description = "Email do profissional", example = "carla@e1.com")
     @NotBlank(message = "Email é obrigatório")
     @Email(message = "Email inválido")
     private String email;
-    @Schema(description = "URL da foto do profissional", example = "https://cdn.exemplo.com/fotos/ana.jpg")
+    @Schema(description = "URL da foto do profissional", example = "https://cdn.exemplo.com/fotos/carla.jpg")
     private String urlFoto;
         @Schema(
             description = "Descricao resumida do profissional",
-            example = "Especialista em coloracao e corte",
+            example = "Especialista coloração",
             maxLength = 500
         )
         @Size(max = 500, message = "Descricao deve ter no máximo 500 caracteres")

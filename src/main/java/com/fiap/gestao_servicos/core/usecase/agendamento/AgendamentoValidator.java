@@ -5,6 +5,7 @@ import com.fiap.gestao_servicos.core.domain.AgendamentoStatus;
 import com.fiap.gestao_servicos.core.domain.Estabelecimento;
 import com.fiap.gestao_servicos.core.domain.HorarioFuncionamento;
 import com.fiap.gestao_servicos.core.domain.Servico;
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 import com.fiap.gestao_servicos.core.exception.ErrorMessages;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
 import com.fiap.gestao_servicos.core.repository.ProfissionalRepository;
@@ -35,7 +36,7 @@ public class AgendamentoValidator {
 
     private void validarVinculoProfissionalServico(Long profissionalId, Long servicoId) {
         if (!profissionalRepository.existsVinculoProfissionalServico(profissionalId, servicoId)) {
-            throw new IllegalArgumentException(ErrorMessages.PROFISSIONAL_SEM_VINCULO_SERVICO);
+            throw new BusinessRuleException(ErrorMessages.PROFISSIONAL_SEM_VINCULO_SERVICO);
         }
     }
 
@@ -52,7 +53,7 @@ public class AgendamentoValidator {
         );
 
         if (existeConflito) {
-            throw new IllegalArgumentException(ErrorMessages.CONFLITO_AGENDA_PROFISSIONAL);
+            throw new BusinessRuleException(ErrorMessages.CONFLITO_AGENDA_PROFISSIONAL);
         }
     }
 
@@ -60,7 +61,7 @@ public class AgendamentoValidator {
                                                              Estabelecimento estabelecimento,
                                                              Servico servico) {
         LocalDateTime dataHoraInicio = agendamento.getDataHoraInicio();
-        LocalDateTime dataHoraFim = dataHoraInicio.plus(servico.getDuracaoMedia());
+        LocalDateTime dataHoraFim = agendamento.getDataHoraFim();
         DayOfWeek diaSemana = dataHoraInicio.getDayOfWeek();
 
         HorarioFuncionamento horarioDia = estabelecimento.getHorarioFuncionamento().stream()
@@ -69,13 +70,13 @@ public class AgendamentoValidator {
                 .orElse(null);
 
         if (horarioDia == null || horarioDia.isFechado()) {
-            throw new IllegalArgumentException(ErrorMessages.ESTABELECIMENTO_FECHADO);
+            throw new BusinessRuleException(ErrorMessages.ESTABELECIMENTO_FECHADO);
         }
 
         LocalTime inicio = dataHoraInicio.toLocalTime();
         LocalDateTime fechamento = dataHoraInicio.toLocalDate().atTime(horarioDia.getFechamento());
         if (inicio.isBefore(horarioDia.getAbertura()) || dataHoraFim.isAfter(fechamento)) {
-            throw new IllegalArgumentException(ErrorMessages.HORARIO_FORA_FUNCIONAMENTO);
+            throw new BusinessRuleException(ErrorMessages.HORARIO_FORA_FUNCIONAMENTO);
         }
     }
 }

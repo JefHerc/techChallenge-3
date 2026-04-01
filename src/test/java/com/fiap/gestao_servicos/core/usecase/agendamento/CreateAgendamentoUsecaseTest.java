@@ -8,6 +8,7 @@ import com.fiap.gestao_servicos.core.domain.Profissional;
 import com.fiap.gestao_servicos.core.domain.Servico;
 import com.fiap.gestao_servicos.core.domain.ServicoEnum;
 import com.fiap.gestao_servicos.core.domain.Cliente;
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
 import com.fiap.gestao_servicos.core.usecase.agendamento.input.AgendamentoInput;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -79,7 +81,7 @@ class CreateAgendamentoUseCaseTest {
         when(servico.getDuracaoMedia()).thenReturn(Duration.ofMinutes(60));
         when(profissionalRepository.existsVinculoProfissionalServico(1L, 2L)).thenReturn(true);
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> useCase.create(input));
+        BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> useCase.create(input));
 
         assertEquals("Estabelecimento fechado para o dia informado", ex.getMessage());
     }
@@ -103,7 +105,7 @@ class CreateAgendamentoUseCaseTest {
         when(servico.getDuracaoMedia()).thenReturn(Duration.ofMinutes(60));
         when(profissionalRepository.existsVinculoProfissionalServico(1L, 2L)).thenReturn(true);
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> useCase.create(input));
+        BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> useCase.create(input));
 
         assertTrue(ex.getMessage().contains("agendamento fora do"));
         assertTrue(ex.getMessage().contains("funcionamento do estabelecimento"));
@@ -136,6 +138,33 @@ class CreateAgendamentoUseCaseTest {
         assertEquals(agendamento, created);
         verify(agendamentoRepository).create(any(Agendamento.class));
     }
+
+        @Test
+        void deveSempreCriarAgendamentoComStatusAgendado() {
+                AgendamentoInput input = new AgendamentoInput(1L, 2L, 3L, 4L,
+                                LocalDateTime.of(2026, 3, 30, 17, 0), AgendamentoStatus.CANCELADO);
+
+                Estabelecimento estabelecimento = new Estabelecimento(
+                                3L, "Salao", null, null, null, null, null,
+                                List.of(new HorarioFuncionamento(null, DayOfWeek.MONDAY, LocalTime.of(8, 0), LocalTime.of(18, 0), false))
+                );
+                Agendamento agendamento = org.mockito.Mockito.mock(Agendamento.class);
+
+                when(profissionalRepository.findByIdAndEstabelecimentoId(1L, 3L)).thenReturn(Optional.of(profissional));
+                when(servicoRepository.findByIdAndEstabelecimentoId(2L, 3L)).thenReturn(Optional.of(servico));
+                when(estabelecimentoRepository.findById(3L)).thenReturn(Optional.of(estabelecimento));
+                when(clienteRepository.findById(4L)).thenReturn(Optional.of(cliente));
+                when(profissional.getId()).thenReturn(1L);
+                when(servico.getId()).thenReturn(2L);
+                when(servico.getDuracaoMedia()).thenReturn(Duration.ofMinutes(60));
+                when(profissionalRepository.existsVinculoProfissionalServico(1L, 2L)).thenReturn(true);
+                when(agendamentoRepository.existsConflitoHorarioProfissional(1L, 2L, input.getDataHoraInicio(), null)).thenReturn(false);
+                when(agendamentoRepository.create(any(Agendamento.class))).thenReturn(agendamento);
+
+                useCase.create(input);
+
+                verify(agendamentoRepository).create(argThat(agendamentoCriado -> agendamentoCriado.getStatus() == AgendamentoStatus.AGENDADO));
+        }
 
         @Test
         void deveLancarExcecaoQuandoProfissionalNaoPertencerAoEstabelecimento() {

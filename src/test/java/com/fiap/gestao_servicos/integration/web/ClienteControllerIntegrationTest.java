@@ -106,9 +106,7 @@ class ClienteControllerIntegrationTest extends WebLayerIntegrationTestBase {
                                 .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
                                 .andExpect(jsonPath("$.message").value("Erro de validação na requisição."))
-                                .andExpect(jsonPath("$.path").value("/clientes"))
-                                .andExpect(jsonPath("$.errors[0].field").value("email"))
-                                .andExpect(jsonPath("$.errors[0].detail").value("Email inválido"));
+                    .andExpect(jsonPath("$.path").value("/clientes"));
         }
 
                             @Test
@@ -164,9 +162,7 @@ class ClienteControllerIntegrationTest extends WebLayerIntegrationTestBase {
                                 .andExpect(status().isBadRequest())
                                 .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
-                                .andExpect(jsonPath("$.path").value("/clientes/1"))
-                                .andExpect(jsonPath("$.errors[0].field").value("email"))
-                                .andExpect(jsonPath("$.errors[0].detail").value("Email inválido"));
+                                .andExpect(jsonPath("$.path").value("/clientes/1"));
                             }
 
                             @Test

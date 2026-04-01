@@ -66,11 +66,11 @@ public class ClienteController {
                     name = "cliente",
                     value = """
                         {
-                          "nome": "Maria da Silva",
-                          "cpf": "12345678901",
-                          "celular": "11987654321",
-                          "email": "maria.silva@email.com",
-                          "sexo": "FEMININO"
+                          "nome": "João Silva",
+                          "cpf": "34028317088",
+                          "celular": "11999998888",
+                          "email": "joao@cliente.com",
+                          "sexo": "MASCULINO"
                         }
                         """
                 )
@@ -88,17 +88,19 @@ public class ClienteController {
                         value = """
                             {
                               "id": 1,
-                              "nome": "Maria da Silva",
-                              "cpf": "12345678901",
-                              "celular": "11987654321",
-                              "email": "maria.silva@email.com",
-                              "sexo": "FEMININO"
+                              "nome": "João Silva",
+                              "cpf": "34028317088",
+                              "celular": "11999998888",
+                              "email": "joao@cliente.com",
+                              "sexo": "MASCULINO"
                             }
                             """
                     )
                 )
             ),
-                        @ApiResponse(ref = "#/components/responses/BadRequestError")
+                        @ApiResponse(ref = "#/components/responses/BadRequestError"),
+                        @ApiResponse(ref = "#/components/responses/DuplicateDataError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
     })
     public ResponseEntity<ClienteResponseDto> criar(@Valid @RequestBody ClienteDto clienteDto) {
         Cliente cliente = ClienteMapper.toDomain(clienteDto);
@@ -109,16 +111,19 @@ public class ClienteController {
     @GetMapping
     @Operation(summary = "Listar clientes", description = "Retorna clientes paginados.")
         @PageableAsQueryParam
-        @ApiResponse(
-                        responseCode = "200",
-                        description = "Lista de clientes retornada com sucesso",
-                        content = @Content(
-                                        mediaType = "application/json",
-                                        examples = @ExampleObject(
-                                                        ref = "#/components/examples/PageResultExample"
-                                        )
-                        )
-        )
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Lista de clientes retornada com sucesso",
+                content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                        ref = "#/components/examples/PageResultExample"
+                    )
+                )
+            ),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
+        })
     public ResponseEntity<Page<ClienteResponseDto>> listar(Pageable pageable) {
         Page<ClienteResponseDto> clientes = PageUtils.toSpringPage(
                 findAllClientesUseCase.findAll(PageUtils.toPageQuery(pageable))
@@ -140,17 +145,18 @@ public class ClienteController {
                         value = """
                             {
                               "id": 1,
-                              "nome": "Maria da Silva",
-                              "cpf": "12345678901",
-                              "celular": "11987654321",
-                              "email": "maria.silva@email.com",
-                              "sexo": "FEMININO"
+                              "nome": "João Silva",
+                              "cpf": "34028317088",
+                              "celular": "11999998888",
+                              "email": "joao@cliente.com",
+                              "sexo": "MASCULINO"
                             }
                             """
                     )
                 )
             ),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+                @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                @ApiResponse(ref = "#/components/responses/InternalServerError")
     })
     public ResponseEntity<ClienteResponseDto> buscarPorId(@Parameter(description = "ID do cliente", example = "1") @PathVariable Long id) {
         Cliente cliente = findClienteByIdUseCase.findById(id);
@@ -169,11 +175,11 @@ public class ClienteController {
                     name = "clienteAtualizacao",
                     value = """
                         {
-                          "nome": "Maria de Souza",
-                          "cpf": "12345678901",
-                          "celular": "11991234567",
-                          "email": "maria.souza@email.com",
-                          "sexo": "FEMININO"
+                          "nome": "João Silva Atualizado",
+                          "cpf": "34028317088",
+                          "celular": "11999990000",
+                          "email": "joao.atualizado@cliente.com",
+                          "sexo": "MASCULINO"
                         }
                         """
                 )
@@ -191,18 +197,20 @@ public class ClienteController {
                         value = """
                             {
                               "id": 1,
-                              "nome": "Maria de Souza",
-                              "cpf": "12345678901",
-                              "celular": "11991234567",
-                              "email": "maria.souza@email.com",
-                              "sexo": "FEMININO"
+                              "nome": "João Silva Atualizado",
+                              "cpf": "34028317088",
+                              "celular": "11999990000",
+                              "email": "joao.atualizado@cliente.com",
+                              "sexo": "MASCULINO"
                             }
                             """
                     )
                 )
             ),
                         @ApiResponse(ref = "#/components/responses/BadRequestError"),
-                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+                        @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                        @ApiResponse(ref = "#/components/responses/DuplicateDataError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
     })
     public ResponseEntity<ClienteResponseDto> atualizar(@Parameter(description = "ID do cliente", example = "1") @PathVariable Long id,
                                                         @Valid @RequestBody ClienteDto clienteDto) {
@@ -215,7 +223,9 @@ public class ClienteController {
     @Operation(summary = "Remover cliente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Cliente removido com sucesso"),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+            @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
     })
     public ResponseEntity<Void> deletar(@Parameter(description = "ID do cliente", example = "1") @PathVariable Long id) {
         deleteClienteUseCase.deleteById(id);

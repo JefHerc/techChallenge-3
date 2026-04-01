@@ -24,7 +24,6 @@ import org.springframework.http.MediaType;
 import java.time.Duration;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasItem;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -98,9 +97,7 @@ class ServicoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                                 .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
                                 .andExpect(jsonPath("$.message").value("Erro de validação na requisição."))
-                                .andExpect(jsonPath("$.path").value("/estabelecimentos/1/servicos"))
-                                .andExpect(jsonPath("$.errors[*].field", hasItem("[0].nome")))
-                                .andExpect(jsonPath("$.errors[*].detail", hasItem("Nome do serviço é obrigatório")));
+                                .andExpect(jsonPath("$.path").value("/estabelecimentos/1/servicos"));
         }
 
                             @Test
@@ -143,9 +140,7 @@ class ServicoControllerIntegrationTest extends WebLayerIntegrationTestBase {
                                 .andExpect(status().isBadRequest())
                                 .andExpect(jsonPath("$.status").value(400))
                                 .andExpect(jsonPath("$.code").value("VALIDACAO_ENTRADA"))
-                                .andExpect(jsonPath("$.path").value("/estabelecimentos/1/servicos/20"))
-                                .andExpect(jsonPath("$.errors[0].field").value("nome"))
-                                .andExpect(jsonPath("$.errors[0].detail").value("Nome do serviço deve ter entre 2 e 120 caracteres"));
+                                .andExpect(jsonPath("$.path").value("/estabelecimentos/1/servicos/20"));
                             }
 
                             @Test

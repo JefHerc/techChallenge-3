@@ -11,6 +11,7 @@ import com.fiap.gestao_servicos.infrastructure.controller.PageUtils;
 import com.fiap.gestao_servicos.infrastructure.mapper.agendamento.AgendamentoMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,6 +23,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,7 +33,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/estabelecimentos/{estabelecimentoId}/agendamentos")
@@ -63,16 +69,15 @@ public class AgendamentoController {
             required = true,
             content = @Content(
                 mediaType = "application/json",
-                schema = @Schema(implementation = AgendamentoDto.class),
+                schema = @Schema(implementation = AgendamentoCreateDto.class),
                 examples = @ExampleObject(
                     name = "agendamento",
                     value = """
                             {
-                              "profissionalId": 5,
-                              "servicoId": 20,
-                              "clienteId": 12,
-                              "dataHoraInicio": "2026-04-20T14:30:00",
-                              "status": "AGENDADO"
+                              "profissionalId": 1,
+                              "servicoId": 1,
+                              "clienteId": 1,
+                              "dataHoraInicio": "2026-04-20T10:00:00"
                             }
                             """
                 )
@@ -89,17 +94,17 @@ public class AgendamentoController {
                         name = "agendamentoCriado",
                         value = """
                                 {
-                                  "id": 10,
-                                  "profissionalId": 5,
-                                  "profissionalNome": "Ana Souza",
-                                  "servicoId": 20,
-                                  "servicoNome": "Corte feminino",
+                                  "id": 1,
+                                  "profissionalId": 1,
+                                  "profissionalNome": "Carla Souza",
+                                  "servicoId": 1,
+                                  "servicoNome": "CORTE",
                                   "estabelecimentoId": 1,
-                                  "estabelecimentoNome": "Studio Beleza Centro",
-                                  "clienteId": 12,
-                                  "clienteNome": "Maria da Silva",
-                                  "dataHoraInicio": "2026-04-20T14:30:00",
-                                  "dataHoraFim": "2026-04-20T15:30:00",
+                                  "estabelecimentoNome": "Studio Bela Vida",
+                                  "clienteId": 1,
+                                  "clienteNome": "João Silva",
+                                  "dataHoraInicio": "2026-04-20T10:00:00",
+                                  "dataHoraFim": "2026-04-20T11:00:00",
                                   "status": "AGENDADO"
                                 }
                                 """
@@ -107,12 +112,13 @@ public class AgendamentoController {
                 )
             ),
                         @ApiResponse(ref = "#/components/responses/BadRequestError"),
-                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+                        @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<AgendamentoResponseDto> criar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                                        @Valid @RequestBody AgendamentoDto agendamentoDto) {
+                                                        @Valid @RequestBody AgendamentoCreateDto agendamentoDto) {
         agendamentoDto.setEstabelecimentoId(estabelecimentoId);
-        var input = AgendamentoMapper.toDomain(agendamentoDto);
+        var input = AgendamentoMapper.toCreateDomain(agendamentoDto);
         Agendamento agendamentoCriado = createAgendamentoUseCase.create(input);
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(AgendamentoMapper.toResponse(agendamentoCriado));
@@ -139,6 +145,59 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentos);
     }
 
+    @GetMapping("/periodo")
+    @Operation(
+            summary = "Listar agendamentos por período",
+            description = "Retorna todos os agendamentos do estabelecimento no intervalo informado. "
+                    + "Se dataInicial e dataFinal não forem enviadas, considera os próximos 30 dias a partir da data atual."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Agendamentos do período retornados com sucesso",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = AgendamentoResponseDto.class)),
+                            examples = @ExampleObject(
+                                    name = "agendamentosPeriodo",
+                                    value = """
+                                            [
+                                              {
+                                                "id": 1,
+                                                "profissionalId": 1,
+                                                "profissionalNome": "Carla Souza",
+                                                "servicoId": 1,
+                                                "servicoNome": "CORTE",
+                                                "estabelecimentoId": 1,
+                                                "estabelecimentoNome": "Studio Bela Vida",
+                                                "clienteId": 1,
+                                                "clienteNome": "João Silva",
+                                                "dataHoraInicio": "2026-04-20T10:00:00",
+                                                "dataHoraFim": "2026-04-20T11:00:00",
+                                                "status": "AGENDADO"
+                                              }
+                                            ]
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(ref = "#/components/responses/BadRequestError"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
+    })
+    public ResponseEntity<List<AgendamentoResponseDto>> listarPorPeriodo(
+            @Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+            @Parameter(description = "Data inicial no formato yyyy-MM-dd", example = "2026-04-01")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
+            @Parameter(description = "Data final no formato yyyy-MM-dd", example = "2026-04-30")
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFinal) {
+        List<AgendamentoResponseDto> agendamentos = findAllAgendamentosUseCase
+                .findByEstabelecimentoIdAndPeriodo(estabelecimentoId, dataInicial, dataFinal)
+                .stream()
+                .map(AgendamentoMapper::toResponse)
+                .toList();
+        return ResponseEntity.ok(agendamentos);
+    }
+
     @GetMapping("/{id}")
         @Operation(summary = "Buscar agendamento por ID")
         @ApiResponses(value = {
@@ -152,27 +211,28 @@ public class AgendamentoController {
                         name = "agendamento",
                         value = """
                                 {
-                                  "id": 10,
-                                  "profissionalId": 5,
-                                  "profissionalNome": "Ana Souza",
-                                  "servicoId": 20,
-                                  "servicoNome": "Corte feminino",
+                                  "id": 1,
+                                  "profissionalId": 1,
+                                  "profissionalNome": "Carla Souza",
+                                  "servicoId": 1,
+                                  "servicoNome": "CORTE",
                                   "estabelecimentoId": 1,
-                                  "estabelecimentoNome": "Studio Beleza Centro",
-                                  "clienteId": 12,
-                                  "clienteNome": "Maria da Silva",
-                                  "dataHoraInicio": "2026-04-20T14:30:00",
-                                  "dataHoraFim": "2026-04-20T15:30:00",
+                                  "estabelecimentoNome": "Studio Bela Vida",
+                                  "clienteId": 1,
+                                  "clienteNome": "João Silva",
+                                  "dataHoraInicio": "2026-04-20T10:00:00",
+                                  "dataHoraFim": "2026-04-20T11:00:00",
                                   "status": "AGENDADO"
                                 }
                                 """
                     )
                 )
             ),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<AgendamentoResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                      @Parameter(description = "ID do agendamento", example = "10") @PathVariable Long id) {
+                                      @Parameter(description = "ID do agendamento", example = "1") @PathVariable Long id) {
         Agendamento agendamento = findAgendamentoByIdUseCase.findById(id);
         validateAgendamentoBelongsToEstabelecimento(estabelecimentoId, agendamento);
         return ResponseEntity.ok(AgendamentoMapper.toResponse(agendamento));
@@ -190,11 +250,11 @@ public class AgendamentoController {
                     name = "agendamentoAtualizacao",
                     value = """
                             {
-                              "profissionalId": 5,
-                              "servicoId": 20,
-                              "clienteId": 12,
-                              "dataHoraInicio": "2026-04-20T15:00:00",
-                              "status": "CONFIRMADO"
+                              "profissionalId": 1,
+                              "servicoId": 1,
+                              "clienteId": 1,
+                              "dataHoraInicio": "2026-04-20T11:00:00",
+                              "status": "AGENDADO"
                             }
                             """
                 )
@@ -211,25 +271,26 @@ public class AgendamentoController {
                         name = "agendamentoAtualizado",
                         value = """
                                 {
-                                  "id": 10,
-                                  "profissionalId": 5,
-                                  "profissionalNome": "Ana Souza",
-                                  "servicoId": 20,
-                                  "servicoNome": "Corte feminino",
+                                  "id": 1,
+                                  "profissionalId": 1,
+                                  "profissionalNome": "Carla Souza",
+                                  "servicoId": 1,
+                                  "servicoNome": "CORTE",
                                   "estabelecimentoId": 1,
-                                  "estabelecimentoNome": "Studio Beleza Centro",
-                                  "clienteId": 12,
-                                  "clienteNome": "Maria da Silva",
-                                  "dataHoraInicio": "2026-04-20T15:00:00",
-                                  "dataHoraFim": "2026-04-20T16:00:00",
-                                  "status": "CONFIRMADO"
+                                  "estabelecimentoNome": "Studio Bela Vida",
+                                  "clienteId": 1,
+                                  "clienteNome": "João Silva",
+                                  "dataHoraInicio": "2026-04-20T11:00:00",
+                                  "dataHoraFim": "2026-04-20T12:00:00",
+                                  "status": "AGENDADO"
                                 }
                                 """
                     )
                 )
             ),
                         @ApiResponse(ref = "#/components/responses/BadRequestError"),
-                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+                        @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<AgendamentoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                     @Parameter(description = "ID do agendamento", example = "10") @PathVariable Long id,
@@ -247,7 +308,9 @@ public class AgendamentoController {
         @Operation(summary = "Remover agendamento")
         @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Agendamento removido com sucesso"),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+            @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                         @Parameter(description = "ID do agendamento", example = "10") @PathVariable Long id) {

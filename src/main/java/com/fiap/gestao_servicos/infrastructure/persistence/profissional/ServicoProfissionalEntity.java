@@ -11,11 +11,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "servico_profissional")
+@Table(name = "servico_profissional", uniqueConstraints = @UniqueConstraint(
+        name = "uq_servico_profissional_profissional_servico",
+        columnNames = {"profissional_id", "servico_id"}))
 @SuppressFBWarnings(value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"}, justification = "Entidade JPA de relacionamento gerenciada pelo ORM")
 public class ServicoProfissionalEntity {
 

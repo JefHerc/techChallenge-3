@@ -73,27 +73,30 @@ public class EstabelecimentoController {
                                         name = "estabelecimento",
                                         value = """
                                                         {
-                                                            "nome": "Studio Beleza Centro",
+                                                            "nome": "Studio Bela Vida",
                                                             "endereco": {
-                                                                "logradouro": "Rua das Flores",
-                                                                "numero": "123",
-                                                                "complemento": "Sala 2",
-                                                                "bairro": "Centro",
-                                                                "cidade": "Sao Paulo",
+                                                                "logradouro": "Avenida Paulista",
+                                                                "numero": "1000",
+                                                                "complemento": "Sala 10",
+                                                                "bairro": "Bela Vista",
+                                                                "cidade": "São Paulo",
                                                                 "estado": "SP",
-                                                                "cep": "01001000"
+                                                                "cep": "01310100"
                                                             },
-                                                            "cnpj": "12345678000199",
-                                                            "urlFotos": ["https://cdn.exemplo.com/estabelecimentos/1/foto1.jpg"],
+                                                            "cnpj": "60.354.362/0001-02",
+                                                            "urlFotos": [
+                                                                "https://cdn.exemplo.com/estabelecimentos/1/foto1.jpg"
+                                                            ],
                                                             "horarioFuncionamento": [
                                                                 {
-                                                                    "diaSemana": "MONDAY",
-                                                                    "abertura": "09:00",
-                                                                    "fechamento": "18:00"
+                                                                "diaSemana": "segunda-feira",
+                                                                "abertura": "08:00",
+                                                                "fechamento": "20:00",
+                                                                "fechado": false
                                                                 }
                                                             ]
                                                         }
-                                                        """
+                                                    """
                                 )
                         )
                 )
@@ -109,16 +112,16 @@ public class EstabelecimentoController {
                                                 value = """
                                                                 {
                                                                     "id": 1,
-                                                                    "nome": "Studio Beleza Centro",
+                                                                    "nome": "Studio Bela Vida",
                                                                     "endereco": {
-                                                                        "logradouro": "Rua das Flores",
-                                                                        "numero": "123",
-                                                                        "bairro": "Centro",
-                                                                        "cidade": "Sao Paulo",
+                                                                        "logradouro": "Avenida Paulista",
+                                                                        "numero": "1000",
+                                                                        "bairro": "Bela Vista",
+                                                                        "cidade": "São Paulo",
                                                                         "estado": "SP",
-                                                                        "cep": "01001000"
+                                                                        "cep": "01310100"
                                                                     },
-                                                                    "cnpj": "12345678000199",
+                                                                    "cnpj": "64245654000168",
                                                                     "urlFotos": ["https://cdn.exemplo.com/estabelecimentos/1/foto1.jpg"],
                                                                     "horarioFuncionamento": []
                                                                 }
@@ -126,7 +129,9 @@ public class EstabelecimentoController {
                                         )
                                 )
                         ),
-                        @ApiResponse(ref = "#/components/responses/BadRequestError")
+                        @ApiResponse(ref = "#/components/responses/BadRequestError"),
+                        @ApiResponse(ref = "#/components/responses/DuplicateDataError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
     public ResponseEntity<EstabelecimentoResponseDto> criar(@Valid @RequestBody EstabelecimentoDto estabelecimentoDto) {
         Estabelecimento estabelecimento = EstabelecimentoMapper.toDomain(estabelecimentoDto);
@@ -139,9 +144,11 @@ public class EstabelecimentoController {
         @Operation(summary = "Remover estabelecimento")
         @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Estabelecimento removido com sucesso"),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+            @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long id) {
+        public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "4") @PathVariable Long id) {
         deleteEstabelecimentoUseCase.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -149,16 +156,19 @@ public class EstabelecimentoController {
     @GetMapping
         @Operation(summary = "Listar estabelecimentos", description = "Retorna estabelecimentos paginados.")
             @PageableAsQueryParam
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Lista retornada com sucesso",
-                        content = @Content(
-                                mediaType = "application/json",
-                                examples = @ExampleObject(
-                                        ref = "#/components/examples/PageResultExample"
-                                )
-                        )
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Lista retornada com sucesso",
+                content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                        ref = "#/components/examples/PageResultExample"
+                    )
                 )
+            ),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
+        })
         public ResponseEntity<Page<EstabelecimentoResponseDto>> listar(@ParameterObject Pageable pageable) {
         Page<EstabelecimentoResponseDto> estabelecimentos = PageUtils.toSpringPage(
                 findAllEstabelecimentosUseCase.findAll(PageUtils.toPageQuery(pageable))
@@ -180,16 +190,16 @@ public class EstabelecimentoController {
                                                 value = """
                                                                 {
                                                                     "id": 1,
-                                                                    "nome": "Studio Beleza Centro",
+                                                                    "nome": "Studio Bela Vida",
                                                                     "endereco": {
-                                                                        "logradouro": "Rua das Flores",
-                                                                        "numero": "123",
-                                                                        "bairro": "Centro",
-                                                                        "cidade": "Sao Paulo",
+                                                                        "logradouro": "Avenida Paulista",
+                                                                        "numero": "1000",
+                                                                        "bairro": "Bela Vista",
+                                                                        "cidade": "São Paulo",
                                                                         "estado": "SP",
-                                                                        "cep": "01001000"
+                                                                        "cep": "01310100"
                                                                     },
-                                                                    "cnpj": "12345678000199",
+                                                                    "cnpj": "64245654000168",
                                                                     "urlFotos": ["https://cdn.exemplo.com/estabelecimentos/1/foto1.jpg"],
                                                                     "horarioFuncionamento": []
                                                                 }
@@ -197,7 +207,8 @@ public class EstabelecimentoController {
                                         )
                                 )
                         ),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<EstabelecimentoResponseDto> buscar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long id) {
         Estabelecimento estabelecimento = findEstabelecimentoByIdUseCase.findById(id);
@@ -216,24 +227,24 @@ public class EstabelecimentoController {
                                         name = "estabelecimentoAtualizacao",
                                         value = """
                                                         {
-                                                            "nome": "Studio Beleza Centro Premium",
+                                                            "nome": "Studio Bela Vida Premium",
                                                             "endereco": {
-                                                                "logradouro": "Rua das Flores",
-                                                                "numero": "125",
-                                                                "complemento": "Sala 5",
-                                                                "bairro": "Centro",
-                                                                "cidade": "Sao Paulo",
+                                                                "logradouro": "Avenida Paulista",
+                                                                "numero": "1002",
+                                                                "complemento": "Sala 12",
+                                                                "bairro": "Bela Vista",
+                                                                "cidade": "São Paulo",
                                                                 "estado": "SP",
-                                                                "cep": "01001000"
+                                                                "cep": "01310100"
                                                             },
-                                                            "cnpj": "12345678000199",
+                                                            "cnpj": "64245654000249",
                                                             "urlFotos": [
-                                                                "https://cdn.exemplo.com/estabelecimentos/1/foto1.jpg",
-                                                                "https://cdn.exemplo.com/estabelecimentos/1/foto2.jpg"
+                                                                "https://cdn.exemplo.com/estabelecimentos/5/foto1.jpg",
+                                                                "https://cdn.exemplo.com/estabelecimentos/5/foto2.jpg"
                                                             ],
                                                             "horarioFuncionamento": [
                                                                 {
-                                                                    "diaSemana": "MONDAY",
+                                                                    "diaSemana": "segunda-feira",
                                                                     "abertura": "08:00",
                                                                     "fechamento": "19:00"
                                                                 }
@@ -254,18 +265,18 @@ public class EstabelecimentoController {
                                                 name = "estabelecimentoAtualizado",
                                                 value = """
                                                                 {
-                                                                    "id": 1,
-                                                                    "nome": "Studio Beleza Centro Premium",
+                                                                    "id": 5,
+                                                                    "nome": "Studio Bela Vida Premium",
                                                                     "endereco": {
-                                                                        "logradouro": "Rua das Flores",
-                                                                        "numero": "125",
-                                                                        "bairro": "Centro",
-                                                                        "cidade": "Sao Paulo",
+                                                                        "logradouro": "Avenida Paulista",
+                                                                        "numero": "1002",
+                                                                        "bairro": "Bela Vista",
+                                                                        "cidade": "São Paulo",
                                                                         "estado": "SP",
-                                                                        "cep": "01001000"
+                                                                        "cep": "01310100"
                                                                     },
-                                                                    "cnpj": "12345678000199",
-                                                                    "urlFotos": ["https://cdn.exemplo.com/estabelecimentos/1/foto1.jpg"],
+                                                                    "cnpj": "64245654000249",
+                                                                    "urlFotos": ["https://cdn.exemplo.com/estabelecimentos/5/foto1.jpg"],
                                                                     "horarioFuncionamento": []
                                                                 }
                                                                 """
@@ -273,9 +284,11 @@ public class EstabelecimentoController {
                                 )
                         ),
                         @ApiResponse(ref = "#/components/responses/BadRequestError"),
-                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+                        @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                        @ApiResponse(ref = "#/components/responses/DuplicateDataError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<EstabelecimentoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long id,
+        public ResponseEntity<EstabelecimentoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "5") @PathVariable Long id,
                                                                 @Valid @RequestBody EstabelecimentoDto estabelecimentoDto) {
         Estabelecimento estabelecimento = EstabelecimentoMapper.toDomain(estabelecimentoDto);
         Estabelecimento atualizado = updateEstabelecimentoUseCase.updateDadosCadastrais(id, estabelecimento);
@@ -285,16 +298,19 @@ public class EstabelecimentoController {
     @GetMapping("/busca")
         @Operation(summary = "Buscar estabelecimentos por filtros", description = "Busca estabelecimentos por criterios como nome, cidade, especialidade e servico.")
             @PageableAsQueryParam
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Resultado da busca retornado com sucesso",
-                        content = @Content(
-                                mediaType = "application/json",
-                                examples = @ExampleObject(
-                                        ref = "#/components/examples/PageResultExample"
-                                )
-                        )
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Resultado da busca retornado com sucesso",
+                content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                        ref = "#/components/examples/PageResultExample"
+                    )
                 )
+            ),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
+        })
     public ResponseEntity<Page<EstabelecimentoSearchResponseDto>> buscarComFiltros(
             @ParameterObject EstabelecimentoFilterDto filtroDto,
             @ParameterObject Pageable pageable) {

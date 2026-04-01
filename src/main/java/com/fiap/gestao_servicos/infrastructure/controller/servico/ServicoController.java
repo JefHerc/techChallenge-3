@@ -69,12 +69,12 @@ public class ServicoController {
                                         value = """
                                                         [
                                                             {
-                                                                "nome": "Corte feminino",
+                                                                "nome": "CORTE",
                                                                 "duracaoMedia": "PT1H"
                                                             },
                                                             {
-                                                                "nome": "Escova",
-                                                                "duracaoMedia": "PT45M"
+                                                                "nome": "ESCOVA",
+                                                                "duracaoMedia": "PT30M"
                                                             }
                                                         ]
                                                         """
@@ -92,14 +92,14 @@ public class ServicoController {
                                                 value = """
                                                                 [
                                                                     {
-                                                                        "id": 20,
-                                                                        "nome": "Corte feminino",
+                                                                        "id": 1,
+                                                                        "nome": "CORTE",
                                                                         "duracaoMedia": "PT1H"
                                                                     },
                                                                     {
-                                                                        "id": 21,
-                                                                        "nome": "Escova",
-                                                                        "duracaoMedia": "PT45M"
+                                                                        "id": 4,
+                                                                        "nome": "ESCOVA",
+                                                                        "duracaoMedia": "PT30M"
                                                                     }
                                                                 ]
                                                                 """
@@ -107,7 +107,9 @@ public class ServicoController {
                                 )
                         ),
                         @ApiResponse(ref = "#/components/responses/BadRequestError"),
-                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+                        @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                        @ApiResponse(ref = "#/components/responses/DuplicateDataError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<List<ServicoResponseDto>> criar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                                           @Valid @RequestBody List<ServicoDto> servicoDtos) {
@@ -123,16 +125,19 @@ public class ServicoController {
     @GetMapping
         @Operation(summary = "Listar servicos por estabelecimento")
             @PageableAsQueryParam
-                @ApiResponse(
-                        responseCode = "200",
-                        description = "Lista de servicos retornada com sucesso",
-                        content = @Content(
-                                mediaType = "application/json",
-                                examples = @ExampleObject(
-                                        ref = "#/components/examples/PageResultExample"
-                                )
-                        )
+        @ApiResponses(value = {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Lista de servicos retornada com sucesso",
+                content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                        ref = "#/components/examples/PageResultExample"
+                    )
                 )
+            ),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
+        })
         public ResponseEntity<Page<ServicoResponseDto>> listar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                    @ParameterObject Pageable pageable) {
         Page<ServicoResponseDto> servicos = PageUtils.toSpringPage(
@@ -155,18 +160,19 @@ public class ServicoController {
                         name = "servico",
                         value = """
                                 {
-                                  "id": 20,
-                                  "nome": "Corte feminino",
+                                  "id": 1,
+                                  "nome": "CORTE",
                                   "duracaoMedia": "PT1H"
                                 }
                                 """
                     )
                 )
             ),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<ServicoResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                  @Parameter(description = "ID do servico", example = "20") @PathVariable Long id) {
+                                  @Parameter(description = "ID do servico", example = "1") @PathVariable Long id) {
         Servico servico = findServicoByIdUseCase.findByIdAndEstabelecimentoId(id, estabelecimentoId);
         return ResponseEntity.ok(ServicoMapper.toResponse(servico));
     }
@@ -183,7 +189,7 @@ public class ServicoController {
                     name = "servicoAtualizacao",
                     value = """
                             {
-                              "nome": "Corte feminino completo",
+                              "nome": "COLORACAO PREMIUM",
                               "duracaoMedia": "PT1H15M"
                             }
                             """
@@ -201,8 +207,8 @@ public class ServicoController {
                         name = "servicoAtualizado",
                         value = """
                                 {
-                                  "id": 20,
-                                  "nome": "Corte feminino completo",
+                                  "id": 2,
+                                  "nome": "COLORACAO PREMIUM",
                                   "duracaoMedia": "PT1H15M"
                                 }
                                 """
@@ -210,10 +216,12 @@ public class ServicoController {
                 )
             ),
                         @ApiResponse(ref = "#/components/responses/BadRequestError"),
-                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+                        @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                        @ApiResponse(ref = "#/components/responses/DuplicateDataError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<ServicoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                @Parameter(description = "ID do servico", example = "20") @PathVariable Long id,
+                                @Parameter(description = "ID do servico", example = "2") @PathVariable Long id,
                                                         @Valid @RequestBody ServicoDto servicoDto) {
         Servico atualizado = updateServicoNoEstabelecimentoUseCase.update(
                 estabelecimentoId,
@@ -227,10 +235,12 @@ public class ServicoController {
     @Operation(summary = "Remover servico")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Servico removido com sucesso"),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+            @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
     })
     public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                        @Parameter(description = "ID do servico", example = "20") @PathVariable Long id) {
+                                        @Parameter(description = "ID do servico", example = "1") @PathVariable Long id) {
         deleteServicoNoEstabelecimentoUseCase.deleteById(estabelecimentoId, id);
         return ResponseEntity.noContent().build();
     }

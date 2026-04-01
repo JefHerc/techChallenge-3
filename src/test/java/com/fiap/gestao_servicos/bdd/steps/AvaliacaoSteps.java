@@ -33,8 +33,7 @@ public class AvaliacaoSteps {
                   "profissionalId": 1,
                   "servicoId": 1,
                   "clienteId": 1,
-                  "dataHoraInicio": "%s",
-                  "status": "CONCLUIDO"
+                                                                        "dataHoraInicio": "%s"
                 }
                 """.formatted(dataHora.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
@@ -47,8 +46,29 @@ public class AvaliacaoSteps {
                 .isEqualTo(201);
 
         JsonNode json = BddTestServer.objectMapper().readTree(response.body());
+        long agendamentoId = json.get("id").asLong();
+
+        String conclusaoBody = """
+                {
+                  "profissionalId": 1,
+                  "servicoId": 1,
+                  "clienteId": 1,
+                  "dataHoraInicio": "%s",
+                  "status": "CONCLUIDO"
+                }
+                """.formatted(dataHora.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+
+        HttpResponse<String> conclusaoResponse = BddTestServer.put(
+                "/estabelecimentos/" + estabelecimentoId + "/agendamentos/" + agendamentoId,
+                conclusaoBody);
+
+        assertThat(conclusaoResponse.statusCode())
+                .as("Falha ao concluir agendamento de pre-condicao. Resposta: %s", conclusaoResponse.body())
+                .isEqualTo(200);
+
         ScenarioContext context = BddTestServer.context();
-        context.setLastAgendamentoId(json.get("id").asLong());
-        context.setLastResponse(response);
+        context.setLastAgendamentoId(agendamentoId);
+        context.setLastEstabelecimentoId(estabelecimentoId);
+        context.setLastResponse(conclusaoResponse);
     }
 }

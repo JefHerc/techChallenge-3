@@ -1,39 +1,42 @@
 package com.fiap.gestao_servicos.infrastructure.controller.agendamento;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 
 import java.time.LocalDateTime;
 
-@Schema(description = "Payload para criacao/atualizacao de agendamento")
-public class AgendamentoDto {
+@JsonIgnoreProperties(ignoreUnknown = false)
+@Schema(description = "Payload para criacao de agendamento")
+public class AgendamentoCreateDto {
 
     @Schema(description = "ID do profissional", example = "1")
     @NotNull(message = "Profissional é obrigatório")
     private Long profissionalId;
+
     @Schema(description = "ID do servico", example = "1")
     @NotNull(message = "Serviço é obrigatório")
     private Long servicoId;
+
     @Schema(description = "ID do estabelecimento", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long estabelecimentoId;
+
     @Schema(description = "ID do cliente", example = "1")
     @NotNull(message = "Cliente é obrigatório")
     private Long clienteId;
-        @Schema(
+
+    @Schema(
             description = "Data e hora de inicio no formato ISO-8601 date-time",
             example = "2026-04-20T10:00:00",
             type = "string",
             format = "date-time"
-        )
+    )
     @NotNull(message = "Data/hora de início é obrigatória")
     private LocalDateTime dataHoraInicio;
-        @Schema(
-            description = "Status do agendamento",
-            example = "AGENDADO",
-            allowableValues = {"AGENDADO", "CANCELADO", "CONCLUIDO"}
-        )
-    @NotBlank(message = "Status é obrigatório")
+
+    @Schema(hidden = true)
+    @Null(message = "Status não deve ser informado na criação do agendamento")
     private String status;
 
     public Long getProfissionalId() {
@@ -84,4 +87,3 @@ public class AgendamentoDto {
         this.status = status;
     }
 }
-

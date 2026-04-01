@@ -6,34 +6,34 @@ import java.time.LocalDateTime;
 @Schema(description = "Dados de agendamento retornados pela API")
 public class AgendamentoResponseDto {
 
-    @Schema(description = "Identificador do agendamento", example = "10")
+    @Schema(description = "Identificador do agendamento", example = "1")
     private Long id;
-    @Schema(description = "ID do profissional", example = "5")
+    @Schema(description = "ID do profissional", example = "1")
     private Long profissionalId;
-    @Schema(description = "Nome do profissional", example = "Ana Souza", minLength = 2, maxLength = 120)
+    @Schema(description = "Nome do profissional", example = "Carla Souza", minLength = 2, maxLength = 120)
     private String profissionalNome;
-    @Schema(description = "ID do servico", example = "20")
+    @Schema(description = "ID do servico", example = "1")
     private Long servicoId;
-    @Schema(description = "Nome do servico", example = "Corte feminino", minLength = 2, maxLength = 120)
+    @Schema(description = "Nome do servico", example = "CORTE", minLength = 2, maxLength = 120)
     private String servicoNome;
     @Schema(description = "ID do estabelecimento", example = "1")
     private Long estabelecimentoId;
-    @Schema(description = "Nome do estabelecimento", example = "Studio Beleza Centro", minLength = 2, maxLength = 120)
+    @Schema(description = "Nome do estabelecimento", example = "Studio Bela Vida", minLength = 2, maxLength = 120)
     private String estabelecimentoNome;
-    @Schema(description = "ID do cliente", example = "12")
+    @Schema(description = "ID do cliente", example = "1")
     private Long clienteId;
-    @Schema(description = "Nome do cliente", example = "Maria da Silva", minLength = 2, maxLength = 120)
+    @Schema(description = "Nome do cliente", example = "João Silva", minLength = 2, maxLength = 120)
     private String clienteNome;
         @Schema(
             description = "Data e hora de inicio no formato ISO-8601 date-time",
-            example = "2026-04-20T14:30:00",
+            example = "2026-04-20T10:00:00",
             type = "string",
             format = "date-time"
         )
     private LocalDateTime dataHoraInicio;
         @Schema(
             description = "Data e hora de fim no formato ISO-8601 date-time",
-            example = "2026-04-20T15:30:00",
+            example = "2026-04-20T11:00:00",
             type = "string",
             format = "date-time"
         )

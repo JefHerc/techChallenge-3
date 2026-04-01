@@ -1,12 +1,16 @@
 package com.fiap.gestao_servicos.infrastructure.controller;
 
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 import com.fiap.gestao_servicos.core.exception.DuplicateDataException;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.MethodParameter;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
@@ -17,7 +21,6 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
 class GlobalExceptionHandlerTest {
@@ -38,7 +41,6 @@ class GlobalExceptionHandlerTest {
         assertEquals("DADO_DUPLICADO", response.getBody().code());
         assertEquals("CNPJ já cadastrado", response.getBody().message());
         assertEquals("/estabelecimentos", response.getBody().path());
-        assertFalse(response.getBody().errors().isEmpty() == false);
     }
 
     @Test
@@ -55,7 +57,22 @@ class GlobalExceptionHandlerTest {
         assertEquals("NAO_ENCONTRADO", response.getBody().code());
         assertEquals("Cliente não encontrado", response.getBody().message());
         assertEquals("/clientes/99", response.getBody().path());
-        assertEquals(0, response.getBody().errors().size());
+    }
+
+    @Test
+    void deveRetornarBadRequestParaBusinessRuleException() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/agendamentos");
+
+        ResponseEntity<ApiErrorResponse> response = handler.handleBusinessRule(
+                new BusinessRuleException("Estabelecimento fechado para o dia informado"),
+                request
+        );
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("REGRA_NEGOCIO", response.getBody().code());
+        assertEquals("Estabelecimento fechado para o dia informado", response.getBody().message());
+        assertEquals("/agendamentos", response.getBody().path());
     }
 
     @Test
@@ -71,9 +88,40 @@ class GlobalExceptionHandlerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("VALOR_INVALIDO", response.getBody().code());
         assertEquals("Status inválido", response.getBody().message());
-        assertEquals(1, response.getBody().errors().size());
-        assertEquals("request", response.getBody().errors().get(0).field());
-        assertEquals("Status inválido", response.getBody().errors().get(0).detail());
+    }
+
+    @Test
+    void deveRetornarConflictParaDataIntegrityViolationException() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/estabelecimentos/3");
+
+        ResponseEntity<ApiErrorResponse> response = handler.handleDataIntegrityViolation(
+                new DataIntegrityViolationException("constraint violation"),
+                request
+        );
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("RECURSO_EM_USO", response.getBody().code());
+        assertEquals("Não é possível concluir a operação porque existem dados vinculados a este recurso.", response.getBody().message());
+        assertEquals("/estabelecimentos/3", response.getBody().path());
+    }
+
+    @Test
+    void deveRetornarBadRequestParaHttpMessageNotReadableException() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/estabelecimentos");
+        HttpInputMessage inputMessage = Mockito.mock(HttpInputMessage.class);
+        String causa = "Cannot deserialize value";
+
+        ResponseEntity<ApiErrorResponse> response = handler.handleHttpMessageNotReadable(
+            new HttpMessageNotReadableException("json malformado", new RuntimeException(causa), inputMessage),
+                request
+        );
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("JSON_INVALIDO", response.getBody().code());
+        assertEquals("Corpo da requisição inválido. Verifique o JSON enviado.", response.getBody().message());
+        assertEquals("/estabelecimentos", response.getBody().path());
     }
 
     @Test
@@ -95,12 +143,7 @@ class GlobalExceptionHandlerTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("VALIDACAO_ENTRADA", response.getBody().code());
-        assertEquals("Erro de validação na requisição.", response.getBody().message());
-        assertEquals(2, response.getBody().errors().size());
-        assertEquals("nome", response.getBody().errors().get(0).field());
-        assertEquals("Nome é obrigatório", response.getBody().errors().get(0).detail());
-        assertEquals("email", response.getBody().errors().get(1).field());
-        assertEquals("Email inválido", response.getBody().errors().get(1).detail());
+        assertEquals("nome: Nome é obrigatório; email: Email inválido", response.getBody().message());
     }
 
     @Test
@@ -121,10 +164,7 @@ class GlobalExceptionHandlerTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("VALIDACAO_ENTRADA", response.getBody().code());
-        assertEquals("Erro de validação na requisição.", response.getBody().message());
-        assertEquals(1, response.getBody().errors().size());
-        assertEquals("[0].nome", response.getBody().errors().get(0).field());
-        assertEquals("Nome do serviço é obrigatório", response.getBody().errors().get(0).detail());
+        assertEquals("nome: Nome do serviço é obrigatório", response.getBody().message());
     }
 
     @Test
@@ -141,9 +181,9 @@ class GlobalExceptionHandlerTest {
         assertEquals("ERRO_INTERNO", response.getBody().code());
         assertEquals("Erro interno no servidor.", response.getBody().message());
         assertEquals("/qualquer-rota", response.getBody().path());
-        assertEquals(0, response.getBody().errors().size());
     }
 
+    @SuppressWarnings("unused")
     private void dummyMethod(String ignored) {
     }
 }

@@ -92,7 +92,7 @@ public class AgendamentoLoadSimulation extends Simulation {
                   "servicoId": %d,
                   "clienteId": %d,
                   "dataHoraInicio": "%s",
-                  "status": "CANCELADO"
+                  "status": "AGENDADO"
                 }
                 """.formatted(
                 profissionalId,

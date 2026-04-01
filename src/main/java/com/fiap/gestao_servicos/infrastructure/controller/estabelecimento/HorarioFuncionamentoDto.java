@@ -6,16 +6,16 @@ import jakarta.validation.constraints.NotBlank;
 public class HorarioFuncionamentoDto {
 
     @Schema(
-        description = "Dia da semana em padrao DayOfWeek",
-        example = "MONDAY",
+        description = "Dia da semana em portugues (pt-BR)",
+        example = "segunda-feira",
         allowableValues = {
-            "MONDAY",
-            "TUESDAY",
-            "WEDNESDAY",
-            "THURSDAY",
-            "FRIDAY",
-            "SATURDAY",
-            "SUNDAY"
+            "segunda-feira",
+            "terca-feira",
+            "quarta-feira",
+            "quinta-feira",
+            "sexta-feira",
+            "sabado",
+            "domingo"
         }
     )
     @NotBlank(message = "Dia da semana é obrigatório")
@@ -36,11 +36,11 @@ public class HorarioFuncionamentoDto {
         pattern = "^([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?$"
     )
     private String fechamento;
-    private boolean fechado;
+    private Boolean fechado;
 
     public HorarioFuncionamentoDto() {}
 
-    public HorarioFuncionamentoDto(String diaSemana, String abertura, String fechamento, boolean fechado) {
+    public HorarioFuncionamentoDto(String diaSemana, String abertura, String fechamento, Boolean fechado) {
         this.diaSemana = diaSemana;
         this.abertura = abertura;
         this.fechamento = fechamento;
@@ -71,11 +71,11 @@ public class HorarioFuncionamentoDto {
         this.fechamento = fechamento;
     }
 
-    public boolean isFechado() {
+    public Boolean isFechado() {
         return fechado;
     }
 
-    public void setFechado(boolean fechado) {
+    public void setFechado(Boolean fechado) {
         this.fechado = fechado;
     }
 }

@@ -16,7 +16,7 @@ public class EstabelecimentoDto {
 
         @Schema(
             description = "Nome do estabelecimento",
-            example = "Studio Beleza Centro",
+            example = "Studio Bela Vida",
             minLength = 2,
             maxLength = 120
         )
@@ -26,7 +26,7 @@ public class EstabelecimentoDto {
     @Schema(description = "Endereco do estabelecimento")
     @Valid
     private EnderecoDto endereco;
-    @Schema(description = "CNPJ do estabelecimento (somente numeros)", example = "12345678000199")
+    @Schema(description = "CNPJ do estabelecimento (somente numeros)", example = "64245654000168")
     @NotBlank(message = "CNPJ é obrigatório")
     private String cnpj;
     @Schema(description = "Lista de URLs de fotos do estabelecimento")

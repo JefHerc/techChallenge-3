@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/agendamentos/{agendamentoId}/avaliacoes")
+@RequestMapping("/estabelecimentos/{estabelecimentoId}")
 @Tag(name = "Avaliacoes", description = "Operacoes de avaliacao vinculadas a agendamentos")
 public class AvaliacaoController {
 
@@ -61,7 +61,7 @@ public class AvaliacaoController {
         this.deleteAvaliacaoUseCase = deleteAvaliacaoUseCase;
     }
 
-    @PostMapping
+    @PostMapping("/agendamentos/{agendamentoId}/avaliacoes")
         @Operation(summary = "Criar avaliacao")
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Payload de criacao de avaliacao",
@@ -93,38 +93,40 @@ public class AvaliacaoController {
                         name = "avaliacaoCriada",
                         value = """
                                 {
-                                  "id": 30,
-                                  "agendamentoId": 10,
-                                  "profissionalId": 5,
-                                  "profissionalNome": "Ana Souza",
+                                  "id": 1,
+                                  "agendamentoId": 1,
+                                  "profissionalId": 1,
+                                  "profissionalNome": "Carla Souza",
                                   "estabelecimentoId": 1,
-                                  "estabelecimentoNome": "Studio Beleza Centro",
-                                  "statusAgendamento": "FINALIZADO",
-                                  "notaEstabelecimento": 4.5,
+                                  "estabelecimentoNome": "Studio Bela Vida",
+                                  "statusAgendamento": "CONCLUIDO",
+                                  "notaEstabelecimento": 4.8,
                                   "notaProfissional": 5.0,
-                                  "comentarioEstabelecimento": "Ambiente limpo e atendimento excelente",
-                                  "comentarioProfissional": "Profissional muito atenciosa"
+                                  "comentarioEstabelecimento": "Ambiente excelente.",
+                                  "comentarioProfissional": "Profissional muito atenciosa."
                                 }
                                 """
                     )
                 )
             ),
                         @ApiResponse(ref = "#/components/responses/BadRequestError"),
-                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+                        @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<AvaliacaoResponseDto> criar(@Parameter(description = "ID do agendamento", example = "10") @PathVariable Long agendamentoId,
+        public ResponseEntity<AvaliacaoResponseDto> criar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                                                      @Parameter(description = "ID do agendamento", example = "1") @PathVariable Long agendamentoId,
                                                       @Valid @RequestBody AvaliacaoDto avaliacaoDto) {
         Agendamento agendamento = findAgendamentoByIdUseCase.findById(agendamentoId);
-        fillAvaliacaoDtoFromAgendamento(avaliacaoDto, agendamento);
+        validateAgendamentoBelongsToEstabelecimento(estabelecimentoId, agendamento);
 
-        Avaliacao avaliacao = AvaliacaoMapper.toDomain(avaliacaoDto);
+        Avaliacao avaliacao = AvaliacaoMapper.toDomain(avaliacaoDto, agendamento);
         Avaliacao avaliacaoCriada = createAvaliacaoUseCase.create(avaliacao);
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(AvaliacaoMapper.toResponse(avaliacaoCriada));
     }
 
-    @GetMapping
-        @Operation(summary = "Listar avaliacoes de um agendamento")
+    @GetMapping("/avaliacoes")
+        @Operation(summary = "Listar avaliacoes de um estabelecimento")
             @PageableAsQueryParam
                 @ApiResponses(value = {
                         @ApiResponse(
@@ -139,18 +141,15 @@ public class AvaliacaoController {
                         ),
             @ApiResponse(ref = "#/components/responses/NotFoundError")
         })
-        public ResponseEntity<Page<AvaliacaoResponseDto>> listar(@Parameter(description = "ID do agendamento", example = "10") @PathVariable Long agendamentoId,
+        public ResponseEntity<Page<AvaliacaoResponseDto>> listar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
                                      @ParameterObject Pageable pageable) {
-        Agendamento agendamento = findAgendamentoByIdUseCase.findById(agendamentoId);
-        Long estabelecimentoId = agendamento.getEstabelecimento().getId();
-
         Page<AvaliacaoResponseDto> avaliacoes = PageUtils.toSpringPage(
                 findAllAvaliacoesUseCase.findByEstabelecimentoId(estabelecimentoId, PageUtils.toPageQuery(pageable))
                         .map(AvaliacaoMapper::toResponse));
         return ResponseEntity.ok(avaliacoes);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/agendamentos/{agendamentoId}/avaliacoes/{id}")
         @Operation(summary = "Buscar avaliacao por ID")
         @ApiResponses(value = {
             @ApiResponse(
@@ -163,32 +162,35 @@ public class AvaliacaoController {
                         name = "avaliacao",
                         value = """
                                 {
-                                  "id": 30,
-                                  "agendamentoId": 10,
-                                  "profissionalId": 5,
-                                  "profissionalNome": "Ana Souza",
+                                  "id": 1,
+                                  "agendamentoId": 1,
+                                  "profissionalId": 1,
+                                  "profissionalNome": "Carla Souza",
                                   "estabelecimentoId": 1,
-                                  "estabelecimentoNome": "Studio Beleza Centro",
-                                  "statusAgendamento": "FINALIZADO",
-                                  "notaEstabelecimento": 4.5,
+                                  "estabelecimentoNome": "Studio Bela Vida",
+                                  "statusAgendamento": "CONCLUIDO",
+                                  "notaEstabelecimento": 4.8,
                                   "notaProfissional": 5.0,
-                                  "comentarioEstabelecimento": "Ambiente limpo e atendimento excelente",
-                                  "comentarioProfissional": "Profissional muito atenciosa"
+                                  "comentarioEstabelecimento": "Ambiente excelente.",
+                                  "comentarioProfissional": "Profissional muito atenciosa."
                                 }
                                 """
                     )
                 )
             ),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<AvaliacaoResponseDto> buscarPorId(@Parameter(description = "ID do agendamento", example = "10") @PathVariable Long agendamentoId,
-                                    @Parameter(description = "ID da avaliacao", example = "30") @PathVariable Long id) {
+        public ResponseEntity<AvaliacaoResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                                    @Parameter(description = "ID do agendamento", example = "1") @PathVariable Long agendamentoId,
+                                    @Parameter(description = "ID da avaliacao", example = "1") @PathVariable Long id) {
         Avaliacao avaliacao = findAvaliacaoByIdUseCase.findById(id);
+        validateAvaliacaoBelongsToEstabelecimento(estabelecimentoId, avaliacao);
         validateAvaliacaoBelongsToAgendamento(agendamentoId, avaliacao);
         return ResponseEntity.ok(AvaliacaoMapper.toResponse(avaliacao));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/agendamentos/{agendamentoId}/avaliacoes/{id}")
         @Operation(summary = "Atualizar avaliacao")
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Payload de atualizacao de avaliacao",
@@ -220,65 +222,88 @@ public class AvaliacaoController {
                         name = "avaliacaoAtualizada",
                         value = """
                                 {
-                                  "id": 30,
-                                  "agendamentoId": 10,
-                                  "profissionalId": 5,
-                                  "profissionalNome": "Ana Souza",
+                                  "id": 1,
+                                  "agendamentoId": 1,
+                                  "profissionalId": 1,
+                                  "profissionalNome": "Carla Souza",
                                   "estabelecimentoId": 1,
-                                  "estabelecimentoNome": "Studio Beleza Centro",
-                                  "statusAgendamento": "FINALIZADO",
+                                  "estabelecimentoNome": "Studio Bela Vida",
+                                  "statusAgendamento": "CONCLUIDO",
                                   "notaEstabelecimento": 4.0,
                                   "notaProfissional": 4.8,
-                                  "comentarioEstabelecimento": "Servico bom e rapido",
-                                  "comentarioProfissional": "Excelente tecnica"
+                                  "comentarioEstabelecimento": "Serviço bom e rápido",
+                                  "comentarioProfissional": "Excelente técnica"
                                 }
                                 """
                     )
                 )
             ),
                         @ApiResponse(ref = "#/components/responses/BadRequestError"),
-                        @ApiResponse(ref = "#/components/responses/NotFoundError")
+                        @ApiResponse(ref = "#/components/responses/NotFoundError"),
+                        @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<AvaliacaoResponseDto> atualizar(@Parameter(description = "ID do agendamento", example = "10") @PathVariable Long agendamentoId,
-                                  @Parameter(description = "ID da avaliacao", example = "30") @PathVariable Long id,
+        public ResponseEntity<AvaliacaoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+                      @Parameter(description = "ID do agendamento", example = "1") @PathVariable Long agendamentoId,
+                                  @Parameter(description = "ID da avaliacao", example = "1") @PathVariable Long id,
                                                           @Valid @RequestBody AvaliacaoDto avaliacaoDto) {
         Avaliacao avaliacaoAtual = findAvaliacaoByIdUseCase.findById(id);
+        validateAvaliacaoBelongsToEstabelecimento(estabelecimentoId, avaliacaoAtual);
         validateAvaliacaoBelongsToAgendamento(agendamentoId, avaliacaoAtual);
 
-        Agendamento agendamento = findAgendamentoByIdUseCase.findById(agendamentoId);
-        fillAvaliacaoDtoFromAgendamento(avaliacaoDto, agendamento);
-
-        Avaliacao avaliacao = AvaliacaoMapper.toDomain(avaliacaoDto);
+        Avaliacao avaliacao = AvaliacaoMapper.toDomain(avaliacaoDto, avaliacaoAtual.getAgendamento());
         Avaliacao avaliacaoAtualizada = updateAvaliacaoUseCase.update(id, avaliacao);
         return ResponseEntity.ok(AvaliacaoMapper.toResponse(avaliacaoAtualizada));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/agendamentos/avaliacoes/{id}")
         @Operation(summary = "Remover avaliacao")
         @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Avaliacao removida com sucesso"),
-            @ApiResponse(ref = "#/components/responses/NotFoundError")
+            @ApiResponse(ref = "#/components/responses/NotFoundError"),
+            @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
+            @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<Void> deletar(@Parameter(description = "ID do agendamento", example = "10") @PathVariable Long agendamentoId,
+        public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "10") @PathVariable Long estabelecimentoId,
                         @Parameter(description = "ID da avaliacao", example = "30") @PathVariable Long id) {
         Avaliacao avaliacao = findAvaliacaoByIdUseCase.findById(id);
-        validateAvaliacaoBelongsToAgendamento(agendamentoId, avaliacao);
+        validateAvaliacaoBelongsToEstabelecimento(estabelecimentoId, avaliacao);
 
         deleteAvaliacaoUseCase.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    private void fillAvaliacaoDtoFromAgendamento(AvaliacaoDto dto, Agendamento agendamento) {
-        dto.setAgendamentoId(agendamento.getId());
-        dto.setProfissionalId(agendamento.getProfissional().getId());
-        dto.setEstabelecimentoId(agendamento.getEstabelecimento().getId());
+    private void validateAvaliacaoBelongsToEstabelecimento(Long estabelecimentoId, Avaliacao avaliacao) {
+        Long avaliacaoEstabelecimentoId = avaliacao.getAgendamento() != null
+                && avaliacao.getAgendamento().getEstabelecimento() != null
+                ? avaliacao.getAgendamento().getEstabelecimento().getId()
+                : null;
+        if (!estabelecimentoId.equals(avaliacaoEstabelecimentoId)) {
+            throw new ResourceNotFoundException(
+                    "Avaliação não encontrada para o id: " + avaliacao.getId()
+                            + " no estabelecimento: " + estabelecimentoId
+            );
+        }
     }
 
     private void validateAvaliacaoBelongsToAgendamento(Long agendamentoId, Avaliacao avaliacao) {
-        Long avaliacaoAgendamentoId = avaliacao.getAgendamento() != null ? avaliacao.getAgendamento().getId() : null;
+        Long avaliacaoAgendamentoId = avaliacao.getAgendamento() != null
+                ? avaliacao.getAgendamento().getId()
+                : null;
         if (!agendamentoId.equals(avaliacaoAgendamentoId)) {
             throw new ResourceNotFoundException(
-                    "Avaliação não encontrada para o id: " + avaliacao.getId() + " no agendamento: " + agendamentoId
+                    "Avaliação não encontrada para o id: " + avaliacao.getId()
+                            + " no agendamento: " + agendamentoId
+            );
+        }
+    }
+
+    private void validateAgendamentoBelongsToEstabelecimento(Long estabelecimentoId, Agendamento agendamento) {
+        Long agendamentoEstabelecimentoId = agendamento.getEstabelecimento() != null
+                ? agendamento.getEstabelecimento().getId()
+                : null;
+        if (!estabelecimentoId.equals(agendamentoEstabelecimentoId)) {
+            throw new ResourceNotFoundException(
+                    "Agendamento não encontrado para o estabelecimento: " + estabelecimentoId
             );
         }
     }

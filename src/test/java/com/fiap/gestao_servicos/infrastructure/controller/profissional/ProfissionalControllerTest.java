@@ -6,6 +6,7 @@ import com.fiap.gestao_servicos.core.domain.Email;
 import com.fiap.gestao_servicos.core.domain.ExpedienteProfissional;
 import com.fiap.gestao_servicos.core.domain.Profissional;
 import com.fiap.gestao_servicos.core.domain.Sexo;
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 import com.fiap.gestao_servicos.core.usecase.profissional.CreateProfissionalNoEstabelecimentoUseCase;
 import com.fiap.gestao_servicos.core.usecase.profissional.DeleteProfissionalNoEstabelecimentoUseCase;
 import com.fiap.gestao_servicos.core.usecase.profissional.FindAllProfissionaisUseCase;
@@ -102,12 +103,12 @@ class ProfissionalControllerTest {
         Long estabelecimentoId = 1L;
         Long profissionalId = 5L;
 
-        org.mockito.Mockito.doThrow(new IllegalArgumentException(
+        org.mockito.Mockito.doThrow(new BusinessRuleException(
                 "Expediente do profissional no dia MONDAY deve estar dentro do horario de funcionamento do estabelecimento"
         )).when(updateProfissionalNoEstabelecimentoUseCase).update(eq(estabelecimentoId), eq(profissionalId), any(Profissional.class));
 
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
+        BusinessRuleException ex = assertThrows(
+                BusinessRuleException.class,
                 () -> controller.atualizar(estabelecimentoId, profissionalId, criarProfissionalDto(
                         "Joao",
                         "52998224725",

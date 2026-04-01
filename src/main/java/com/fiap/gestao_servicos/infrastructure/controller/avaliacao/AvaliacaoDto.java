@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 @Schema(description = "Payload para criacao/atualizacao de avaliacao")
 public class AvaliacaoDto {
 
-    @Schema(description = "ID do agendamento", example = "10", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "ID do agendamento", example = "10")
     private Long agendamentoId;
     @Schema(description = "ID do profissional", example = "5", accessMode = Schema.AccessMode.READ_ONLY)
     private Long profissionalId;

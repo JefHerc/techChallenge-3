@@ -13,6 +13,7 @@ import com.fiap.gestao_servicos.infrastructure.controller.estabelecimento.Estabe
 import com.fiap.gestao_servicos.infrastructure.controller.estabelecimento.HorarioFuncionamentoDto;
 import com.fiap.gestao_servicos.infrastructure.controller.estabelecimento.ProfissionalServicoDto;
 import com.fiap.gestao_servicos.infrastructure.controller.estabelecimento.ServicoOfertadoDto;
+import com.fiap.gestao_servicos.infrastructure.mapper.DiaSemanaMapper;
 import com.fiap.gestao_servicos.infrastructure.persistence.EnderecoEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento.EstabelecimentoEntity;
 import com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento.EstabelecimentoRepositoryJpa;
@@ -283,8 +284,8 @@ public final class EstabelecimentoMapper {
             return null;
         }
 
-        boolean fechado = dto.isFechado();
-        DayOfWeek diaSemana = dto.getDiaSemana() != null ? DayOfWeek.valueOf(dto.getDiaSemana().trim().toUpperCase()) : null;
+        boolean fechado = Boolean.TRUE.equals(dto.isFechado());
+        DayOfWeek diaSemana = DiaSemanaMapper.parse(dto.getDiaSemana());
         LocalTime abertura = fechado || dto.getAbertura() == null || dto.getAbertura().isBlank()
             ? null
             : LocalTime.parse(dto.getAbertura());
@@ -309,7 +310,7 @@ public final class EstabelecimentoMapper {
         }
 
         HorarioFuncionamentoDto dto = new HorarioFuncionamentoDto();
-        dto.setDiaSemana(horario.getDiaSemana() != null ? horario.getDiaSemana().name() : null);
+        dto.setDiaSemana(DiaSemanaMapper.toPtBr(horario.getDiaSemana()));
         dto.setAbertura(horario.getAbertura() != null ? horario.getAbertura().toString() : null);
         dto.setFechamento(horario.getFechamento() != null ? horario.getFechamento().toString() : null);
         dto.setFechado(horario.isFechado());

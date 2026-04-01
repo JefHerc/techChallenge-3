@@ -4,6 +4,7 @@ import com.fiap.gestao_servicos.core.domain.Agendamento;
 import com.fiap.gestao_servicos.core.domain.Avaliacao;
 import com.fiap.gestao_servicos.core.domain.Estabelecimento;
 import com.fiap.gestao_servicos.core.domain.Profissional;
+import com.fiap.gestao_servicos.core.exception.BusinessRuleException;
 import com.fiap.gestao_servicos.core.exception.ResourceNotFoundException;
 import com.fiap.gestao_servicos.core.repository.AgendamentoRepository;
 import com.fiap.gestao_servicos.core.repository.AvaliacaoRepository;
@@ -77,7 +78,7 @@ class UpdateAvaliacaoUseCaseTest {
         when(estabelecimentoRepository.existsById(30L)).thenReturn(true);
         when(estabelecimentoRepository.temProfissional(30L, 20L)).thenReturn(false);
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> useCase.update(11L, avaliacao));
+        BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> useCase.update(11L, avaliacao));
 
         assertEquals("Profissional informado não pertence ao estabelecimento informado", ex.getMessage());
         verify(avaliacaoRepository, never()).update(11L, avaliacao);

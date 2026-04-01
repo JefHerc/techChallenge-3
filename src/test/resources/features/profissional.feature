@@ -16,7 +16,7 @@ Feature: Cadastro de Profissionais
         "sexo": "FEMININO",
         "expedientes": [
           {
-            "diaSemana": "MONDAY",
+            "diaSemana": "segunda-feira",
             "inicioTurno": "09:00",
             "fimTurno": "17:00"
           }
@@ -71,7 +71,7 @@ Feature: Cadastro de Profissionais
         "sexo": "MASCULINO",
         "expedientes": [
           {
-            "diaSemana": "TUESDAY",
+            "diaSemana": "terca-feira",
             "inicioTurno": "10:00",
             "fimTurno": "16:00"
           }
@@ -98,7 +98,7 @@ Feature: Cadastro de Profissionais
         "sexo": "MASCULINO",
         "expedientes": [
           {
-            "diaSemana": "WEDNESDAY",
+            "diaSemana": "quarta-feira",
             "inicioTurno": "09:00",
             "fimTurno": "15:00"
           }
@@ -128,7 +128,7 @@ Feature: Cadastro de Profissionais
         "sexo": "FEMININO",
         "expedientes": [
           {
-            "diaSemana": "THURSDAY",
+            "diaSemana": "quinta-feira",
             "inicioTurno": "09:00",
             "fimTurno": "14:00"
           }

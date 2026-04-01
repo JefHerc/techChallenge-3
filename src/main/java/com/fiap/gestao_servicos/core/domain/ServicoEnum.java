@@ -4,7 +4,9 @@ public enum ServicoEnum {
 
     HIDRATACAO("Hidratação"),
     CORTE("Corte"),
+    COLORACAO("Coloração"),
     PINTURA("Pintura"),
+    ESCOVA("Escova"),
     MANICURE("Manicure"),
     PEDICURE("Pedicure"),
     MASSAGEM("Massagem"),
