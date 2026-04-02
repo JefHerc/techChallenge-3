@@ -74,9 +74,9 @@ public class AgendamentoController {
                     name = "agendamento",
                     value = """
                             {
-                              "profissionalId": 2001,
-                              "servicoId": 201,
-                              "clienteId": 4,
+                              "profissionalId": 11,
+                              "servicoId": 8,
+                              "clienteId": 3,
                               "dataHoraInicio": "2026-04-20T10:00:00"
                             }
                             """
@@ -232,7 +232,7 @@ public class AgendamentoController {
             @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<AgendamentoResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
-                                      @Parameter(description = "ID do agendamento", example = "20013") @PathVariable Long id) {
+                                      @Parameter(description = "ID do agendamento", example = "19") @PathVariable Long id) {
         Agendamento agendamento = findAgendamentoByIdUseCase.findById(id);
         validateAgendamentoBelongsToEstabelecimento(estabelecimentoId, agendamento);
         return ResponseEntity.ok(AgendamentoMapper.toResponse(agendamento));
@@ -250,10 +250,11 @@ public class AgendamentoController {
                     name = "agendamentoAtualizacao",
                     value = """
                             {
-                              "profissionalId": 2001,
-                              "servicoId": 201,
-                              "clienteId": 4,
-                              "dataHoraInicio": "2026-04-20T10:00:00"
+                              "profissionalId": 10,
+                              "servicoId": 8,
+                              "clienteId": 2,
+                              "dataHoraInicio": "2026-04-20T10:00:00",
+                              "status": "AGENDADO"
                             }
                             """
                 )
@@ -292,7 +293,7 @@ public class AgendamentoController {
                         @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<AgendamentoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
-                                    @Parameter(description = "ID do agendamento", example = "20012") @PathVariable Long id,
+                                    @Parameter(description = "ID do agendamento", example = "17") @PathVariable Long id,
                                                             @Valid @RequestBody AgendamentoDto agendamentoDto) {
         Agendamento atual = findAgendamentoByIdUseCase.findById(id);
         validateAgendamentoBelongsToEstabelecimento(estabelecimentoId, atual);
@@ -312,7 +313,7 @@ public class AgendamentoController {
             @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
-                        @Parameter(description = "ID do agendamento", example = "20011") @PathVariable Long id) {
+                        @Parameter(description = "ID do agendamento", example = "20") @PathVariable Long id) {
         Agendamento agendamento = findAgendamentoByIdUseCase.findById(id);
         validateAgendamentoBelongsToEstabelecimento(estabelecimentoId, agendamento);
 

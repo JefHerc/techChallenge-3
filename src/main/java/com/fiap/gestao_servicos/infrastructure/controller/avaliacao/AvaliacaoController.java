@@ -114,7 +114,7 @@ public class AvaliacaoController {
                         @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<AvaliacaoResponseDto> criar(@Parameter(description = "ID do estabelecimento", example = "3") @PathVariable Long estabelecimentoId,
-                                                      @Parameter(description = "ID do agendamento", example = "39991") @PathVariable Long agendamentoId,
+                                                      @Parameter(description = "ID do agendamento", example = "42") @PathVariable Long agendamentoId,
                                                       @Valid @RequestBody AvaliacaoDto avaliacaoDto) {
         Agendamento agendamento = findAgendamentoByIdUseCase.findById(agendamentoId);
         validateAgendamentoBelongsToEstabelecimento(estabelecimentoId, agendamento);
@@ -141,7 +141,7 @@ public class AvaliacaoController {
                         ),
             @ApiResponse(ref = "#/components/responses/NotFoundError")
         })
-        public ResponseEntity<Page<AvaliacaoResponseDto>> listar(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
+        public ResponseEntity<Page<AvaliacaoResponseDto>> listar(@Parameter(description = "ID do estabelecimento", example = "3") @PathVariable Long estabelecimentoId,
                                      @ParameterObject Pageable pageable) {
         Page<AvaliacaoResponseDto> avaliacoes = PageUtils.toSpringPage(
                 findAllAvaliacoesUseCase.findByEstabelecimentoId(estabelecimentoId, PageUtils.toPageQuery(pageable))
@@ -181,9 +181,9 @@ public class AvaliacaoController {
             @ApiResponse(ref = "#/components/responses/NotFoundError"),
             @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<AvaliacaoResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
-                                    @Parameter(description = "ID do agendamento", example = "20013") @PathVariable Long agendamentoId,
-                                    @Parameter(description = "ID da avaliacao", example = "720013") @PathVariable Long id) {
+        public ResponseEntity<AvaliacaoResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "3") @PathVariable Long estabelecimentoId,
+                                    @Parameter(description = "ID do agendamento", example = "41") @PathVariable Long agendamentoId,
+                                    @Parameter(description = "ID da avaliacao", example = "17") @PathVariable Long id) {
         Avaliacao avaliacao = findAvaliacaoByIdUseCase.findById(id);
         validateAvaliacaoBelongsToEstabelecimento(estabelecimentoId, avaliacao);
         validateAvaliacaoBelongsToAgendamento(agendamentoId, avaliacao);
@@ -242,9 +242,9 @@ public class AvaliacaoController {
                         @ApiResponse(ref = "#/components/responses/NotFoundError"),
                         @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<AvaliacaoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
-                      @Parameter(description = "ID do agendamento", example = "20043") @PathVariable Long agendamentoId,
-                                  @Parameter(description = "ID da avaliacao", example = "720043") @PathVariable Long id,
+        public ResponseEntity<AvaliacaoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "3") @PathVariable Long estabelecimentoId,
+                      @Parameter(description = "ID do agendamento", example = "42") @PathVariable Long agendamentoId,
+                                  @Parameter(description = "ID da avaliacao", example = "18") @PathVariable Long id,
                                                           @Valid @RequestBody AvaliacaoDto avaliacaoDto) {
         Avaliacao avaliacaoAtual = findAvaliacaoByIdUseCase.findById(id);
         validateAvaliacaoBelongsToEstabelecimento(estabelecimentoId, avaliacaoAtual);
@@ -263,8 +263,8 @@ public class AvaliacaoController {
             @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
             @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
-                        @Parameter(description = "ID da avaliacao", example = "720023") @PathVariable Long id) {
+        public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "3") @PathVariable Long estabelecimentoId,
+                        @Parameter(description = "ID da avaliacao", example = "16") @PathVariable Long id) {
         Avaliacao avaliacao = findAvaliacaoByIdUseCase.findById(id);
         validateAvaliacaoBelongsToEstabelecimento(estabelecimentoId, avaliacao);
 

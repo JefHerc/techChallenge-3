@@ -228,7 +228,7 @@ public class ClienteController {
             @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
             @ApiResponse(ref = "#/components/responses/InternalServerError")
     })
-    public ResponseEntity<Void> deletar(@Parameter(description = "ID do cliente", example = "4") @PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID do cliente", example = "5") @PathVariable Long id) {
         deleteClienteUseCase.deleteById(id);
         return ResponseEntity.noContent().build();
     }

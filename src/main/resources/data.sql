@@ -15,6 +15,10 @@ INSERT INTO cliente (nome, cpf, celular, email, sexo)
 SELECT 'Pedro Alves',   '39053344705', '11977776665', 'pedro@cliente.com',   'MASCULINO'
 WHERE NOT EXISTS (SELECT 1 FROM cliente c WHERE c.cpf = '39053344705');
 
+INSERT INTO cliente (nome, cpf, celular, email, sexo)
+SELECT 'Larissa Gomes', '70841596069', '11966665544', 'larissa@cliente.com', 'FEMININO'
+WHERE NOT EXISTS (SELECT 1 FROM cliente c WHERE c.cpf = '70841596069');
+
     -- ============================================================
     -- ESTABELECIMENTO 1 — Studio Bela Vida
     -- ============================================================
@@ -288,3 +292,47 @@ WHERE NOT EXISTS (SELECT 1 FROM cliente c WHERE c.cpf = '39053344705');
     INSERT INTO estabelecimento (nome, cnpj, logradouro, numero, complemento, bairro, cidade, estado, cep)
     SELECT 'Studio Bela Vida Premium', '64245654000249', 'Avenida Paulista', '1002', 'Sala 12', 'Bela Vista', 'São Paulo', 'SP', '01310100'
     WHERE NOT EXISTS (SELECT 1 FROM estabelecimento e WHERE e.cnpj = '64245654000249');
+
+    -- ============================================================
+    -- DADOS ADICIONAIS SOLICITADOS
+    -- ============================================================
+
+    -- Novo serviço no estabelecimento 1
+    INSERT INTO servico (nome, duracao_media, estabelecimento_id)
+    SELECT 'SOBRANCELHA', 1800000000000, e.id
+    FROM estabelecimento e
+    WHERE e.cnpj = '64245654000168'
+        AND NOT EXISTS (SELECT 1 FROM servico sv WHERE sv.nome = 'SOBRANCELHA' AND sv.estabelecimento_id = e.id);
+
+    -- Novo profissional no estabelecimento 2
+    INSERT INTO profissional (nome, cpf, celular, email, url_foto, descricao, sexo, estabelecimento_id)
+    SELECT 'Gabriel Nunes', '90234123036', '11977770005', 'gabriel@e2.com', NULL, 'Especialista em visagismo', 'MASCULINO', e.id
+    FROM estabelecimento e
+    WHERE e.cnpj = '12345678000195'
+        AND NOT EXISTS (SELECT 1 FROM profissional pf WHERE pf.cpf = '90234123036');
+
+    -- 2 novos agendamentos CONCLUIDO no estabelecimento 3
+    INSERT INTO agendamento (profissional_id, servico_id, estabelecimento_id, cliente_id, data_hora_inicio, data_hora_fim, status)
+    SELECT pf.id, sv.id, e.id, c.id, ag.inicio, ag.inicio + INTERVAL 1 HOUR, 'CONCLUIDO'
+    FROM estabelecimento e
+    JOIN profissional pf ON pf.estabelecimento_id = e.id
+    JOIN servico sv ON sv.estabelecimento_id = e.id AND sv.nome = 'CORTE'
+    JOIN (
+        SELECT '55666777890' AS profissional_cpf, '34028317088' AS cliente_cpf, DATE_SUB(NOW(), INTERVAL 15 DAY) AS inicio
+        UNION ALL
+        SELECT '66777888900', '52998224725', DATE_SUB(NOW(), INTERVAL 16 DAY)
+    ) ag ON ag.profissional_cpf = pf.cpf
+    JOIN cliente c ON c.cpf = ag.cliente_cpf
+    WHERE e.cnpj = '98765432000198'
+        AND NOT EXISTS (
+            SELECT 1
+            FROM agendamento a
+            WHERE a.profissional_id = pf.id
+              AND a.data_hora_inicio = ag.inicio
+              AND a.status = 'CONCLUIDO'
+        );
+
+    -- Novo estabelecimento
+    INSERT INTO estabelecimento (nome, cnpj, logradouro, numero, complemento, bairro, cidade, estado, cep)
+    SELECT 'Ateliê Essencial', '80345612000155', 'Rua Aurora', '321', 'Loja 5', 'Vila Mariana', 'São Paulo', 'SP', '04103000'
+    WHERE NOT EXISTS (SELECT 1 FROM estabelecimento e WHERE e.cnpj = '80345612000155');
