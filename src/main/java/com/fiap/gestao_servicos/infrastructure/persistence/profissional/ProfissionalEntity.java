@@ -122,13 +122,16 @@ public class ProfissionalEntity {
     }
 
     public List<ServicoProfissionalEntity> getServicosProfissional() {
-        return servicosProfissional == null ? null : new ArrayList<>(servicosProfissional);
+        return servicosProfissional;
     }
 
     public void setServicosProfissional(List<ServicoProfissionalEntity> servicosProfissional) {
-        this.servicosProfissional = servicosProfissional == null ? null : new ArrayList<>(servicosProfissional);
-        if (this.servicosProfissional != null) {
-            this.servicosProfissional.forEach(servicoProfissional -> servicoProfissional.setProfissional(this));
+        this.servicosProfissional = new ArrayList<>();
+        if (servicosProfissional != null) {
+            servicosProfissional.forEach(servicoProfissional -> {
+                servicoProfissional.setProfissional(this);
+                this.servicosProfissional.add(servicoProfissional);
+            });
         }
     }
 
@@ -149,13 +152,16 @@ public class ProfissionalEntity {
     }
 
     public List<ExpedienteProfissionalEntity> getExpedientes() {
-        return expedientes == null ? null : new ArrayList<>(expedientes);
+        return expedientes;
     }
 
     public void setExpedientes(List<ExpedienteProfissionalEntity> expedientes) {
-        this.expedientes = expedientes == null ? null : new ArrayList<>(expedientes);
-        if (this.expedientes != null) {
-            this.expedientes.forEach(expediente -> expediente.setProfissional(this));
+        this.expedientes = new ArrayList<>();
+        if (expedientes != null) {
+            expedientes.forEach(expediente -> {
+                expediente.setProfissional(this);
+                this.expedientes.add(expediente);
+            });
         }
     }
 }

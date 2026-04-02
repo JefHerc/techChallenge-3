@@ -74,9 +74,9 @@ public class AgendamentoController {
                     name = "agendamento",
                     value = """
                             {
-                              "profissionalId": 1,
-                              "servicoId": 1,
-                              "clienteId": 1,
+                              "profissionalId": 2001,
+                              "servicoId": 201,
+                              "clienteId": 4,
                               "dataHoraInicio": "2026-04-20T10:00:00"
                             }
                             """
@@ -115,7 +115,7 @@ public class AgendamentoController {
                         @ApiResponse(ref = "#/components/responses/NotFoundError"),
                         @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<AgendamentoResponseDto> criar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+        public ResponseEntity<AgendamentoResponseDto> criar(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
                                                         @Valid @RequestBody AgendamentoCreateDto agendamentoDto) {
         agendamentoDto.setEstabelecimentoId(estabelecimentoId);
         var input = AgendamentoMapper.toCreateDomain(agendamentoDto);
@@ -137,7 +137,7 @@ public class AgendamentoController {
                                 )
                         )
                 )
-        public ResponseEntity<Page<AgendamentoResponseDto>> listar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+        public ResponseEntity<Page<AgendamentoResponseDto>> listar(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
                                        @ParameterObject Pageable pageable) {
         Page<AgendamentoResponseDto> agendamentos = PageUtils.toSpringPage(
                 findAllAgendamentosUseCase.findByEstabelecimentoId(estabelecimentoId, PageUtils.toPageQuery(pageable))
@@ -185,7 +185,7 @@ public class AgendamentoController {
             @ApiResponse(ref = "#/components/responses/InternalServerError")
     })
     public ResponseEntity<List<AgendamentoResponseDto>> listarPorPeriodo(
-            @Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
+            @Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
             @Parameter(description = "Data inicial no formato yyyy-MM-dd", example = "2026-04-01")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicial,
             @Parameter(description = "Data final no formato yyyy-MM-dd", example = "2026-04-30")
@@ -231,8 +231,8 @@ public class AgendamentoController {
             @ApiResponse(ref = "#/components/responses/NotFoundError"),
             @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<AgendamentoResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                      @Parameter(description = "ID do agendamento", example = "1") @PathVariable Long id) {
+        public ResponseEntity<AgendamentoResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
+                                      @Parameter(description = "ID do agendamento", example = "20013") @PathVariable Long id) {
         Agendamento agendamento = findAgendamentoByIdUseCase.findById(id);
         validateAgendamentoBelongsToEstabelecimento(estabelecimentoId, agendamento);
         return ResponseEntity.ok(AgendamentoMapper.toResponse(agendamento));
@@ -250,11 +250,10 @@ public class AgendamentoController {
                     name = "agendamentoAtualizacao",
                     value = """
                             {
-                              "profissionalId": 1,
-                              "servicoId": 1,
-                              "clienteId": 1,
-                              "dataHoraInicio": "2026-04-20T11:00:00",
-                              "status": "AGENDADO"
+                              "profissionalId": 2001,
+                              "servicoId": 201,
+                              "clienteId": 4,
+                              "dataHoraInicio": "2026-04-20T10:00:00"
                             }
                             """
                 )
@@ -292,8 +291,8 @@ public class AgendamentoController {
                         @ApiResponse(ref = "#/components/responses/NotFoundError"),
                         @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<AgendamentoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                    @Parameter(description = "ID do agendamento", example = "10") @PathVariable Long id,
+        public ResponseEntity<AgendamentoResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
+                                    @Parameter(description = "ID do agendamento", example = "20012") @PathVariable Long id,
                                                             @Valid @RequestBody AgendamentoDto agendamentoDto) {
         Agendamento atual = findAgendamentoByIdUseCase.findById(id);
         validateAgendamentoBelongsToEstabelecimento(estabelecimentoId, atual);
@@ -312,8 +311,8 @@ public class AgendamentoController {
             @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
             @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-        public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                        @Parameter(description = "ID do agendamento", example = "10") @PathVariable Long id) {
+        public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "2") @PathVariable Long estabelecimentoId,
+                        @Parameter(description = "ID do agendamento", example = "20011") @PathVariable Long id) {
         Agendamento agendamento = findAgendamentoByIdUseCase.findById(id);
         validateAgendamentoBelongsToEstabelecimento(estabelecimentoId, agendamento);
 

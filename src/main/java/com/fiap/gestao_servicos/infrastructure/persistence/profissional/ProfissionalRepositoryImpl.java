@@ -13,7 +13,7 @@ import com.fiap.gestao_servicos.core.domain.ServicoProfissional;
 import com.fiap.gestao_servicos.core.repository.ProfissionalRepository;
 import com.fiap.gestao_servicos.infrastructure.pagination.SpringPaginationMapper;
 import com.fiap.gestao_servicos.infrastructure.persistence.estabelecimento.EstabelecimentoEntity;
-import com.fiap.gestao_servicos.infrastructure.persistence.servico.ServicoEntity;
+import com.fiap.gestao_servicos.infrastructure.persistence.servico.ServicoRepositoryJpa;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,9 +28,12 @@ import java.util.Set;
 public class ProfissionalRepositoryImpl implements ProfissionalRepository {
 
     private final ProfissionalRepositoryJpa profissionalRepositoryJpa;
+    private final ServicoRepositoryJpa servicoRepositoryJpa;
 
-    public ProfissionalRepositoryImpl(ProfissionalRepositoryJpa profissionalRepositoryJpa) {
+    public ProfissionalRepositoryImpl(ProfissionalRepositoryJpa profissionalRepositoryJpa,
+                                      ServicoRepositoryJpa servicoRepositoryJpa) {
         this.profissionalRepositoryJpa = profissionalRepositoryJpa;
+        this.servicoRepositoryJpa = servicoRepositoryJpa;
     }
 
     @Override
@@ -122,9 +125,7 @@ public class ProfissionalRepositoryImpl implements ProfissionalRepository {
                         spe.setId(sp.getId());
                         spe.setProfissional(existing);
 
-                        ServicoEntity servicoEntity = new ServicoEntity();
-                        servicoEntity.setId(servicoId);
-                        spe.setServico(servicoEntity);
+                        spe.setServico(servicoRepositoryJpa.getReferenceById(servicoId));
 
                         existing.getServicosProfissional().add(spe);
                         existentesPorServicoId.put(servicoId, spe);
@@ -247,9 +248,7 @@ public class ProfissionalRepositoryImpl implements ProfissionalRepository {
                 ServicoProfissionalEntity spe = new ServicoProfissionalEntity();
                 spe.setId(sp.getId());
                 if (sp.getServico() != null && sp.getServico().getId() != null) {
-                    ServicoEntity servicoEntity = new ServicoEntity();
-                    servicoEntity.setId(sp.getServico().getId());
-                    spe.setServico(servicoEntity);
+                    spe.setServico(servicoRepositoryJpa.getReferenceById(sp.getServico().getId()));
                 }
                 spe.setValor(sp.getValor());
                 spe.setProfissional(entity);

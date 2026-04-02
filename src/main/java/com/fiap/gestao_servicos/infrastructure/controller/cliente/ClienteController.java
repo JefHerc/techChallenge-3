@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -66,11 +67,11 @@ public class ClienteController {
                     name = "cliente",
                     value = """
                         {
-                          "nome": "João Silva",
-                          "cpf": "34028317088",
-                          "celular": "11999998888",
-                          "email": "joao@cliente.com",
-                          "sexo": "MASCULINO"
+                        "nome": "Priscila Oliveira",
+                        "cpf": "636.394.100-84",
+                        "celular": "13991053387",
+                        "email": "pri.oliv@cliente.com",
+                        "sexo": "FEMININO"
                         }
                         """
                 )
@@ -124,7 +125,7 @@ public class ClienteController {
             ),
             @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
-    public ResponseEntity<Page<ClienteResponseDto>> listar(Pageable pageable) {
+    public ResponseEntity<Page<ClienteResponseDto>> listar(@ParameterObject Pageable pageable) {
         Page<ClienteResponseDto> clientes = PageUtils.toSpringPage(
                 findAllClientesUseCase.findAll(PageUtils.toPageQuery(pageable))
                         .map(ClienteMapper::toResponse));
@@ -175,11 +176,11 @@ public class ClienteController {
                     name = "clienteAtualizacao",
                     value = """
                         {
-                          "nome": "João Silva Atualizado",
-                          "cpf": "34028317088",
-                          "celular": "11999990000",
-                          "email": "joao.atualizado@cliente.com",
-                          "sexo": "MASCULINO"
+                            "nome": "Maria Oliveira da Paixão",
+                            "cpf": "52998224725",
+                            "celular": "11988887776",
+                            "email": "maria@cliente.com",
+                            "sexo": "FEMININO"
                         }
                         """
                 )
@@ -196,12 +197,12 @@ public class ClienteController {
                         name = "clienteAtualizado",
                         value = """
                             {
-                              "id": 1,
-                              "nome": "João Silva Atualizado",
-                              "cpf": "34028317088",
-                              "celular": "11999990000",
-                              "email": "joao.atualizado@cliente.com",
-                              "sexo": "MASCULINO"
+                              "id": 2,
+                              "nome": "Maria Oliveira da Paixão",
+                              "cpf": "52998224725",
+                              "celular": "11988887776",
+                              "email": "maria@cliente.com",
+                              "sexo": "FEMININO"
                             }
                             """
                     )
@@ -212,7 +213,7 @@ public class ClienteController {
                         @ApiResponse(ref = "#/components/responses/DuplicateDataError"),
                         @ApiResponse(ref = "#/components/responses/InternalServerError")
     })
-    public ResponseEntity<ClienteResponseDto> atualizar(@Parameter(description = "ID do cliente", example = "1") @PathVariable Long id,
+    public ResponseEntity<ClienteResponseDto> atualizar(@Parameter(description = "ID do cliente", example = "2") @PathVariable Long id,
                                                         @Valid @RequestBody ClienteDto clienteDto) {
         Cliente cliente = ClienteMapper.toDomain(clienteDto);
         Cliente clienteAtualizado = updateClienteUseCase.update(id, cliente);
@@ -227,7 +228,7 @@ public class ClienteController {
             @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
             @ApiResponse(ref = "#/components/responses/InternalServerError")
     })
-    public ResponseEntity<Void> deletar(@Parameter(description = "ID do cliente", example = "1") @PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID do cliente", example = "4") @PathVariable Long id) {
         deleteClienteUseCase.deleteById(id);
         return ResponseEntity.noContent().build();
     }

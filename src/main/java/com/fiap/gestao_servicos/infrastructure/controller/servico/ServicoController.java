@@ -69,11 +69,11 @@ public class ServicoController {
                                         value = """
                                                         [
                                                             {
-                                                                "nome": "CORTE",
+                                                                "nome": "MASSAGEM",
                                                                 "duracaoMedia": "PT1H"
                                                             },
                                                             {
-                                                                "nome": "ESCOVA",
+                                                                "nome": "BARBA",
                                                                 "duracaoMedia": "PT30M"
                                                             }
                                                         ]
@@ -189,7 +189,7 @@ public class ServicoController {
                     name = "servicoAtualizacao",
                     value = """
                             {
-                              "nome": "COLORACAO PREMIUM",
+                              "nome": "LIMPEZA_DE_PELE",
                               "duracaoMedia": "PT1H15M"
                             }
                             """
@@ -208,7 +208,7 @@ public class ServicoController {
                         value = """
                                 {
                                   "id": 2,
-                                  "nome": "COLORACAO PREMIUM",
+                                  "nome": "LIMPEZA_DE_PELE",
                                   "duracaoMedia": "PT1H15M"
                                 }
                                 """
@@ -239,8 +239,8 @@ public class ServicoController {
             @ApiResponse(ref = "#/components/responses/DataIntegrityViolationException"),
             @ApiResponse(ref = "#/components/responses/InternalServerError")
     })
-    public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                        @Parameter(description = "ID do servico", example = "1") @PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "3") @PathVariable Long estabelecimentoId,
+                                        @Parameter(description = "ID do servico", example = "20") @PathVariable Long id) {
         deleteServicoNoEstabelecimentoUseCase.deleteById(estabelecimentoId, id);
         return ResponseEntity.noContent().build();
     }

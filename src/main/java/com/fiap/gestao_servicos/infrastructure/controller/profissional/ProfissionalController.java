@@ -67,13 +67,13 @@ public class ProfissionalController {
                                         name = "profissional",
                                         value = """
                                                         {
-                                                            "nome": "Carla Souza",
-                                                            "cpf": "06854809096",
-                                                            "celular": "11988887777",
-                                                            "email": "carla@e1.com",
-                                                            "urlFoto": "https://cdn.exemplo.com/fotos/carla.jpg",
+                                                            "nome": "Roberval Soraiano",
+                                                            "cpf": "413.803.570-20",
+                                                            "celular": "12994558623",
+                                                            "email": "roberval@e1.com",
+                                                            "urlFoto": "https://cdn.exemplo.com/fotos/roberval.jpg",
                                                             "descricao": "Especialista coloração",
-                                                            "sexo": "FEMININO",
+                                                            "sexo": "MASCULINO",
                                                             "expedientes": [
                                                                 {
                                                                     "diaSemana": "segunda-feira",
@@ -83,8 +83,8 @@ public class ProfissionalController {
                                                             ],
                                                             "servicosProfissional": [
                                                                 {
-                                                                    "servicoId": 1,
-                                                                    "valor": 80.00
+                                                                    "servicoId": 2,
+                                                                    "valor": 95.00
                                                                 }
                                                             ]
                                                         }
@@ -104,13 +104,13 @@ public class ProfissionalController {
                         value = """
                                 {
                                   "id": 1,
-                                  "nome": "Carla Souza",
-                                  "cpf": "06854809096",
-                                  "celular": "11988887777",
-                                  "email": "carla@e1.com",
-                                  "urlFoto": "https://cdn.exemplo.com/fotos/carla.jpg",
+                                  "nome": "Roberval Soraiano",
+                                  "cpf": "413.803.570-20",
+                                  "celular": "12994558623",
+                                  "email": "roberval@e1.com",
+                                  "urlFoto": "https://cdn.exemplo.com/fotos/roberval.jpg",
                                   "descricao": "Especialista coloração",
-                                  "sexo": "FEMININO",
+                                  "sexo": "MASCULINO",
                                   "expedientes": [],
                                   "servicosProfissional": []
                                 }
@@ -188,7 +188,7 @@ public class ProfissionalController {
             @ApiResponse(ref = "#/components/responses/InternalServerError")
         })
         public ResponseEntity<ProfissionalResponseDto> buscarPorId(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                       @Parameter(description = "ID do profissional", example = "5") @PathVariable Long id) {
+                                       @Parameter(description = "ID do profissional", example = "3") @PathVariable Long id) {
         Profissional profissional = findProfissionalByIdUseCase.findByIdAndEstabelecimentoId(id, estabelecimentoId);
         return ResponseEntity.ok(ProfissionalMapper.toResponse(profissional));
     }
@@ -205,24 +205,32 @@ public class ProfissionalController {
                                         name = "profissionalAtualizacao",
                                         value = """
                                                         {
-                                                            "nome": "Carla Souza Premium",
-                                                            "cpf": "06854809096",
-                                                            "celular": "11988887771",
-                                                            "email": "carla.premium@e1.com",
-                                                            "urlFoto": "https://cdn.exemplo.com/fotos/carla-premium.jpg",
-                                                            "descricao": "Especialista coloração e hidratação",
-                                                            "sexo": "FEMININO",
+                                                            "nome": "Henrique Luz",
+                                                            "celular": "19966660006",
+                                                            "cpf": "52284927041",
+                                                            "descricao": "Corte moderno e barba",
+                                                            "email": "henrique@e3.com",
                                                             "expedientes": [
                                                                 {
                                                                     "diaSemana": "terca-feira",
                                                                     "inicioTurno": "10:00",
-                                                                    "fimTurno": "19:00"
+                                                                    "fimTurno": "18:00"
                                                                 }
                                                             ],
+                                                            "sexo": "MASCULINO",
+                                                            "urlFoto": "https://cdn.exemplo.com/fotos/henrique.jpg",
                                                             "servicosProfissional": [
                                                                 {
-                                                                    "servicoId": 1,
-                                                                    "valor": 130.00
+                                                                    "servicoId": 15,
+                                                                    "valor": 75.00
+                                                                },
+                                                                {
+                                                                    "servicoId": 16,
+                                                                    "valor": 55.00
+                                                                },
+                                                                {
+                                                                    "servicoId": 17,
+                                                                    "valor": 63.00
                                                                 }
                                                             ]
                                                         }
@@ -261,8 +269,8 @@ public class ProfissionalController {
                         @ApiResponse(ref = "#/components/responses/DuplicateDataError"),
                         @ApiResponse(ref = "#/components/responses/InternalServerError"),
         })
-        public ResponseEntity<ProfissionalResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                     @Parameter(description = "ID do profissional", example = "5") @PathVariable Long id,
+        public ResponseEntity<ProfissionalResponseDto> atualizar(@Parameter(description = "ID do estabelecimento", example = "3") @PathVariable Long estabelecimentoId,
+                                     @Parameter(description = "ID do profissional", example = "20") @PathVariable Long id,
                                                              @Valid @RequestBody ProfissionalDto profissionalDto) {
         Profissional atualizado = updateProfissionalNoEstabelecimentoUseCase.update(
                 estabelecimentoId,
@@ -281,8 +289,8 @@ public class ProfissionalController {
                 @ApiResponse(ref = "#/components/responses/InternalServerError")
 
     })
-    public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "1") @PathVariable Long estabelecimentoId,
-                                        @Parameter(description = "ID do profissional", example = "5") @PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@Parameter(description = "ID do estabelecimento", example = "3") @PathVariable Long estabelecimentoId,
+                                        @Parameter(description = "ID do profissional", example = "19") @PathVariable Long id) {
         deleteProfissionalNoEstabelecimentoUseCase.deleteById(estabelecimentoId, id);
         return ResponseEntity.noContent().build();
     }
